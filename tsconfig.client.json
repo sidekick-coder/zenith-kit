@@ -1,0 +1,26 @@
+{
+    "extends": [
+        "@vue/tsconfig/tsconfig.dom.json"
+    ],
+    "compilerOptions": {
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "strict": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": true,
+        "erasableSyntaxOnly": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedSideEffectImports": true,
+        "strictPropertyInitialization": false,
+        "baseUrl": ".",
+        "lib": [
+            "es2023",
+            "dom",
+            "dom.iterable"
+        ]
+    },
+    "include": [
+        "client/**/**/*.ts",
+        "client/**/**/*.vue",
+        "shared/**/**/*.ts",
+    ]
+}

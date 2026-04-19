@@ -1,0 +1,39 @@
+{
+  "name": "@sidekick-coder/zenith-kit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "generate:indexes": "node indexes.js",
+    "build": "tsdown"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "exports": {
+    "shared": {
+      "import": "./dist/shared/index.mjs",
+      "require": "./dist/shared/index.js",
+      "types": "./dist/shared/index.d.ts"
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@eslint/json": "^0.14.0",
+    "@types/lodash-es": "^4.17.12",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.8.0",
+    "globals": "^17.5.0",
+    "jiti": "^2.6.1",
+    "tsdown": "^0.21.9",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "lodash-es": "^4.18.1",
+    "valibot": "^1.3.1"
+  }
+}
