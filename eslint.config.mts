@@ -14,4 +14,9 @@ export default defineConfig([
     { files: ["**/*.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
     { files: ["**/*.jsonc"], plugins: { json }, language: "json/jsonc", extends: ["json/recommended"] },
     eslintConfigPrettier,
+    {
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+        }
+    }
 ]);

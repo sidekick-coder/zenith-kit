@@ -1,39 +1,52 @@
 {
-  "name": "@sidekick-coder/zenith-kit",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "generate:indexes": "node indexes.js",
-    "build": "tsdown"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "exports": {
-    "shared": {
-      "import": "./dist/shared/index.mjs",
-      "require": "./dist/shared/index.js",
-      "types": "./dist/shared/index.d.ts"
+    "name": "@sidekick-coder/zenith-kit",
+    "version": "0.0.1",
+    "license": "MIT",
+    "description": "A collection of utilities and tools for building language servers and related applications.",
+    "keywords": [],
+    "author": "Henrique Oliveira <henriqueoliwork@gmail.com>",
+    "homepage": "https://github.com/sidekick-coder/language-kit",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sidekick-coder/language-kit.git"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "exports": {
+        "./shared": {
+            "import": "./dist/shared/index.mjs",
+            "require": "./dist/shared/index.js",
+            "types": "./dist/shared/index.d.mts"
+        },
+        "./server": {
+            "import": "./dist/server/index.mjs",
+            "require": "./dist/server/index.js",
+            "types": "./dist/server/index.d.mts"
+        }
+    },
+    "scripts": {
+        "generate:indexes": "node indexes.js",
+        "build": "node indexes.js && tsdown"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.4",
+        "@eslint/json": "^0.14.0",
+        "@types/lodash-es": "^4.17.12",
+        "@types/node": "^25.6.0",
+        "@vue/tsconfig": "^0.9.1",
+        "eslint": "^9.39.4",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-vue": "^10.8.0",
+        "globals": "^17.5.0",
+        "jiti": "^2.6.1",
+        "tsdown": "^0.21.9",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.58.2"
+    },
+    "dependencies": {
+        "fast-glob": "^3.3.3",
+        "lodash-es": "^4.18.1",
+        "valibot": "^1.3.1"
     }
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.4",
-    "@eslint/json": "^0.14.0",
-    "@types/lodash-es": "^4.17.12",
-    "@vue/tsconfig": "^0.9.1",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-vue": "^10.8.0",
-    "globals": "^17.5.0",
-    "jiti": "^2.6.1",
-    "tsdown": "^0.21.9",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.58.2"
-  },
-  "dependencies": {
-    "fast-glob": "^3.3.3",
-    "lodash-es": "^4.18.1",
-    "valibot": "^1.3.1"
-  }
 }

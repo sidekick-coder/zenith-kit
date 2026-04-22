@@ -5,6 +5,9 @@
     "lib": [
       "ES2023"
     ],
+    "types": [
+      "node"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -21,10 +24,7 @@
     "strictPropertyInitialization": false
   },
   "include": [
-    "vite.config.ts",
-    "index.ts",
-    "arte",
-    "server/**/*.ts",
-    "shared/**/*.ts",
+    "src/server/**/*.ts",
+    "src/shared/**/*.ts"
   ]
 }

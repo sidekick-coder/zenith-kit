@@ -13,8 +13,6 @@ function generate(options) {
     for (const folder of folders) {
         const files = fg.sync(`${folder}/**/*.ts`, { ignore: ['**/index.ts'] })
 
-        console.log(files)
-
         for (const file of files) {
             const filePath = path.relative(path.dirname(filename), file)
 
@@ -31,4 +29,9 @@ function generate(options) {
 generate({
     folders: ['src/shared/services', 'src/shared/utils'],
     filename: 'src/shared/index.ts'
+})
+
+generate({
+    folders: ['src/server/services'],
+    filename: 'src/server/index.ts'
 })
