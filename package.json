@@ -27,7 +27,8 @@
     },
     "scripts": {
         "generate:indexes": "node indexes.js",
-        "build": "tsdown"
+        "build": "tsdown",
+        "watch": "tsdown --watch"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",

@@ -18,7 +18,6 @@
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "strictPropertyInitialization": false

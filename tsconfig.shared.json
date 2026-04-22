@@ -15,12 +15,11 @@
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "strictPropertyInitialization": false
   },
   "include": [
-    "src/shared/**/*.ts",
+    "src/shared/**/*.ts"
   ]
 }
