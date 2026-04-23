@@ -4,6 +4,7 @@ import { writeFile, unlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
+import LoggerService from '../../shared/services/LoggerService.ts'
 
 const execAsync = promisify(exec)
 
@@ -20,6 +21,8 @@ export interface GitGatewayOptions {
     sshKey?: string
     sshKeyFile?: string
     sshKeyTmpFileName?: string
+    logger?: LoggerService
+    debug?: boolean
 }
 
 function escapeShellArgument(value: string): string {
@@ -31,23 +34,23 @@ export class GitGateway {
     private readonly sshKey?: string
     private readonly sshKeyFile?: string
     private readonly sshKeyTmpFileName?: string
+    private readonly logger: LoggerService = new LoggerService()
+    private readonly debug: boolean
 
-    constructor({ cwd, sshKey, sshKeyFile, sshKeyTmpFileName }: GitGatewayOptions) {
-        this.cwd = cwd
-        this.sshKey = sshKey
-        this.sshKeyFile = sshKeyFile
-        this.sshKeyTmpFileName = sshKeyTmpFileName
+    constructor(options: GitGatewayOptions) {
+        Object.assign(this, options)
     }
 
-    private async buildEnv(): Promise<{ env: NodeJS.ProcessEnv; cleanup: () => Promise<void> }> {
+    private async buildEnv() {
+        const result = {
+            sshKeyFile: undefined as string | undefined,
+            env: process.env,
+            cleanup: async () => { },
+        }
+
         if (this.sshKeyFile) {
-            return {
-                env: {
-                    ...process.env,
-                    GIT_SSH_COMMAND: `ssh -i ${escapeShellArgument(this.sshKeyFile)} -o StrictHostKeyChecking=no`,
-                },
-                cleanup: async () => {},
-            }
+            result.env.GIT_SSH_COMMAND = `ssh -i ${escapeShellArgument(this.sshKeyFile)} -o StrictHostKeyChecking=no`
+            result.sshKeyFile = this.sshKeyFile
         }
 
         if (this.sshKey) {
@@ -55,22 +58,31 @@ export class GitGateway {
 
             await writeFile(tempFile, this.sshKey, { mode: 0o600 })
 
-            return {
-                env: {
-                    ...process.env,
-                    GIT_SSH_COMMAND: `ssh -i ${escapeShellArgument(tempFile)} -o StrictHostKeyChecking=no`,
-                },
-                cleanup: async () => {
-                    await unlink(tempFile).catch(() => {})
-                },
+            result.env.GIT_SSH_COMMAND = `ssh -i ${escapeShellArgument(tempFile)} -o StrictHostKeyChecking=no`
+            result.sshKeyFile = tempFile
+            result.cleanup = async () => {
+                try {
+                    await unlink(tempFile)
+                } catch (err) {
+                    this.logger.warn(`Failed to delete temporary SSH key file: ${tempFile}`, { error: err })
+                }
             }
         }
 
-        return { env: process.env, cleanup: async () => {} }
+        return result
     }
 
     async run(args: string): Promise<string> {
-        const { env, cleanup } = await this.buildEnv()
+
+        const { env, sshKeyFile, cleanup } = await this.buildEnv()
+
+        if (this.debug) {
+            this.logger.debug('git ' + args, {
+                cwd: this.cwd,
+                sshKeyFile,
+            })
+        }
+
         try {
             const { stdout } = await execAsync(`git ${args}`, {
                 cwd: this.cwd,
