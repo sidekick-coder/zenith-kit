@@ -11,11 +11,34 @@ export interface GitRepoInfo {
     remotes: string[]
 }
 
+export interface GitGatewayOptions {
+    cwd: string
+    sshKey?: string
+}
+
+function escapeShellArgument(value: string): string {
+    return `'${value.replace(/'/g, `'\\''`)}'`
+}
+
 export class GitGateway {
-    constructor(private readonly cwd: string) {}
+    private readonly cwd: string
+    private readonly env?: NodeJS.ProcessEnv
+
+    constructor({ cwd, sshKey }: GitGatewayOptions) {
+        this.cwd = cwd
+        this.env = sshKey
+            ? {
+                ...process.env,
+                GIT_SSH_COMMAND: `ssh -i ${escapeShellArgument(sshKey)} -o StrictHostKeyChecking=no`,
+            }
+            : undefined
+    }
 
     async run(args: string): Promise<string> {
-        const { stdout } = await execAsync(`git ${args}`, { cwd: this.cwd })
+        const { stdout } = await execAsync(`git ${args}`, {
+            cwd: this.cwd,
+            env: this.env,
+        })
         return stdout.trim()
     }
 
