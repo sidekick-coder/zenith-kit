@@ -1,3 +1,6 @@
+export * from './services/GitBranchRepository.ts'
+export * from './services/GitCommitRepository.ts'
 export * from './services/PluginIpcClient.ts'
 export * from './services/PluginIpcHost.ts'
 export * from './services/PluginRouter.ts'
+export * from './gateways/GitGateway.ts'

@@ -24,7 +24,10 @@ export default defineConfig([
         hooks(hooks) {
             hooks.hook('build:before', async () => {
                 generateIndexFile({
-                    folders: ['src/server/services'],
+                    folders: [
+                        'src/server/services',
+                        'src/server/gateways',
+                    ],
                     filename: 'src/server/index.ts'
                 })
 
