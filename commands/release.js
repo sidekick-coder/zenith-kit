@@ -61,7 +61,7 @@ command
         run('npm', ['version', bump])
 
         console.log('\nBuilding...')
-        run('npm', ['run', 'build'])
+        run('npm', ['run', 'build', '--', '--dts'])
 
         console.log('\nPublishing to npm...')
         run('npm', ['publish'])
