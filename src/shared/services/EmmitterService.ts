@@ -6,7 +6,7 @@ interface EmmitterHandler {
     id: string
     event: string
     listener: (...args: any[]) => any
-    originalListener?: (...args: any[]) => any 
+    originalListener?: (...args: any[]) => any
 }
 
 interface OnOptions {
@@ -31,7 +31,7 @@ export default class EmmitterService<Events extends Record<string, any> = Record
     public load(options?: EmmitterServiceOptions) {
         this.debug = options?.debug || false
         this.logger = options?.logger || new LoggerService()
-        
+
         if (this.debug) {
             this.logger.debug('emmitter loaded with debug mode enabled')
         }
@@ -44,7 +44,7 @@ export default class EmmitterService<Events extends Record<string, any> = Record
 
         if (options?.unique) {
             const exists = this.handlers.some(h => (h.event === event && h.listener === listener) || h.id === id)
-            
+
             if (exists) {
                 return
             }
@@ -53,7 +53,7 @@ export default class EmmitterService<Events extends Record<string, any> = Record
         const handler: EmmitterHandler = {
             id,
             event,
-            listener 
+            listener
         }
 
         this.handlers.push(handler)
@@ -65,8 +65,21 @@ export default class EmmitterService<Events extends Record<string, any> = Record
         return handler
     }
 
-    public onDebounce<K extends keyof Events>(event: K, listener: (args: Events[K]) => void, options?: OnDebounceOptions): EmmitterHandler 
-    public onDebounce(event: string, listener: (args: any) => void, options?: OnDebounceOptions): EmmitterHandler 
+    public once<K extends keyof Events>(event: K, listener: (args: Events[K]) => void, options?: OnOptions): EmmitterHandler
+    public once(event: string, listener: (args: any) => void, options?: OnOptions): EmmitterHandler
+    public once(event: string, listener: EmmitterHandler['listener'], options?: OnOptions) {
+        const wrapper = (args: any) => {
+            listener(args)
+
+            this.off(event, wrapper)
+        }
+
+        return this.on(event, wrapper, options)
+    }
+
+
+    public onDebounce<K extends keyof Events>(event: K, listener: (args: Events[K]) => void, options?: OnDebounceOptions): EmmitterHandler
+    public onDebounce(event: string, listener: (args: any) => void, options?: OnDebounceOptions): EmmitterHandler
     public onDebounce(event: string, listener: EmmitterHandler['listener'], options?: OnDebounceOptions) {
         const debounced = debounce(listener, options?.debounce || 300)
 
@@ -114,14 +127,14 @@ export default class EmmitterService<Events extends Record<string, any> = Record
     public emit(event: string, args?: any) {
 
         if (this.debug) {
-            this.logger.debug('emitting event', { 
-                event, 
+            this.logger.debug('emitting event', {
+                event,
                 args
             })
         }
-        
+
         const handlers = this.handlers.filter(h => h.event === event)
-        
+
         for (const handler of handlers) {
             tryCatch.sync(() => handler.listener(args))
         }
@@ -130,14 +143,14 @@ export default class EmmitterService<Events extends Record<string, any> = Record
     public async emitAndWait<K extends keyof Events>(event: K, args: Events[K]): Promise<void>
     public async emitAndWait(event: string, args?: any): Promise<void>
     public async emitAndWait(event: string, args?: any) {
-       
+
 
         const handlers = this.handlers.filter(h => h.event === event)
 
         if (this.debug) {
-            this.logger.debug('emitting event', { 
+            this.logger.debug('emitting event', {
                 handlers: handlers.length,
-                event, 
+                event,
                 args
             })
         }
