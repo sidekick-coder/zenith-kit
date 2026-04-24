@@ -1,3 +1,5 @@
+export * from './services/EmmitterService.ts'
+export { default as EmmitterService } from './services/EmmitterService.ts'
 export * from './services/GitBranchRepository.ts'
 export * from './services/GitCommitRepository.ts'
 export * from './services/PluginIpcClient.ts'

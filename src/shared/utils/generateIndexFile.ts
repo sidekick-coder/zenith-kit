@@ -15,7 +15,13 @@ export function generateIndexFile(options: any) {
         for (const file of files) {
             const filePath = path.relative(path.dirname(filename), file)
 
+            const hasDefaultExport = fs.readFileSync(file, 'utf-8').includes('export default') && !filePath.includes('generateIndexFile.ts')
+
             content += `export * from './${filePath}'\n`
+            // default export 
+            if (hasDefaultExport) {
+                content += `export { default as ${path.basename(file, '.ts')} } from './${filePath}'\n`
+            }
         }
     }
 
