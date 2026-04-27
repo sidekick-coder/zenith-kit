@@ -37,6 +37,7 @@ export default defineConfig([
                         'src/server/mixins',
                         'src/server/facades',
                         'src/server/contracts',
+                        'src/server/loaders',
                     ],
                     filename: 'src/server/index.ts'
                 })
