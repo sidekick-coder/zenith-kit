@@ -9,7 +9,13 @@ export default defineConfig([
         hooks(hooks) {
             hooks.hook('build:before', async () => {
                 generateIndexFile({
-                    folders: ['src/shared/services', 'src/shared/utils'],
+                    folders: [
+                        'src/shared/services', 
+                        'src/shared/utils',
+                        'src/shared/schemas',
+                        'src/shared/exceptions',
+                        'src/shared/facades',
+                    ],
                     filename: 'src/shared/index.ts'
                 })
 
@@ -26,7 +32,11 @@ export default defineConfig([
                 generateIndexFile({
                     folders: [
                         'src/server/services',
+                        'src/server/repositories',
                         'src/server/gateways',
+                        'src/server/mixins',
+                        'src/server/facades',
+                        'src/server/contracts',
                     ],
                     filename: 'src/server/index.ts'
                 })

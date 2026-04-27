@@ -2,7 +2,7 @@ type Constructor<T = object> = new (...args: any[]) => T
 
 type EntryKey = string | symbol | Constructor
 
-export default class DIService {
+export default class ContainerService {
     private entries = new Map<EntryKey, any>()
 
     public loadFromRecord(record: Record<string, any>): void {

@@ -1,4 +1,4 @@
 import BaseEmmitterService from "../../shared/services/EmmitterService";
-import type { Events } from '../contracts/events';
+import type { EventContract } from '../contracts/EventContract';
 
-export default class EmmitterService extends BaseEmmitterService<Events> {}
+export default class EmmitterService extends BaseEmmitterService<EventContract> {}

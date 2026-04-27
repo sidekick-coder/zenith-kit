@@ -1,4 +1,4 @@
-export interface Events {
+export interface EventContract {
   'user:before-create': { user: any }
   'user:after-create': { user: any }
   'user:before-update': { user: any }

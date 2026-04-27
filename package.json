@@ -13,6 +13,11 @@
     "publishConfig": {
         "access": "public"
     },
+    "imports": {
+        "#client/*": "./src/client/*",
+        "#server/*": "./src/server/*",
+        "#shared/*": "./src/shared/*"
+    },
     "exports": {
         "./shared": {
             "import": "./dist/shared/index.mjs",
@@ -36,6 +41,7 @@
         "@eslint/json": "^0.14.0",
         "@types/lodash-es": "^4.17.12",
         "@types/node": "^25.6.0",
+        "@types/qs": "^6.15.0",
         "@vue/tsconfig": "^0.9.1",
         "commander": "^14.0.3",
         "eslint": "^9.39.4",
@@ -48,8 +54,14 @@
         "typescript-eslint": "^8.58.2"
     },
     "dependencies": {
+        "better-sqlite3": "^12.9.0",
+        "date-fns": "^4.1.0",
         "fast-glob": "^3.3.3",
+        "kysely": "^0.28.16",
         "lodash-es": "^4.18.1",
+        "mysql2": "^3.22.3",
+        "pg": "^8.20.0",
+        "qs": "^6.15.1",
         "valibot": "^1.3.1"
     }
 }
