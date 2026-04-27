@@ -32,6 +32,20 @@ export default class DatabaseRepository {
     protected table: string = ''
     protected primaryKey: string = 'id'
 
+    constructor(db: Kysely<any>, table: string, primaryKey: string) {
+        if (db) {
+            this.db = db
+        }
+
+        if (table) {
+            this.table = table
+        }
+
+        if (primaryKey) {
+            this.primaryKey = primaryKey
+        }
+    }
+
     public setDatabase(db: Kysely<any>) {
         this.db = db
         return this

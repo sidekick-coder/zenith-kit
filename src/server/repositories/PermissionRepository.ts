@@ -1,21 +1,20 @@
 import DatabaseRepositoryInfer from '#server/mixins/DatabaseRepositoryInferMixin.ts'
 import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
 import { compose, mixin } from '#shared/utils/index.ts'
-import type { Token } from '#shared/schemas/tokenSchema.ts'
+import type { Permission } from '#shared/schemas/permissionSchema.ts'
 
 export interface QueryOptions {
     id?: number | number[]
     search?: string 
-    type?: string | string[]
 }
 
-export default class TokenRepository extends compose(
+export default class PermissionRepository extends compose(
     mixin(DatabaseRepository),
-    DatabaseRepositoryInfer<Token, Token['id'], QueryOptions>()
+    DatabaseRepositoryInfer<Permission, Permission['id'], QueryOptions>()
 ) {
 
     constructor(db: DatabaseRepository['db']) {
-        super(db, 'tokens', 'id')
+        super(db, 'permissions', 'id')
     }
 
     public query(options?: QueryOptions) {
@@ -29,12 +28,6 @@ export default class TokenRepository extends compose(
 
         if (options?.search) {
             qb = qb.where('name', 'like', `%${options.search}%`)
-        }
-
-        if (options?.type) {
-            const types = Array.isArray(options.type) ? options.type : [options.type]
-
-            qb = qb.where('type', 'in', types)
         }
 
         return qb
