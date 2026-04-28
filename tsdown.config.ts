@@ -15,6 +15,7 @@ export default defineConfig([
                         'src/shared/schemas',
                         'src/shared/exceptions',
                         'src/shared/facades',
+                        'src/shared/entities',
                     ],
                     filename: 'src/shared/index.ts'
                 })
@@ -38,6 +39,7 @@ export default defineConfig([
                         'src/server/facades',
                         'src/server/contracts',
                         'src/server/loaders',
+                        'src/server/entities',
                     ],
                     filename: 'src/server/index.ts'
                 })
