@@ -39,4 +39,16 @@ export default class TokenRepository extends compose(
 
         return qb
     }
+
+    public async findByToken(token: string): Promise<Token | null> {
+        let qb = this.query() as any
+
+        qb = qb.selectAll()
+
+        qb = qb.where('token', '=', token)
+
+        const item = await qb.executeTakeFirst()
+
+        return item || null
+    }
 }

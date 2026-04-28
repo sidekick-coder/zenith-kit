@@ -1,4 +1,4 @@
-import type { FindManyOptions, PaginateOptions } from '#server/repositories/DatabaseRepository.ts'
+import type { FindManyOptions, PaginateOptions, Pagination } from '#server/repositories/DatabaseRepository.ts'
 import type { Constructor } from '#shared/utils/compose.ts'
 
 export interface IRepositoryTypes<TEntity = Record<string, any>, TPrimaryKeyType = any, TOptions = Record<string, any>> {
@@ -8,7 +8,7 @@ export interface IRepositoryTypes<TEntity = Record<string, any>, TPrimaryKeyType
     findById(id: TPrimaryKeyType, options?: TOptions): Promise<TEntity | null>
     findByIdOrFail(id: TPrimaryKeyType, options?: TOptions): Promise<TEntity>
 
-    paginate(options?: TOptions & PaginateOptions): Promise<{ items: TEntity[]; total: number }>
+    paginate(options?: TOptions & PaginateOptions): Promise<Pagination>
 
     create(data: Partial<TEntity>, options?: TOptions): Promise<TEntity>
     createMany(data: Partial<TEntity>[], options?: TOptions): Promise<TEntity[]> 

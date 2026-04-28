@@ -3,7 +3,7 @@ import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
 import type { PermissionAssignment } from '#shared/schemas/permissionAssignmentSchema.ts'
 import { compose, mixin } from '#shared/utils/index.ts'
 
-interface QueryOptions {
+export interface PermissionAssignmentRepositoryQueryOptions {
     id?: number | number[]
     permissionId?: number | number[]
     assignableId?: number | number[]
@@ -12,10 +12,13 @@ interface QueryOptions {
 
 export default class PermissionAssignmentRepository extends compose(
     mixin(DatabaseRepository),
-    DatabaseRepositoryInfer<PermissionAssignment, PermissionAssignment['id']>()
+    DatabaseRepositoryInfer<PermissionAssignment, PermissionAssignment['id'], PermissionAssignmentRepositoryQueryOptions >()
 ) {
+    constructor(db: DatabaseRepository['db']) {
+        super(db, 'permissions_assignments', 'id')
+    }
 
-    public query(options?: QueryOptions) {
+    public query(options?: PermissionAssignmentRepositoryQueryOptions) {
         let qb = super.query(options as any)
 
         if (options?.id) {
@@ -45,7 +48,4 @@ export default class PermissionAssignmentRepository extends compose(
         return qb
     }
 
-    constructor(db: DatabaseRepository['db']) {
-        super(db, 'permissions_assignments', 'id')
-    }
 }
