@@ -21,7 +21,7 @@ export default class ContainerService {
         return record
     }
 
-    public set(payload: EntryKey, value: any): void {
+    public set(payload: EntryKey, value: any) {
         let key = payload
 
         if (typeof payload === 'function' || typeof payload === 'object') {
@@ -29,6 +29,8 @@ export default class ContainerService {
         }
 
         this.entries.set(key, value)
+
+        return this
     }
 
     public has(payload: EntryKey): boolean {
