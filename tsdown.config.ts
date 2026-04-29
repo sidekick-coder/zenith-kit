@@ -1,5 +1,5 @@
 import { defineConfig, globalLogger } from 'tsdown'
-import { generateIndexFile } from './src/shared/utils/generateIndexFile'
+import { generateIndexFile } from './src/server/utils/generateIndexFile'
 
 export default defineConfig([
     {
