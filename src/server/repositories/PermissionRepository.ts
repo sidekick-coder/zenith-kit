@@ -3,21 +3,21 @@ import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
 import { compose, mixin } from '#shared/utils/index.ts'
 import type { Permission } from '#shared/schemas/permissionSchema.ts'
 
-export interface QueryOptions {
+export interface PermissionRepositoryQueryOptions {
     id?: number | number[]
     search?: string 
 }
 
 export default class PermissionRepository extends compose(
     mixin(DatabaseRepository),
-    DatabaseRepositoryInfer<Permission, Permission['id'], QueryOptions>()
+    DatabaseRepositoryInfer<Permission, Permission['id'], PermissionRepositoryQueryOptions>()
 ) {
 
     constructor(db: DatabaseRepository['db']) {
         super(db, 'permissions', 'id')
     }
 
-    public query(options?: QueryOptions) {
+    public query(options?: PermissionRepositoryQueryOptions) {
         let qb = super.query(options as any)
 
         if (options?.id) {

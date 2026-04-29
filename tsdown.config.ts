@@ -40,6 +40,7 @@ export default defineConfig([
                         'src/server/contracts',
                         'src/server/loaders',
                         'src/server/entities',
+                        'src/server/utils',
                     ],
                     filename: 'src/server/index.ts'
                 })

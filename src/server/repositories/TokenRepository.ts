@@ -3,7 +3,7 @@ import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
 import { compose, mixin } from '#shared/utils/index.ts'
 import type { Token } from '#shared/schemas/tokenSchema.ts'
 
-export interface QueryOptions {
+export interface TokenRepositoryQueryOptions {
     id?: number | number[]
     search?: string 
     type?: string | string[]
@@ -11,14 +11,14 @@ export interface QueryOptions {
 
 export default class TokenRepository extends compose(
     mixin(DatabaseRepository),
-    DatabaseRepositoryInfer<Token, Token['id'], QueryOptions>()
+    DatabaseRepositoryInfer<Token, Token['id'], TokenRepositoryQueryOptions>()
 ) {
 
     constructor(db: DatabaseRepository['db']) {
         super(db, 'tokens', 'id')
     }
 
-    public query(options?: QueryOptions) {
+    public query(options?: TokenRepositoryQueryOptions) {
         let qb = super.query(options as any)
 
         if (options?.id) {
