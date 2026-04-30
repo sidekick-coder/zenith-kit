@@ -69,6 +69,7 @@ export default defineConfig([
                         'src/client/services',
                         'src/client/facades',
                         'src/client/entities',
+                        'src/client/guards',
                     ],
                     filename: 'src/client/index.ts'
                 })

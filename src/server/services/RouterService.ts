@@ -1,9 +1,9 @@
-import { join } from 'path'
-import logger from '#server/facades/logger.ts'
+import { join } from 'lodash-es'
 import Route from '#server/entities/RouteEntity.ts'
 import type { Handler, Middleware, MiddlewareHandleResult } from '#server/contracts/RouterContract.ts'
 import { compose } from '#shared/utils/compose.ts'
 import Hooks from '#shared/mixins/HooksMixin.ts'
+import { LoggerService } from '#shared/index.ts'
 
 type RouteContext = 'global' | 'group' | 'route'
 
@@ -27,7 +27,7 @@ export default class Router<C = {}> extends compose(Hooks){
     public groupPrefixes: string[] = []
 
     public debug = false
-    public logger = logger.child({ label: 'router' })
+    public logger = new LoggerService()
     public metadata: Record<string, any> = {}
 
     constructor(data: Partial<Router<C>> = {}) {
@@ -58,7 +58,7 @@ export default class Router<C = {}> extends compose(Hooks){
     }
 
     public makePath(args: string): string {
-        return join(...this.groupPrefixes, ...this.prefixes, args)
+        return join([...this.groupPrefixes, ...this.prefixes, args], '/')
     }
 
     public add(payload: Pick<Route, 'path' | 'method' | 'handler'>) {
