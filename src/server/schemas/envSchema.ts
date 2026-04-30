@@ -9,7 +9,7 @@ const boolean = v.pipe(
     v.boolean()
 )
 
-const config = v.optional(v.pipe(v.string(), v.transform((value) => {
+const keyValue = v.optional(v.pipe(v.string(), v.transform((value) => {
     const entries = value.split(/[;\n]/)
         .filter(Boolean)
         .filter(l => l.includes('='))
@@ -52,10 +52,10 @@ export const envSchema = v.object({
 
     ZENITH_LOG_LEVEL: v.optional(v.picklist(['error', 'warn', 'info', 'debug']), 'info'),
     ZENITH_LIFECYCLE_DEBUG: v.optional(boolean, 'false'),
-    ZENITH_CLIENT_CONFIG: config,
+    ZENITH_CLIENT_CONFIG: keyValue,
     
-    ZENITH_CONFIG: config,
-    ZENITH_CONFIG_ARGUMENTS: config,
+    ZENITH_CONFIG: keyValue,
+    ZENITH_CONFIG_ARGUMENTS: keyValue,
     ZENITH_CONFIG_FILES: v.optional(stringArray, ''),
 
     ZENITH_CONFIG_DEBUG: v.optional(boolean, 'false'),
@@ -70,5 +70,5 @@ export const envSchema = v.object({
     ZENITH_CONFIG_S3_PREFIX: v.optional(v.string(), ''),
 
 
-    ZENITH_MODULE_EXTRAS: v.optional(stringArray, ''),
+    ZENITH_MODULE_EXTRAS: keyValue,
 })

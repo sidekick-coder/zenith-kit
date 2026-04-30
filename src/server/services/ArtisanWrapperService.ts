@@ -12,6 +12,10 @@ export default class ArtisanWrapperService {
     public debug: boolean = false;
     public logger = new LoggerService();
 
+    public static create() {
+        return new ArtisanWrapperService();
+    }
+
     public setBasePath(path: string) {
         this.appBasePath = path;
         return this;

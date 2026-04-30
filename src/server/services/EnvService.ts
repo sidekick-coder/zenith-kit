@@ -8,6 +8,10 @@ export default class EnvService {
     private env: EnvSchema | null = null
     private files: string[] = []
 
+    public static create() {
+        return new EnvService()
+    }
+
     public static dotEnvConfig(options?: dotenv.DotenvConfigOptions) {
         return dotenv.config(options)
     }
@@ -31,7 +35,7 @@ export default class EnvService {
 
         this.env = v.parse(envSchema, process.env)
 
-        return this.env
+        return this
     }
 
     public get production(): boolean {

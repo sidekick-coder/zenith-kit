@@ -20,7 +20,7 @@ export default class Module extends composeWith(Base) {
     }
 
     public makePath(...parts: string[]) {
-        return join(this.directory, this.id, ...parts)
+        return join(this.directory, ...parts)
     }
 
     public staticPath(...parts: string[]) {

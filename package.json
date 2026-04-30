@@ -39,6 +39,7 @@
     "devDependencies": {
         "@eslint/js": "^9.39.4",
         "@eslint/json": "^0.14.0",
+        "@types/express": "^5.0.6",
         "@types/js-yaml": "^4.0.9",
         "@types/lodash-es": "^4.17.12",
         "@types/mime": "^3.0.4",
@@ -61,6 +62,7 @@
         "@aws-sdk/client-s3": "^3.1039.0",
         "@aws-sdk/lib-storage": "^3.1039.0",
         "@aws-sdk/s3-request-presigner": "^3.1039.0",
+        "@casl/ability": "^6.8.1",
         "better-sqlite3": "^12.9.0",
         "cli-table3": "^0.6.5",
         "date-fns": "^4.1.0",

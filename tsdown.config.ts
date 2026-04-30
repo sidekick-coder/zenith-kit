@@ -10,7 +10,7 @@ export default defineConfig([
             hooks.hook('build:before', async () => {
                 generateIndexFile({
                     folders: [
-                        'src/shared/services', 
+                        'src/shared/services',
                         'src/shared/utils',
                         'src/shared/schemas',
                         'src/shared/exceptions',
@@ -28,6 +28,14 @@ export default defineConfig([
         entry: 'src/server/index.ts',
         outDir: 'dist/server',
         tsconfig: 'tsconfig.server.json',
+        deps: {
+            neverBundle: [
+                'express',
+                'kysely',
+                'chalk',
+                'commander',
+            ]
+        },
         hooks(hooks) {
             hooks.hook('build:before', async () => {
                 generateIndexFile({
