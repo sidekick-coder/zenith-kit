@@ -62,14 +62,28 @@ export default defineConfig([
         outDir: 'dist/client',
         tsconfig: 'tsconfig.client.json',
         fromVite: true,
+        deps: {
+            neverBundle: [
+                'vue',
+                'vue-router',
+                'axios',
+                '@vueuse/core',
+                '@vueuse/head',
+                '@vueuse/integrations',
+                '@vueuse/nuxt',
+            ]
+        },
         hooks(hooks) {
             hooks.hook('build:before', async () => {
                 generateIndexFile({
+                    glob: '**/*.{ts,vue}',
                     folders: [
                         'src/client/services',
                         'src/client/facades',
                         'src/client/entities',
                         'src/client/guards',
+                        'src/client/components',
+                        'src/client/layouts',
                     ],
                     filename: 'src/client/index.ts'
                 })
