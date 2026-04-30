@@ -47,4 +47,18 @@ export default class Module extends composeWith(Base) {
         this.dependencies = json.dependencies || {}
         this.build = json.build || {}      
     }
+
+    public findClientEntrypointFilename(): string | null {
+        const candidates = ['module.client.ts', 'module.client.js', 'client.ts', 'client.js', 'index.ts', 'index.js']
+        
+        for (const candidate of candidates) {
+            const fullPath = this.makePath('client', candidate)
+
+            if (fs.existsSync(fullPath)) {
+                return fullPath
+            }
+        }
+
+        return null
+    }
 }

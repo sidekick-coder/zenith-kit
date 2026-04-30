@@ -1,6 +1,6 @@
 import LoggerService from './LoggerService.ts'
-import type LifecycleHook from '../entities/LifecycleHook.ts'
-import type { Constructor } from '../utils/compose.ts'
+import type LifecycleHook from '#shared/entities/LifecycleHook.ts'
+import type { Constructor } from '#shared/utils/compose.ts'
 import { tryCatch } from '../utils/tryCatch.ts'
 
 interface ListOptions {
