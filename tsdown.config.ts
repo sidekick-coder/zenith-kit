@@ -56,5 +56,25 @@ export default defineConfig([
                 globalLogger.info('Generated index.ts for server')
             })
         }
+    },
+    {
+        entry: 'src/client/index.ts',
+        outDir: 'dist/client',
+        tsconfig: 'tsconfig.client.json',
+        fromVite: true,
+        hooks(hooks) {
+            hooks.hook('build:before', async () => {
+                generateIndexFile({
+                    folders: [
+                        'src/client/services',
+                        'src/client/facades',
+                        'src/client/entities',
+                    ],
+                    filename: 'src/client/index.ts'
+                })
+
+                globalLogger.info('Generated index.ts for client')
+            })
+        }
     }
 ])
