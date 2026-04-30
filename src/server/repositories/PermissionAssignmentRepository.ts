@@ -1,19 +1,18 @@
-import DatabaseRepositoryInfer from '#server/mixins/DatabaseRepositoryInferMixin.ts'
 import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
 import type { PermissionAssignment } from '#shared/schemas/permissionAssignmentSchema.ts'
-import { compose, mixin } from '#shared/utils/index.ts'
 
 export interface PermissionAssignmentRepositoryQueryOptions {
     id?: number | number[]
     permissionId?: number | number[]
-    assignableId?: number | number[]
+    assignableId?: string | string[]
     assignableType?: string | string[]
 }
 
-export default class PermissionAssignmentRepository extends compose(
-    mixin(DatabaseRepository),
-    DatabaseRepositoryInfer<PermissionAssignment, PermissionAssignment['id'], PermissionAssignmentRepositoryQueryOptions >()
-) {
+export default class PermissionAssignmentRepository extends DatabaseRepository<
+    PermissionAssignment,
+    PermissionAssignment['id'],
+    PermissionAssignmentRepositoryQueryOptions
+> {
     constructor(db: DatabaseRepository['db']) {
         super(db, 'permissions_assignments', 'id')
     }
@@ -47,5 +46,4 @@ export default class PermissionAssignmentRepository extends compose(
 
         return qb
     }
-
 }

@@ -27,42 +27,22 @@ export interface DeleteManyOptions {
     limit?: number
 }
 
-export default class DatabaseRepository {
-    protected db: Kysely<any> = null as any
-    protected table: string = ''
-    protected primaryKey: string = 'id'
+export default class DatabaseRepository<
+    TEntity = Record<string, any>,
+    TPrimaryKey = any,
+    TOptions = Record<string, any>
+> {
+    constructor(
+        protected db: Kysely<any>, 
+        protected table: string, 
+        protected primaryKey: string
+    ) {    }
 
-    constructor(db: Kysely<any>, table: string, primaryKey: string) {
-        if (db) {
-            this.db = db
-        }
 
-        if (table) {
-            this.table = table
-        }
+    public query(options?: { qb?: any } & TOptions) {
+        const qb = options?.qb || this.db.selectFrom(this.table as any)
 
-        if (primaryKey) {
-            this.primaryKey = primaryKey
-        }
-    }
-
-    public setDatabase(db: Kysely<any>) {
-        this.db = db
-        return this
-    }
-
-    public setTable(table: string) {
-        this.table = table
-        return this
-    }
-
-    public setPrimaryKey(primaryKey: string) {
-        this.primaryKey = primaryKey
-        return this
-    }
-
-    public query(options?: { qb?: any } & Record<string, any>) {
-        return (options?.qb || this.db.selectFrom(this.table as any)) as any
+        return qb
     }
 
     async count(options?: Record<string, any>) {
@@ -75,7 +55,7 @@ export default class DatabaseRepository {
         return Number(result.count)
     }
 
-    async findMany(options?: FindManyOptions & Record<string, any>) {
+    async findMany(options?: FindManyOptions & TOptions): Promise<TEntity[]> {
         let qb = this.query(options) as any
 
         qb = qb.selectAll()
@@ -100,7 +80,7 @@ export default class DatabaseRepository {
         return await qb.execute()
     }
 
-    async findById(id: any, options?: Record<string, any>) {
+    async findById(id: TPrimaryKey, options?: TOptions): Promise<TEntity | null> {
         let qb = this.query(options as any) as any
 
         qb = qb.selectAll()
@@ -112,7 +92,7 @@ export default class DatabaseRepository {
         return item
     }
 
-    async findByIdOrFail(id: any, options?: Record<string, any>) {
+    async findByIdOrFail(id: TPrimaryKey, options?: TOptions) {
         const item = await this.findById(id, options)
 
         if (!item) {
@@ -122,7 +102,7 @@ export default class DatabaseRepository {
         return item
     }
 
-    public async paginate(options?: PaginateOptions & Record<string, any>) {
+    public async paginate(options?: PaginateOptions & TOptions): Promise<Pagination> {
         const page = options?.page ?? 1
         const offset = (page - 1) * (options?.limit ?? 10)
         const limit = options?.limit ?? 10
@@ -136,8 +116,8 @@ export default class DatabaseRepository {
         const countOptions = { ...options }
 
         const [items, totalItems] = await Promise.all([
-            this.findMany(findAllOptions as FindManyOptions & Record<string, any>),
-            this.count(countOptions as Record<string, any>)
+            this.findMany(findAllOptions as any),
+            this.count(countOptions as any)
         ])
 
         return {
@@ -146,10 +126,10 @@ export default class DatabaseRepository {
             per_page: limit,
             total: totalItems,
             total_pages: Math.ceil(totalItems / limit)
-        } as Pagination
+        }
     }
 
-    public async create(data: any) {
+    public async create(data: Partial<TEntity>) {
         let qb = this.db.insertInto(this.table as any) as any
 
         qb = qb.values(data).returningAll()
@@ -159,7 +139,7 @@ export default class DatabaseRepository {
         return result as any
     }
 
-    public async createMany(data: any[]) {
+    public async createMany(data: Partial<TEntity>[]) {
         let qb = this.db.insertInto(this.table as any) as any
 
         qb = qb.values(data).returningAll()
@@ -169,7 +149,7 @@ export default class DatabaseRepository {
         return result as any[]
     }
 
-    public async updateById(id: any, data: any) {
+    public async updateById(id: TPrimaryKey, data: Partial<TEntity>) {
         const row = await this.findByIdOrFail(id)
 
         let qb = this.db.updateTable(this.table as any) as any
@@ -181,7 +161,7 @@ export default class DatabaseRepository {
         await qb.executeTakeFirst()
     }
 
-    public async deleteById(id: any) {
+    public async deleteById(id: TPrimaryKey) {
         const row = await this.findByIdOrFail(id)
 
         let qb = this.db.deleteFrom(this.table as any) as any
@@ -191,7 +171,7 @@ export default class DatabaseRepository {
         await qb.executeTakeFirst()
     }
 
-    async deleteMany(options?: DeleteManyOptions & Record<string, any>) {
+    async deleteMany(options?: DeleteManyOptions & TOptions) {
         const deleteOptions = {
             ...options,
             qb: this.db.deleteFrom(this.table as any)

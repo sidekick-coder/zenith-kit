@@ -1,9 +1,11 @@
 import * as v from 'valibot'
-import * as url from '#shared/validators/url.ts'
+import * as url from '#shared/validators/urlValidator.ts'
+import * as pagination from '#shared/validators/paginationValidator.ts'
 import BaseException from '../exceptions/BaseException.ts'
 
 const extras = {
     url,
+    pagination,
 }
 
 export type Valibot = typeof v & { extras: typeof extras } 

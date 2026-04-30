@@ -1,18 +1,16 @@
-import DatabaseRepositoryInfer from '#server/mixins/DatabaseRepositoryInferMixin.ts'
 import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
-import { compose, mixin } from '#shared/utils/index.ts'
 import type { Permission } from '#shared/schemas/permissionSchema.ts'
 
 export interface PermissionRepositoryQueryOptions {
     id?: number | number[]
-    search?: string 
+    search?: string
 }
 
-export default class PermissionRepository extends compose(
-    mixin(DatabaseRepository),
-    DatabaseRepositoryInfer<Permission, Permission['id'], PermissionRepositoryQueryOptions>()
-) {
-
+export default class PermissionRepository extends DatabaseRepository<
+    Permission,
+    Permission['id'],
+    PermissionRepositoryQueryOptions
+> {
     constructor(db: DatabaseRepository['db']) {
         super(db, 'permissions', 'id')
     }

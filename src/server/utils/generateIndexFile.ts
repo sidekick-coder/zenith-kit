@@ -9,7 +9,9 @@ export function generateIndexFile(options: any) {
     const defaultIgnore = [
         "**/index.ts",
         "**/*.spec.ts",
+        "**/*.spec-d.ts",
         "**/*.test.ts",
+        "**/*.test-d.ts",
     ]
 
     const ignore = options.ignore || []
