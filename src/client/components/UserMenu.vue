@@ -7,7 +7,7 @@ import di from '#client/facades/container.ts'
 import {
     Avatar,
     AvatarFallback,
-} from '#client/components/ui/avatar'
+} from '#client/components/ui/avatar/index.ts'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,22 +16,21 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '#client/components/ui/dropdown-menu'
+} from '#client/components/ui/dropdown-menu/index.ts'
 import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
     useSidebar,
-} from '#client/components/ui/sidebar'
+} from '#client/components/ui/sidebar/index.ts'
 import Icon from '#client/components/Icon.vue'
+import { toast } from 'vue-sonner'
 
 interface Link {
     label: string
     to: string
     icon?: string
 }
-
-const emit = defineEmits(['logout'])
 
 defineProps({
     links: {
@@ -85,8 +84,16 @@ async function toggleDarkMode() {
     isTogglingDarkMode.value = false
 }
 
-function handleLogout() {
-    emit('logout')
+async function handleLogout() {
+    const [error] = await $fetch.try('/auth/logout', { method: 'POST' })
+
+    if (error) {
+        return
+    }
+
+    toast.error($t('You have been logged out.'))
+
+    window.location.href = '/'
 }
 </script>
 
@@ -95,10 +102,8 @@ function handleLogout() {
         <SidebarMenuItem>
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                    <SidebarMenuButton
-                        size="lg"
-                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                    >
+                    <SidebarMenuButton size="lg"
+                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                         <Avatar class="h-8 w-8 rounded-lg">
                             <AvatarFallback class="rounded-lg">
                                 {{ userInitials }}
@@ -108,18 +113,11 @@ function handleLogout() {
                             <span class="truncate font-medium">{{ userName }}</span>
                             <span class="truncate text-xs">{{ userEmail }}</span>
                         </div>
-                        <Icon
-                            name="ChevronsUpDown"
-                            class="ml-auto size-4"
-                        />
+                        <Icon name="ChevronsUpDown" class="ml-auto size-4" />
                     </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                    class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                    :side="isMobile ? 'bottom' : 'right'"
-                    align="start"
-                    :side-offset="4"
-                >
+                <DropdownMenuContent class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                    :side="isMobile ? 'bottom' : 'right'" align="start" :side-offset="4">
                     <DropdownMenuLabel class="p-0 font-normal">
                         <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                             <Avatar class="h-8 w-8 rounded-lg">
@@ -136,43 +134,24 @@ function handleLogout() {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                         <DropdownMenuItem @click="toggleDarkMode">
-                            <Icon
-                                v-if="isDarkMode"
-                                name="Sun"
-                            />
-                            <Icon
-                                v-else
-                                name="Moon"
-                            />
+                            <Icon v-if="isDarkMode" name="Sun" />
+                            <Icon v-else name="Moon" />
                             <span v-if="isDarkMode">{{ $t('Light mode') }}</span>
                             <span v-else>{{ $t('Dark mode') }}</span>
-                            <Icon
-                                v-if="isTogglingDarkMode"
-                                name="Loader2"
-                                class="ml-auto animate-spin"
-                            />
+                            <Icon v-if="isTogglingDarkMode" name="Loader2" class="ml-auto animate-spin" />
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
-                    <DropdownMenuGroup
-                        v-for="link in links"
-                        :key="link.to"
-                    >
+                    <DropdownMenuGroup v-for="link in links" :key="link.to">
                         <DropdownMenuItem as-child>
                             <RouterLink :to="link.to">
-                                <Icon
-                                    v-if="link.icon"
-                                    :name="link.icon"
-                                />
+                                <Icon v-if="link.icon" :name="link.icon" />
                                 {{ $t(link.label) }}
                             </RouterLink>
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem @click="handleLogout">
-                        <Icon
-                            name="LogOut"
-                            class="rotate-180"
-                        />
+                        <Icon name="LogOut" class="rotate-180" />
                         {{ $t('Logout') }}
                     </DropdownMenuItem>
                 </DropdownMenuContent>

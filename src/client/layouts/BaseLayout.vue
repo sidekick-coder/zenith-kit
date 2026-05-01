@@ -1,5 +1,10 @@
 <script lang="ts">
-import { toast } from 'vue-sonner'
+export interface LayoutBreadcrumbItem {
+    label: string
+    to?: string
+}
+</script>
+<script setup lang="ts">
 import {
     ref,
     computed,
@@ -12,7 +17,6 @@ import { useHead } from '@unhead/vue'
 import menu from '#client/facades/menu.ts'
 import AdminLayoutDefaultMenu from './AdminLayoutDefaultMenu.vue'
 import AdminLayoutPlainMenu from './AdminLayoutPlainMenu.vue'
-import AdminLayoutUserMenu from './AdminLayoutUserMenu.vue'
 import Logo from '#client/components/Logo.vue'
 import {
     Breadcrumb,
@@ -21,7 +25,7 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator
-} from '#client/components/ui/breadcrumb'
+} from '#client/components/ui/breadcrumb/index.ts'
 import {
     Sidebar,
     SidebarInset,
@@ -33,19 +37,11 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton
-} from '#client/components/ui/sidebar'
-import { $fetch } from '#client/utils/fetcher.ts'
-import { tryCatch } from '#shared/utils/tryCatch.ts'
+} from '#client/components/ui/sidebar/index.ts'
 import Icon from '#client/components/Icon.vue'
 import { cn } from '#client/lib/utils.ts'
+import UserMenu from '#client/components/UserMenu.vue'
 
-export interface BreadcrumbItem {
-    label: string;
-    to?: string;
-    icon?: string;
-}
-</script>
-<script setup lang="ts">
 
 defineOptions({ inheritAttrs: false, })
 
@@ -95,7 +91,7 @@ const props = defineProps({
 })
 
 const breadcrumbs = defineModel('breadcrumbs', {
-    type: Array as () => BreadcrumbItem[],
+    type: Array as () => LayoutBreadcrumbItem[],
     default: null,
 })
 
@@ -114,9 +110,13 @@ const computedBreadcrumbs = computed(() => {
     return generateBreadcrumbsFromRoute()
 })
 
-function generateBreadcrumbsFromRoute(): BreadcrumbItem[] {
+function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
+    if (!route?.path) {
+        return []
+    }
+
     const pathSegments = route.path.split('/').filter(segment => segment !== '')
-    const breadcrumbItems: BreadcrumbItem[] = []
+    const breadcrumbItems: LayoutBreadcrumbItem[] = []
 
     let currentPath = ''
     for (let i = 0; i < pathSegments.length; i++) {
@@ -141,18 +141,6 @@ function generateBreadcrumbsFromRoute(): BreadcrumbItem[] {
     return breadcrumbItems
 }
 
-async function onLogout() {
-    const [error] = await tryCatch(() => $fetch('/auth/logout', { method: 'POST' }))
-
-    if (error) {
-        return
-    }
-
-    toast.error($t('You have been logged out.'))
-
-    window.location.href = '/'
-}
-
 onMounted(() => {
     loading.value = false
 })
@@ -160,27 +148,16 @@ onMounted(() => {
 
 <template>
     <SidebarProvider v-model:open="open">
-        <Sidebar
-            collapsible="icon"
-            variant="inset"
-        >
+        <Sidebar collapsible="icon" variant="inset">
             <slot name="header">
                 <SidebarHeader>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <SidebarMenuButton
-                                size="lg"
-                                as-child
-                            >
+                            <SidebarMenuButton size="lg" as-child>
                                 <router-link :to="homePath">
-                                    <div
-                                        v-if="icon"
-                                        class="size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-md mr-2"
-                                    >
-                                        <Icon
-                                            :name="icon"
-                                            class="text-lg"
-                                        />
+                                    <div v-if="icon"
+                                        class="size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-md mr-2">
+                                        <Icon :name="icon" class="text-lg" />
                                     </div>
 
                                     <Logo v-else />
@@ -202,37 +179,21 @@ onMounted(() => {
                     </p>
                 </div>
 
-                <AdminLayoutDefaultMenu
-                    v-else-if="menuVariant === 'default'"
-                    :items="items"
-                    :open="open"
-                />
+                <AdminLayoutDefaultMenu v-else-if="menuVariant === 'default'" :items="items" :open="open" />
 
-                <AdminLayoutPlainMenu
-                    v-else-if="menuVariant === 'plain'"
-                    :items="items"
-                    :open="open"
-                />
+                <AdminLayoutPlainMenu v-else-if="menuVariant === 'plain'" :items="items" :open="open" />
             </SidebarContent>
 
-            <slot
-                name="sidebar-footer"
-                :open
-            >
+            <slot name="sidebar-footer" :open>
                 <SidebarFooter>
-                    <AdminLayoutUserMenu
-                        :links="userMenuLinks"
-                        @logout="onLogout"
-                    />
+                    <UserMenu :links="userMenuLinks" />
                 </SidebarFooter>
             </slot>
         </Sidebar>
 
         <SidebarInset variant="sidebar">
-            <header
-                v-if="!hideBreadcrumbs"
-                class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/70 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
-            >
+            <header v-if="!hideBreadcrumbs"
+                class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/70 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
                 <div class="flex items-center gap-2">
                     <SidebarTrigger class="-ml-1" />
 
@@ -243,10 +204,7 @@ onMounted(() => {
                             </BreadcrumbItem>
                         </BreadcrumbList>
                         <BreadcrumbList class="hidden md:flex">
-                            <template
-                                v-for="(item, index) in computedBreadcrumbs"
-                                :key="index"
-                            >
+                            <template v-for="(item, index) in computedBreadcrumbs" :key="index">
                                 <BreadcrumbItem>
                                     <template v-if="index === computedBreadcrumbs.length - 1">
                                         <BreadcrumbPage>{{ truncate(item.label) }}</BreadcrumbPage>
@@ -266,13 +224,11 @@ onMounted(() => {
                 </div>
             </header>
             <div>
-                <div
-                    :class="cn(
-                        'dashboard-layout-content h-full overflow-auto lg:max-w-[calc(100dvw-8px-var(--sidebar-width))] group-has-data-[collapsible=icon]/sidebar-wrapper:max-w-[calc(100dvw-var(--sidebar-width-icon))]',
-                        padding ? 'p-5' : '',
-                        contentClass
-                    )"
-                >
+                <div :class="cn(
+                    'dashboard-layout-content h-full overflow-auto lg:max-w-[calc(100dvw-8px-var(--sidebar-width))] group-has-data-[collapsible=icon]/sidebar-wrapper:max-w-[calc(100dvw-var(--sidebar-width-icon))]',
+                    padding ? 'p-5' : '',
+                    contentClass
+                )">
                     <slot />
                 </div>
             </div>

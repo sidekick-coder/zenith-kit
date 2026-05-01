@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { SidebarFooter } from '../components/ui/sidebar'
-import AdminLayoutUserMenu from './AdminLayoutUserMenu.vue'
 import BaseLayout from './BaseLayout.vue'
 import auth from '#client/facades/auth.ts'
+import UserMenu from '#client/components/UserMenu.vue';
 
 const userLinks = [
     {
@@ -25,7 +25,7 @@ const userLinks = [
 
         <template #sidebar-footer>
             <SidebarFooter>
-                <AdminLayoutUserMenu
+                <UserMenu
                     :links="userLinks"
                     @logout="auth.logout" 
                 />
