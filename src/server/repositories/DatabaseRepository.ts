@@ -80,6 +80,16 @@ export default class DatabaseRepository<
         return await qb.execute()
     }
 
+    async findOne(options?: TOptions): Promise<TEntity | null> {
+        let qb = this.query(options as any) as any
+
+        qb = qb.selectAll()
+
+        const item = await qb.executeTakeFirst()
+
+        return item
+    }
+
     async findById(id: TPrimaryKey, options?: TOptions): Promise<TEntity | null> {
         let qb = this.query(options as any) as any
 

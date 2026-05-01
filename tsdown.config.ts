@@ -6,6 +6,7 @@ export default defineConfig([
         entry: 'src/shared/index.ts',
         outDir: 'dist/shared',
         tsconfig: 'tsconfig.shared.json',
+        dts: true,
         hooks(hooks) {
             hooks.hook('build:before', async () => {
                 generateIndexFile({
@@ -27,6 +28,7 @@ export default defineConfig([
     {
         entry: 'src/server/index.ts',
         outDir: 'dist/server',
+        dts: true,
         tsconfig: 'tsconfig.server.json',
         deps: {
             neverBundle: [
