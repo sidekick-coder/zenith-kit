@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 // import { importReplacer } from './src/build/vite'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
+import dts from 'vite-plugin-dts'
 
 const logger = createLogger()
 
@@ -45,19 +46,13 @@ export default defineConfig({
                 }
             }
         }),
+        // dts({
+        //     entryRoot: 'src/client/index.ts',
+        //     tsconfigPath: 'tsconfig.client.json',
+        //     bundleTypes: true,
+        // }),
         tailwindcss(),
         prebuild(),
-        // importReplacer({
-        //     imports: [
-        //         'vue',
-        //         'vue-router',
-        //         'vue-sonner',
-        //         'vee-validate',
-        //         'reka-ui',
-        //         '@vueuse/core',
-        //         '@unhead/vue',
-        //     ],
-        // })
     ],
     build: {
         outDir: 'dist/client',
