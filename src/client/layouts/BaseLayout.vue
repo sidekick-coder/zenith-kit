@@ -102,44 +102,44 @@ const items = computed(() =>
     })
 )
 
-const computedBreadcrumbs = computed(() => {
-    if (breadcrumbs.value) {
-        return breadcrumbs.value
-    }
+// const computedBreadcrumbs = computed(() => {
+//     if (breadcrumbs.value) {
+//         return breadcrumbs.value
+//     }
+//
+//     return generateBreadcrumbsFromRoute()
+// })
 
-    return generateBreadcrumbsFromRoute()
-})
-
-function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
-    if (!route?.path) {
-        return []
-    }
-
-    const pathSegments = route.path.split('/').filter(segment => segment !== '')
-    const breadcrumbItems: LayoutBreadcrumbItem[] = []
-
-    let currentPath = ''
-    for (let i = 0; i < pathSegments.length; i++) {
-        currentPath += `/${pathSegments[i]}`
-        const segment = pathSegments[i]
-
-        if (segment.startsWith(':')) {
-            continue
-        }
-
-        const label = segment
-            .split('-')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ')
-
-        breadcrumbItems.push({
-            label: $t(label),
-            to: i === pathSegments.length - 1 ? undefined : currentPath,
-        })
-    }
-
-    return breadcrumbItems
-}
+// function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
+//     if (!route?.path) {
+//         return []
+//     }
+//
+//     const pathSegments = route.path.split('/').filter(segment => segment !== '')
+//     const breadcrumbItems: LayoutBreadcrumbItem[] = []
+//
+//     let currentPath = ''
+//     for (let i = 0; i < pathSegments.length; i++) {
+//         currentPath += `/${pathSegments[i]}`
+//         const segment = pathSegments[i]
+//
+//         if (segment.startsWith(':')) {
+//             continue
+//         }
+//
+//         const label = segment
+//             .split('-')
+//             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+//             .join(' ')
+//
+//         breadcrumbItems.push({
+//             label: $t(label),
+//             to: i === pathSegments.length - 1 ? undefined : currentPath,
+//         })
+//     }
+//
+//     return breadcrumbItems
+// }
 
 onMounted(() => {
     loading.value = false
@@ -197,16 +197,16 @@ onMounted(() => {
                 <div class="flex items-center gap-2">
                     <SidebarTrigger class="-ml-1" />
 
-                    <Breadcrumb v-if="computedBreadcrumbs?.length">
+                    <Breadcrumb v-if="breadcrumbs?.length">
                         <BreadcrumbList class="md:hidden">
                             <BreadcrumbItem>
-                                <BreadcrumbPage>{{ truncate(computedBreadcrumbs.at(-1)?.label) }}</BreadcrumbPage>
+                                <BreadcrumbPage>{{ truncate(breadcrumbs.at(-1)?.label) }}</BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                         <BreadcrumbList class="hidden md:flex">
-                            <template v-for="(item, index) in computedBreadcrumbs" :key="index">
+                            <template v-for="(item, index) in breadcrumbs" :key="index">
                                 <BreadcrumbItem>
-                                    <template v-if="index === computedBreadcrumbs.length - 1">
+                                    <template v-if="index === breadcrumbs.length - 1">
                                         <BreadcrumbPage>{{ truncate(item.label) }}</BreadcrumbPage>
                                     </template>
                                     <template v-else>
@@ -217,7 +217,7 @@ onMounted(() => {
                                         </BreadcrumbLink>
                                     </template>
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator v-if="index !== computedBreadcrumbs.length - 1" />
+                                <BreadcrumbSeparator v-if="index !== breadcrumbs.length - 1" />
                             </template>
                         </BreadcrumbList>
                     </Breadcrumb>
