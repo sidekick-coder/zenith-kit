@@ -1,7 +1,7 @@
 import { createLogger, defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
-import { importReplacer } from './src/build/vite'
+// import { importReplacer } from './src/build/vite'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
 
 const logger = createLogger()
@@ -10,15 +10,16 @@ const prebuild = () => ({
     name: 'prebuild',
     buildStart() {
         generateIndexFile({
-            glob: '**/*.{ts,vue}',
+            glob: '**/*.{ts,vue,css}',
             folders: [
-                // 'src/client/composables',
+                'src/client/composables',
                 'src/client/utils',
                 'src/client/facades',
-                // 'src/client/components',
+                'src/client/components',
                 'src/client/layouts',
                 'src/client/services',
                 'src/client/guards',
+                'src/client/css',
             ],
             filename: 'src/client/index.ts'
         })
@@ -42,7 +43,6 @@ export default defineConfig({
                         return ['iconify-icon'].includes(tag)
                     }
                 }
-
             }
         }),
         tailwindcss(),
@@ -70,7 +70,7 @@ export default defineConfig({
             entry: 'src/client/index.ts',
             formats: ['es'],
             fileName: (format) => `index.${format}.js`,
-            cssFileName: 'styles.css',
+            cssFileName: 'styles',
         },
     },
 })

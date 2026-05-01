@@ -1,9 +1,9 @@
-import { computed, isRef, onMounted, onServerPrefetch, readonly, ref, watch  } from 'vue'
-import type { MaybeRef, Ref } from 'vue'
+import { computed, onMounted, onServerPrefetch, ref, watch  } from 'vue'
+import type { Ref } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 import { useState } from './useState.ts'
-import type Pagination from '#shared/entities/pagination.entity.ts'
-import $fetch from '#client/facades/fetch.facade.ts'
+import type Pagination from '#shared/entities/PaginationEntity.ts'
+import $fetch from '#client/facades/fetch.ts'
 
 export interface UseFetchPaginationOptions {
     key?: string
