@@ -1,4 +1,4 @@
-import { computed, onMounted, onServerPrefetch, ref, watch  } from 'vue'
+import { computed, onMounted, onServerPrefetch, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 import { useState } from './useState.ts'
@@ -68,7 +68,7 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
 
         const [error, result] = await $fetch.try<Pagination>(url, {
             method: 'GET',
-            query: params 
+            query: params
         })
 
         if (error) {
@@ -84,9 +84,9 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
             return
         }
 
-        setTimeout(() => {
-            loading.value = false
-        }, 800)
+        await new Promise(resolve => setTimeout(resolve, 800))
+
+        loading.value = false
     }
 
     async function reset() {
@@ -116,27 +116,16 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
         }
     )
 
-    if (options.immediate !== false) {
-        onMounted(async () => {
-            if (!hydrated.has(key) && items.value.length) {
-                hydrated.add(key)
-                return
-            }
-
+    async function hydrate() {
+        if (!hydrated.has(key) && items.value.length) {
             hydrated.add(key)
+            return
+        }
 
-            await load()
-        })
+        hydrated.add(key)
 
-        onServerPrefetch(async () => {
-            if (!items.value.length) {
-                await load()
-            }
-        })
-
+        await load()
     }
-
-
 
     return {
         page,
@@ -147,6 +136,7 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
         loading,
         load,
         reset,
-        query
+        query,
+        hydrate
     }
 }
