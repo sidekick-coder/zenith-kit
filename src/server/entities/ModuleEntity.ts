@@ -48,14 +48,39 @@ export default class Module extends composeWith(Base) {
         this.build = json.build || {}      
     }
 
-    public findClientEntrypointFilename(): string | null {
-        const candidates = ['module.client.ts', 'module.client.js', 'client.ts', 'client.js', 'index.ts', 'index.js']
+    public findClientEntrypointFilename(context: 'dev' | 'node' | 'browser' = 'dev'): string | null {
+        const candidates = [] as string[]
+
+        if (context === 'dev') {
+            candidates.push(
+                this.makePath('client', 'module.client.ts'),
+                this.makePath('client', 'module.client.js'),
+                this.makePath('client', 'client.ts'),
+                this.makePath('client', 'client.js'),
+            )
+        }
+
+        if (context === 'node') {
+            candidates.push(
+                this.makePath('client-dist/node', 'index.js'),
+                this.makePath('client-dist/node', 'index.mjs'),
+                this.makePath('client-dist/node', 'module.client.js'),
+                this.makePath('client-dist/node', 'module.client.mjs'),
+            )
+        }
+
+        if (context === 'browser') {
+            candidates.push(
+                this.makePath('client-dist/browser', 'index.js'),
+                this.makePath('client-dist/browser', 'index.mjs'),
+                this.makePath('client-dist/browser', 'module.client.js'),
+                this.makePath('client-dist/browser', 'module.client.mjs'),
+            )
+        }
         
         for (const candidate of candidates) {
-            const fullPath = this.makePath('client', candidate)
-
-            if (fs.existsSync(fullPath)) {
-                return fullPath
+            if (fs.existsSync(candidate)) {
+                return candidate
             }
         }
 
