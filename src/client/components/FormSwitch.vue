@@ -6,7 +6,7 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '#client/components/ui/form'
+} from '#client/components/ui/form/index.ts'
 import Switch from '#client/components/ui/switch/Switch.vue'
 
 defineProps({

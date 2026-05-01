@@ -4,7 +4,7 @@ import FormDescription from './ui/form/FormDescription.vue'
 import FormItem from './ui/form/FormItem.vue'
 import FormLabel from './ui/form/FormLabel.vue'
 import FormMessage from './ui/form/FormMessage.vue'
-import Select from './Select.vue'
+import Select from './ZSelect.vue'
 
 defineProps({
     name: {

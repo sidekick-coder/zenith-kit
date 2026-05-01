@@ -2,13 +2,12 @@
     "name": "@sidekick-coder/zenith-kit",
     "version": "0.0.12",
     "license": "MIT",
-    "description": "A collection of utilities and tools for building language servers and related applications.",
-    "keywords": [],
+    "description": "Package to use with zenith framework",
     "author": "Henrique Oliveira <henriqueoliwork@gmail.com>",
-    "homepage": "https://github.com/sidekick-coder/language-kit",
+    "homepage": "https://github.com/sidekick-coder/zenith-kit",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/sidekick-coder/language-kit.git"
+        "url": "git+https://github.com/sidekick-coder/zenith-kit.git"
     },
     "publishConfig": {
         "access": "public"
@@ -20,24 +19,25 @@
     },
     "exports": {
         "./shared": {
+            "types": "./dist/shared/index.d.mts",
             "import": "./dist/shared/index.mjs",
-            "require": "./dist/shared/index.js",
-            "types": "./dist/shared/index.d.mts"
+            "require": "./dist/shared/index.js"
         },
         "./server": {
+            "types": "./dist/server/index.d.mts",
             "import": "./dist/server/index.mjs",
-            "require": "./dist/server/index.js",
-            "types": "./dist/server/index.d.mts"
+            "require": "./dist/server/index.js"
         },
         "./client": {
-            "import": "./dist/client/index.mjs",
-            "require": "./dist/client/index.js",
-            "types": "./dist/client/index.d.mts"
+            "types": "./dist/client/index.d.mts",
+            "import": "./dist/client/index.es.js",
+            "require": "./dist/client/index.umd.js"
         }
     },
     "scripts": {
         "generate:indexes": "node indexes.js",
         "build": "tsdown",
+        "build:vite": "vite build",
         "watch": "tsdown --watch",
         "release": "node artisan.js release"
     },
@@ -68,6 +68,7 @@
         "@aws-sdk/lib-storage": "^3.1039.0",
         "@aws-sdk/s3-request-presigner": "^3.1039.0",
         "@casl/ability": "^6.8.1",
+        "@rollup/pluginutils": "^5.3.0",
         "@tailwindcss/vite": "^4.2.4",
         "@unhead/vue": "^3.1.0",
         "@vee-validate/valibot": "^4.15.1",

@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { computed } from 'vue'
-import di from '#client/utils/di.ts'
+import di from '#client/facades/container.ts'
 
 export interface UseStateOptions {
     default?: () => any

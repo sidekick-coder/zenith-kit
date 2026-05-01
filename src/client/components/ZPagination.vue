@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import Icon from './Icon.vue'
 import DropdownMenu from './ui/dropdown-menu/DropdownMenu.vue'
 import { DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu'
-import { Button } from '#client/components/ui/button'
+import { Button } from '#client/components/ui/button/index.ts'
 import { cn } from '#client/lib/utils.ts'
 
 const page = defineModel('page', {

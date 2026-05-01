@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Icon from './Icon.vue'
-import Select from './Select.vue'
+import Select from './ZSelect.vue'
 import DropdownMenu from './ui/dropdown-menu/DropdownMenu.vue'
 import { DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu'
-import { Button } from '#client/components/ui/button'
+import { Button } from '#client/components/ui/button/index.ts'
 
 const page = defineModel('page', {
     type: Number,

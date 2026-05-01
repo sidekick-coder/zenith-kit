@@ -3,8 +3,8 @@ import container from './container'
 
 const config = container.proxy<ConfigService>(ConfigService)
 
-// if (import.meta.env.DEV) {
-//     globalThis.config = config
-// }
+if (import.meta.env.DEV) {
+    globalThis.config = config
+}
 
 export default config
