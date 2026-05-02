@@ -1,8 +1,7 @@
 <script lang="ts">
-export function defineFormFields<T extends Record<string, FormField | ((data: any) => FormField)>>(field: T) {
+export function defineDialogFormFields<T extends Record<string, FormField | ((data: any) => FormField)>>(field: T) {
     return field
 }
-
 </script>
 <script lang="ts" setup generic="T extends BaseSchema<any, any, any>">
 import { useForm } from 'vee-validate'

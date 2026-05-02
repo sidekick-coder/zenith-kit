@@ -3,6 +3,8 @@ import Permission from './PermissionEntity.ts'
 import LoggerService from '#shared/services/LoggerService.ts'
 
 export default class AclEntity {
+    public static __container_entry_key = 'AclEntity'
+
     public ability: ReturnType<typeof defineAbility>
     public permissions: Permission[]
     public debug: boolean = false

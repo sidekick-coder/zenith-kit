@@ -13,7 +13,7 @@ declare global {
     var __STATE__: Record<string, any> | undefined
 
     var config: ConfigService | undefined // only on dev
-    var container: ContainerService | undefined // only on dev
+    var clientContainer: ContainerService | undefined
     var $t: TranslatorService['t']
     var $dt: TranslatorService['datetime']
     var $d: TranslatorService['date']

@@ -40,8 +40,8 @@
         "./styles": "./dist/client/styles.css"
     },
     "scripts": {
-        "generate:indexes": "node indexes.js",
-        "build": "tsdown",
+        "build": "npm run build:server && npm run build:client",
+        "build:server": "tsdown",
         "build:client": "vite build",
         "watch": "tsdown --watch",
         "release": "node artisan.js release"
