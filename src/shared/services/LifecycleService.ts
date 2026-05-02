@@ -8,6 +8,8 @@ interface ListOptions {
 }
 
 export default class LifecycleService {
+    public static __container_entry_key = 'LifecycleService'
+
     public hooks: Map<string, LifecycleHook>
     public logger: LoggerService
     public debug = false

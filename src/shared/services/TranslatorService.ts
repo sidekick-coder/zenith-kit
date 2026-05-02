@@ -1,6 +1,8 @@
 import LoggerService from './LoggerService.ts'
 
 export default class TranslatorService {
+    public static __container_entry_key = 'TranslatorService'
+
     public entries: Map<string, string>
     public locale: string
     public localeLoaders: Map<string, () => Promise<Record<string, string>>>
@@ -29,9 +31,9 @@ export default class TranslatorService {
         const items: { key: string; value: string }[] = []
 
         this.entries.forEach((value, key) => {
-            items.push({ 
+            items.push({
                 key,
-                value 
+                value
             })
         })
 
@@ -41,14 +43,14 @@ export default class TranslatorService {
 
     public async getEntries(locale: string): Promise<Record<string, string>> {
         const cache = this.cache.get(locale)!
-        
+
         if (cache && this.debug) {
             this.logger.debug(`load locale "${locale}" from cache`, {
                 locale,
                 length: Object.keys(cache).length
             })
         }
-        
+
         if (cache) {
             return cache
         }
@@ -59,7 +61,7 @@ export default class TranslatorService {
             this.logger.warn(`no loader found for locale "${locale}"`)
             return {}
         }
-        
+
         const entries = await loader()
 
         this.cache.set(locale, entries)
@@ -73,12 +75,12 @@ export default class TranslatorService {
 
         return entries
     }
-    
-    public async load(locale: string){
+
+    public async load(locale: string) {
         const entries = await this.getEntries(locale)
-        
+
         this.entries = new Map<string, string>(Object.entries(entries))
-        
+
         this.locale = locale
     }
 
@@ -105,7 +107,7 @@ export default class TranslatorService {
         return translation
     }
 
-    public date(data: string | number | Date){
+    public date(data: string | number | Date) {
         const date = new Date(data)
 
         return date.toLocaleDateString(this.locale, {
@@ -115,7 +117,7 @@ export default class TranslatorService {
         })
     }
 
-    public datetime(data: string | number | Date){
+    public datetime(data: string | number | Date) {
         const date = new Date(data)
 
         return date.toLocaleString(this.locale, {

@@ -8,6 +8,8 @@ export interface FetchOptions extends RequestInit {
 }
 
 export default class FetchService {
+    public static __container_entry_key = 'FetchService'
+
     protected async handleError(response: Response) {    
         const contentType = response.headers.get('Content-Type') || ''
 

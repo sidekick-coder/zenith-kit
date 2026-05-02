@@ -17,7 +17,9 @@ interface LoadOptions {
 }
 
 
-export default class Router<C = {}> extends compose(Hooks){
+export default class Router<C = {}> extends compose(Hooks) {
+    public static __container_entry_key = 'RouterService'
+
     public routes: Route[] = []
 
     public middlewares: MiddlewareRegister[] = []
@@ -131,7 +133,7 @@ export default class Router<C = {}> extends compose(Hooks){
             handler,
         })
     }
-    
+
 
     public group() {
         const group = new Router<C>({
@@ -142,7 +144,7 @@ export default class Router<C = {}> extends compose(Hooks){
         group.groupPrefixes = this.prefixes // Inherit prefixes from parent
         group.middlewares = this.middlewares.map(r => ({
             middleware: r.middleware,
-            context: 'group' 
+            context: 'group'
         }))
 
         this.groups.push(group)

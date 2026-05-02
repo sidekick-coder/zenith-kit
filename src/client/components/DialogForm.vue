@@ -32,11 +32,11 @@ import validator from '#shared/facades/validator.ts'
 const props = defineProps({
     title: {
         type: String,
-        default: $t('Form'),
+        default: () => $t('Form'),
     },
     description: {
         type: String,
-        default: $t('Fill in the details below to create a new item'),
+        default: () => $t('Fill in the details below to create a new item'),
     },
     schema: {
         type: Object as () => T,
@@ -56,7 +56,7 @@ const props = defineProps({
     },
     submitText: {
         type: String,
-        default: $t('Save'),
+        default: () => $t('Save'),
     },
     toastOnSuccess: {
         type: String,

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import { RouterLink } from 'vue-router'
 import { computed, resolveComponent } from 'vue'
 import Icon from './Icon.vue'
 import { Tooltip, TooltipContent, TooltipTrigger } from '#client/components/ui/tooltip/index.ts'

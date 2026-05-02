@@ -1,4 +1,6 @@
 export default class CookieService {
+    public static __container_entry_key = 'CookieService'
+
     public cookies: Map<string, string>
     public prefix: string
 
@@ -23,7 +25,7 @@ export default class CookieService {
 
     public get(name: string, defaultValue: string | null = null): string | null {
         const fullName = this.prefix + name
-        
+
         return this.cookies.get(fullName) || defaultValue
     }
 

@@ -3,6 +3,8 @@
 // @ts-nocheck
 
 export default class LoggerService {
+    public static __container_entry_key = 'LoggerService' 
+
     public info(message: string, meta?: any): void {
         // Implementation here
     }

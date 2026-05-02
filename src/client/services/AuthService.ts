@@ -6,6 +6,7 @@ interface LogoutOptions {
 }
 
 export default class AuthService {
+    public static __container_entry_key = 'AuthService'
     public user: User | null
 
     constructor(data: Partial<AuthService> = {}) {

@@ -2,18 +2,20 @@ import { get, set, has, unset } from 'lodash-es'
 
 interface Entry {
     key: string
-    value: any 
+    value: any
     source: string
 }
 
 export default class ConfigService {
+    public static __container_entry_key = 'ConfigService'
+
     public entries: Map<string, Entry>
 
     constructor() {
         this.entries = new Map()
     }
 
-    public list(){
+    public list() {
         return Array.from(this.entries.values())
     }
 
@@ -71,7 +73,7 @@ export default class ConfigService {
 
         if (!primaryEntry) {
             const entry = this.entries.get(key)
-            
+
             return entry ? true : false
         }
 
@@ -100,7 +102,7 @@ export default class ConfigService {
 
         if (!primaryEntry) {
             const entry = this.entries.get(key)
-            
+
             return entry ? entry.value : defaultValue
         }
 

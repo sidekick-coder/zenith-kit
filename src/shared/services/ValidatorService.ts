@@ -32,6 +32,8 @@ export type ValidateResult<T extends ValidatePayload> =
 
 
 export default class ValidatorService {
+    public static __container_entry_key = 'ValidatorService'
+
     public v: Valibot = {
         ...v,
         extras,

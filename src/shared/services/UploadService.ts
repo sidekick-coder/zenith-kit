@@ -1,4 +1,6 @@
 export default class UploadService {
+    public static __container_entry_key = 'UploadService'
+
     public single(name: string){
         const error = new Error('Method not implemented.')
 

@@ -31,14 +31,18 @@
         "./client": {
             "types": "./dist/client/index.d.mts",
             "import": "./dist/client/index.es.js",
-            "require": "./dist/client/index.umd.js"
+            "require": "./dist/client/index.es.js"
+        },
+        "./vite": {
+            "import": "./extras/vite.js",
+            "require": "./extras/vite.js"
         },
         "./styles": "./dist/client/styles.css"
     },
     "scripts": {
         "generate:indexes": "node indexes.js",
         "build": "tsdown",
-        "build:vite": "vite build",
+        "build:client": "vite build",
         "watch": "tsdown --watch",
         "release": "node artisan.js release"
     },

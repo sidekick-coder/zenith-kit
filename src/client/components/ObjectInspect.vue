@@ -17,11 +17,11 @@ import { cn } from '#client/lib/utils.ts'
 defineProps({
     title: {
         type: String,
-        default: $t('Object Inspect')
+        default: () => $t('Object Inspect')
     },
     description: {
         type: String,
-        default: $t('Inspect the object data structure')
+        default: () => $t('Inspect the object data structure')
     },
     contentClass: {
         type: String,

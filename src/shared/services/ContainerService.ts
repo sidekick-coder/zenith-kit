@@ -21,12 +21,29 @@ export default class ContainerService {
         return record
     }
 
-    public set(payload: EntryKey, value: any) {
+    private getKey(payload: EntryKey): EntryKey {
         let key = payload
 
         if (typeof payload === 'function' || typeof payload === 'object') {
             key = payload.name
         }
+
+        const isConstructor = typeof payload !== 'string' && typeof payload !== 'symbol'
+
+        if (isConstructor && !(payload as any).__container_entry_key) {
+            console.warn(`Warning: The constructor ${payload.name} does not have a unique identifier. Consider adding a static property __container_entry_key__ to avoid potential conflicts.`)
+        }
+
+        if (isConstructor && (payload as any).__container_entry_key) {
+            key = (payload as any).__container_entry_key
+        }
+
+        return key
+
+    }
+
+    public set(payload: EntryKey, value: any) {
+        const key = this.getKey(payload)
 
         this.entries.set(key, value)
 
@@ -34,40 +51,27 @@ export default class ContainerService {
     }
 
     public has(payload: EntryKey): boolean {
-        let key = payload
-
-        if (typeof payload === 'function' || typeof payload === 'object') {
-            key = payload.name
-        }
+        const key = this.getKey(payload)
 
         return this.entries.has(key)
     }
 
     public get<T>(payload: EntryKey): T {
-        let key = payload
-
-        if (typeof payload === 'function' || typeof payload === 'object') {
-            key = payload.name
-        }
-
-        if (!this.has(key)) {
-            throw new Error(`entry not found: ${String(key)}`)
-        }
+        const key = this.getKey(payload)
 
         const entry = this.entries.get(key)
-        
-        
+
         return entry
     }
 
     public singleton<T>(classConstructor: Constructor<T>): T {
         const key = classConstructor.name
         const existingInstance = this.entries.get(key)
-        
+
         if (existingInstance) {
             return existingInstance
         }
-        
+
         const newInstance = new classConstructor()
         this.entries.set(key, newInstance)
         return newInstance

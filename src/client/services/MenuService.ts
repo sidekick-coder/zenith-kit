@@ -4,11 +4,13 @@ import acl from '#client/facades/acl.ts'
 export interface ListFilter {
     layout?: string
     group?: string
-    parent?: string 
+    parent?: string
     allowed?: boolean
 }
 
 export default class MenuService {
+    public static __container_entry_key = 'MenuService'
+
     public items: Map<string, MenuItem> = new Map()
 
     public add(...item: Omit<Partial<MenuItem>, 'merge' | 'from'>[]) {
@@ -28,7 +30,7 @@ export default class MenuService {
 
     public list(filter: ListFilter = {}) {
         let items = JSON.parse(JSON.stringify(Array.from(this.items.values()))) as MenuItem[]
-        
+
 
         if (filter.layout) {
             items = items.filter(i => i.layout === filter.layout)

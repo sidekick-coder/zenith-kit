@@ -10,6 +10,8 @@ interface CommandOptions {
 }
 
 export default class ShellService {
+    public static __container_entry_key = 'ShellService'
+
     public debug: boolean
     public logger: LoggerService
 
@@ -46,20 +48,20 @@ export default class ShellService {
 
             child.on('close', (code) => {
                 if (this.debug) {
-                    this.logger.debug('command executed', { 
-                        bin, 
+                    this.logger.debug('command executed', {
+                        bin,
                         args,
-                        output: data 
+                        output: data
                     })
                 }
-                
+
                 if (code === 0) {
                     return resolve()
                 }
 
                 const errorMessage = `Command failed with exit code ${code}`
-                
-                this.logger.error(errorMessage, { 
+
+                this.logger.error(errorMessage, {
                     bin,
                     args,
                     code,
@@ -67,14 +69,14 @@ export default class ShellService {
                 })
 
                 reject(new ShellExecption(errorMessage, data, bin, args))
-                
+
             })
 
             child.on('error', (error) => {
-                this.logger.error('Command execution error', { 
-                    bin, 
-                    args, 
-                    error: error.message 
+                this.logger.error('Command execution error', {
+                    bin,
+                    args,
+                    error: error.message
                 })
 
                 reject(error)
@@ -116,11 +118,11 @@ export default class ShellService {
                     resolve(output.trim())
                 } else {
                     const errorMessage = `Command failed with exit code ${code}: ${errorOutput}`
-                    this.logger.error(errorMessage, { 
-                        bin, 
-                        args, 
-                        code, 
-                        errorOutput 
+                    this.logger.error(errorMessage, {
+                        bin,
+                        args,
+                        code,
+                        errorOutput
                     })
 
                     reject(new ShellExecption(errorMessage, output, bin, args))
@@ -128,10 +130,10 @@ export default class ShellService {
             })
 
             child.on('error', (error) => {
-                this.logger.error('Command execution error', { 
-                    bin, 
-                    args, 
-                    error: error.message 
+                this.logger.error('Command execution error', {
+                    bin,
+                    args,
+                    error: error.message
                 })
                 reject(error)
             })

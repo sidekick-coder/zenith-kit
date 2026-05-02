@@ -22,11 +22,11 @@ defineOptions({ inheritAttrs: false })
 const props = defineProps({
     title: {
         type: String,
-        default: $t('Are you sure?')
+        default: () => $t('Are you sure?')
     },
     description: {
         type: String,
-        default: $t('This action cannot be undone.')
+        default: () => $t('This action cannot be undone.')
     },
     fetch: {
         type: [String, Function],
@@ -39,7 +39,7 @@ const props = defineProps({
     },
     toastOnSuccess: {
         type: String,
-        default: $t('Deleted successfully.')
+        default: () => $t('Deleted successfully.')
     },
 })
 

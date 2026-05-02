@@ -15,11 +15,11 @@ import {
 defineProps({
     title: {
         type: String,
-        default: $t('Are you sure?')
+        default: () => $t('Are you sure?')
     },
     description: {
         type: String,
-        default: $t('This action cannot be undone.')
+        default: () => $t('This action cannot be undone.')
     }
 })
 
