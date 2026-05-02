@@ -7,14 +7,25 @@ import type EnvService from './EnvService.ts'
 import fs from 'fs'
 import yaml from 'js-yaml'
 
-export default class ConfigManagerService {
-    constructor(
-        public env: EnvService,
-        public logger: LoggerService,
-    ) { }
+export interface ConfigManagerOptions {
+    env: EnvService
+    logger: LoggerService
+    silent?: boolean
+}
 
-    public static create(env: EnvService, logger: LoggerService) {
-        const service = new ConfigManagerService(env, logger)
+export default class ConfigManagerService {
+    public env: EnvService
+    public logger: LoggerService
+    public silent: boolean
+
+    constructor(options: ConfigManagerOptions) {
+        this.env = options.env
+        this.logger = options.logger
+        this.silent = options.silent ?? false
+    }
+
+    public static create(options: ConfigManagerOptions) {
+        const service = new ConfigManagerService(options)
 
         return service
     }
@@ -34,11 +45,14 @@ export default class ConfigManagerService {
 
         await service.load()
 
-        this.logger.info('using S3 configuration service', {
-            bucket: service.bucket,
-            region: service.region,
-            prefix: service.prefix
-        })
+        if (!this.silent) {
+            this.logger.info('using S3 configuration service', {
+                bucket: service.bucket,
+                region: service.region,
+                prefix: service.prefix
+            })
+        }
+
 
         return service
     }
@@ -52,7 +66,9 @@ export default class ConfigManagerService {
 
         await service.load()
 
-        this.logger.info('using filesystem configuration service', { path: service.directory })
+        if (!this.silent) {
+            this.logger.info('using filesystem configuration service', { path: service.directory })
+        }
 
         return service
     }
