@@ -1,39 +1,18 @@
 import { join } from 'path'
-import { GitGateway } from '#server/gateways/GitGateway.ts'
-import { tmpPath } from '#server/utils/basePath.ts'
-import Base from '#shared/entities/PluginEntity.ts'
-import { composeWith } from '#shared/utils/compose.ts'
-import config from '#server/facades/config.ts'
-import logger from '#server/facades/logger.ts'
 import RouterFileBaseRoutingService from '#server/services/RouterFileBaseRoutingService.ts'
 import router from '#server/facades/router.ts'
+import PluginDiscoverEntity from './PluginDiscoverEntity'
 
 interface AddApiFolderOptions {
     prefix?: string
 }
 
-export default class PluginEntity extends composeWith(Base) {
-    public directory: string
-
-    public get git() {
-        return new GitGateway({
-            cwd: this.directory,
-            sshKey: config.get(`modules.${this.id}.ssh_key`),
-            sshKeyTmpFileName: tmpPath(`ssh_key_${this.id}.pem`),
-            logger: logger.child({ label: 'git' }),
-            debug: config.get('git.debug', false),
-        })
-    }
-
-    public makePath(...parts: string[]) {
-        return join(this.directory, ...parts)
-    }
-
+export default class PluginEntity extends PluginDiscoverEntity {
     public staticPath(...parts: string[]) {
         return join('/static', 'modules', this.id, ...parts)
     }
 
-    public load() {
+    public async load() {
         // This method can be used to load additional data from the plugin's directory if needed
     }
 
@@ -47,4 +26,31 @@ export default class PluginEntity extends composeWith(Base) {
             .setModule(this.id)
             .load()
     }
+
+    public static fromPluginDiscoverEntity<T>(this: new () => T, entity: PluginDiscoverEntity): T {
+        const contructor = (typeof this === 'function' ? this : PluginEntity) as any
+
+        const instance = new contructor() as any
+
+        let payload = { 
+            id: entity.id,
+            name: entity.name,
+            version: entity.version,
+            directory: entity.directory,
+        }
+
+        if (typeof contructor?.parse === 'function') {
+            payload = (contructor as any).parse(entity)
+        }
+
+        if (typeof (this as any)?.parse === 'function') {
+            payload = (this as any).parse(entity)
+        }
+
+        Object.assign(instance as any, payload)
+
+        return instance
+    }
+
+
 }

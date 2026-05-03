@@ -10,6 +10,14 @@ export function basePath(...args: string[]): string {
     return path.resolve(BASE_PATH, ...args)
 }
 
+export function relativeToBasePath(...args: string[]): string {
+    if (!BASE_PATH) {
+        throw new Error('ZENITH_BASE_PATH environment variable is not set')
+    }
+
+    return path.relative(process.cwd(), path.resolve(BASE_PATH, ...args))
+}
+
 export function tmpPath(...args: string[]): string {
     return basePath('tmp', ...args)
 }
