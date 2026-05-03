@@ -78,11 +78,10 @@ export default class ArtisanWrapperService {
         this.addEnv('ZENITH_CONFIG_FILES', this.configFiles.join(','));
     }
 
-    public loadArguments() {
+    public loadArguments(args: string[] = []) {
         const namespaces = ['@config:', '@config-file:'];
-        const userArgs = process.argv.slice(2);
 
-        const forwardArgs = userArgs.filter(arg => !namespaces.some(ns => arg.startsWith(ns)));
+        const forwardArgs = args.filter(arg => !namespaces.some(ns => arg.startsWith(ns)));
 
         this.args = [
             '--no-warnings',
@@ -101,14 +100,14 @@ export default class ArtisanWrapperService {
         process.exit(code);
     }
 
-    public async run() {
+    public async run(args?: string[]) {
         if (!this.appBasePath) {
             throw new Error('Base path not set. Please call setBasePath() before run().');
         }
 
         this.loadConfigArguments();
         this.loadConfigFiles();
-        this.loadArguments();
+        this.loadArguments(args || process.argv.slice(2));
 
         this.loadEnvironment();
 
