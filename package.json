@@ -33,20 +33,27 @@
         },
         "./client": {
             "types": "./dist/client/index.d.mts",
-            "import": "./dist/client/index.es.js",
-            "require": "./dist/client/index.es.js"
+            "import": "./dist/client/index.mjs",
+            "require": "./dist/client/index.mjs"
+        },
+        "./components": {
+            "types": "./dist/components/index.d.mts",
+            "import": "./dist/components/index.es.js",
+            "require": "./dist/components/index.es.js"
         },
         "./vite": {
             "import": "./extras/vite.js",
             "require": "./extras/vite.js"
         },
-        "./styles": "./dist/client/styles.css"
+        "./styles": "./dist/client/styles.css",
+        "./client-globals": {
+            "types": "./src/client/zenith-env.d.ts"
+        }
     },
     "scripts": {
-        "build": "npm run build:server && npm run build:client",
-        "build:server": "tsdown",
-        "build:client": "vite build",
-        "watch": "tsdown --watch",
+        "build": "npm run build:tsdown && npm run build:vite",
+        "build:tsdown": "tsdown",
+        "build:vite": "vite build",
         "release": "node artisan.js release"
     },
     "devDependencies": {

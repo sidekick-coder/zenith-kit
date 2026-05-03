@@ -12,7 +12,7 @@ export interface Router extends VueRouter {
     auto: typeof auto;
 }
 
-interface AutoOptions {
+export interface AutoOptions {
     guards?: NavigationGuard[] | ((record: RouteRecordRaw) => NavigationGuard[]);
     strip?: (string | RegExp)[];
     exclude?: (string | RegExp)[];

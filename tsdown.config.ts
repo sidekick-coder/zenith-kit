@@ -61,4 +61,37 @@ export default defineConfig([
             })
         }
     },
+    {
+        entry: 'src/client/index.ts',
+        outDir: 'dist/client',
+        dts: true,
+        minify: true,
+        tsconfig: 'tsconfig.client.json',
+        deps: {
+            neverBundle: [
+                'vue',
+                'vue-router',
+            ]
+        },
+        hooks(hooks) {
+            hooks.hook('build:before', async () => {
+                generateIndexFile({
+                    folders: [
+                        'src/client/services',
+                        'src/client/repositories',
+                        'src/client/mixins',
+                        'src/client/facades',
+                        'src/client/loaders',
+                        'src/client/entities',
+                        'src/client/utils',
+                        'src/client/guards',
+                    ],
+                    filename: 'src/client/index.ts'
+                })
+
+                globalLogger.info('Generated index.ts for client')
+            })
+        }
+    },
+
 ])

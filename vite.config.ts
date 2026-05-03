@@ -13,16 +13,16 @@ const prebuild = () => ({
         generateIndexFile({
             glob: '**/*.{ts,vue,css}',
             folders: [
-                'src/client/composables',
-                'src/client/utils',
-                'src/client/facades',
+                // 'src/client/composables',
+                // 'src/client/utils',
+                // 'src/client/facades',
                 'src/client/components',
                 'src/client/layouts',
-                'src/client/services',
-                'src/client/guards',
-                'src/client/css',
+                // 'src/client/services',
+                // 'src/client/guards',
+                // 'src/client/css',
             ],
-            filename: 'src/client/index.ts'
+            filename: 'src/client/components.ts'
         })
 
         logger.info('Generated index.ts for client')
@@ -55,14 +55,14 @@ export default defineConfig({
         prebuild(),
     ],
     build: {
-        outDir: 'dist/client',
+        outDir: 'dist/components',
         minify: false,
         rollupOptions: {
             external: externals,
         },
         lib: {
             name: 'Client',
-            entry: 'src/client/index.ts',
+            entry: 'src/client/components.ts',
             formats: ['es'],
             fileName: (format) => `index.${format}.js`,
             cssFileName: 'styles',
