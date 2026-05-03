@@ -6,7 +6,8 @@ import { tryCatch } from '../utils/tryCatch.ts'
 type LifecycleMethod = 'register' | 'load' | 'boot' | 'shutdown'
 
 interface ListOptions {
-    exclude?: (string | Constructor<LifecycleHook> | LifecycleHook)[]
+    include?: string | string[]
+    exclude?: string | string[]
 }
 
 export default class LifecycleService {
@@ -22,28 +23,45 @@ export default class LifecycleService {
         this.logger = data.logger ?? new LoggerService()
     }
 
+    public mapAliases(args: string[]) {
+        const result: string[] = []
+        const all = Array.from(this.hooks.values())
+
+        for (const hook of all) {
+            if (args.includes(hook.hook_id)) {
+                result.push(hook.hook_id)
+                continue
+            }
+
+            if (hook.hook_aliases) {
+                const matchedAlias = hook.hook_aliases.find(alias => args.includes(alias))
+
+                if (matchedAlias) {
+                    result.push(hook.hook_id)
+                }
+            }
+        }
+
+        return result
+    }
+
     public list(options?: ListOptions) {
         let hooks = Array.from(this.hooks.values())
 
         if (options?.exclude) {
-            const ids = options.exclude.filter(item => typeof item === 'string') as string[]
-            const constructors = options.exclude.filter(item => typeof item === 'function') as Constructor<LifecycleHook>[]
-            const instances = options.exclude.filter(item => typeof item === 'object') as LifecycleHook[]
-            hooks = hooks.filter(hook => {
-                if (ids.includes(hook.hook_id)) {
-                    return false
-                }
+            let ids = Array.isArray(options.exclude) ? options.exclude : [options.exclude]
 
-                if (constructors.find(ctor => hook instanceof ctor)) {
-                    return false
-                }
+            ids = this.mapAliases(ids)
 
-                if (instances.find(inst => hook === inst)) {
-                    return false
-                }
+            hooks = hooks.filter(hook => !ids.includes(hook.hook_id))
+        }
 
-                return true
-            })
+        if (options?.include) {
+            let ids = Array.isArray(options.include) ? options.include : [options.include]
+
+            ids = this.mapAliases(ids)
+
+            hooks = hooks.filter(hook => ids.includes(hook.hook_id))
         }
 
         hooks.sort((a, b) => {

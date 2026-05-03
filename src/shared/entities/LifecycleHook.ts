@@ -1,5 +1,6 @@
 export default class LifecycleHook {
     public hook_id: string
+    public hook_aliases?: string[]
     public order?: number
     public subhooks?: LifecycleHook[]
 
