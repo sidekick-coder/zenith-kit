@@ -6,7 +6,8 @@
     "author": "Henrique Oliveira <henriqueoliwork@gmail.com>",
     "homepage": "https://github.com/sidekick-coder/zenith-kit",
     "bin": {
-        "zkit": "./bin/zkit.js"
+        "zkit": "./bin/zkit.js",
+        "zenith": "./bin/zenith.js"
     },
     "repository": {
         "type": "git",
