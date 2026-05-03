@@ -5,10 +5,16 @@ import BaseLifecycleService from '#shared/services/LifecycleService.ts';
 export default class LifecycleService extends BaseLifecycleService {
     public async addDirectory(dirname: string) {
         const mods = await importAll(dirname)
+        const hooks: LifecycleHook[] = []
 
-        const hooks: LifecycleHook[] = Object.values(mods)
-            .map(m => m.default || m)
-            .map((m: any) => new m())
+        for (const [name, mod] of Object.entries(mods)) {
+            const HookClass = mod.default || mod
+            const instance = new HookClass() as LifecycleHook
+
+            instance.hook_id = instance.hook_id || name
+
+            hooks.push(instance)
+        }
 
         hooks.forEach(hook => this.add(hook))
     }

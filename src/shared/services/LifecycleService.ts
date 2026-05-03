@@ -3,6 +3,8 @@ import type LifecycleHook from '#shared/entities/LifecycleHook.ts'
 import type { Constructor } from '#shared/utils/compose.ts'
 import { tryCatch } from '../utils/tryCatch.ts'
 
+type LifecycleMethod = 'register' | 'load' | 'boot' | 'shutdown'
+
 interface ListOptions {
     exclude?: (string | Constructor<LifecycleHook> | LifecycleHook)[]
 }
@@ -18,24 +20,6 @@ export default class LifecycleService {
         this.debug = data.debug ?? this.debug
         this.hooks = data.hooks ?? new Map()
         this.logger = data.logger ?? new LoggerService()
-    }
-
-    private async executeHookMethod(hook: LifecycleHook, method: 'onRegister' | 'onLoad' | 'onBoot' | 'onShutdown'): Promise<void> {
-        await hook[method]()
-
-        if (this.debug) {
-            this.logger.debug(`${method} ${hook.hook_id}`)
-        }
-
-        const subhooks = hook.subhooks || []
-
-        for (const subhook of subhooks) {
-            await this.executeHookMethod(subhook, method)
-
-            if (this.debug) {
-                this.logger.debug(`${method} subhook ${subhook.hook_id} of ${hook.hook_id}`)
-            }
-        }
     }
 
     public list(options?: ListOptions) {
@@ -96,74 +80,54 @@ export default class LifecycleService {
         }
     }
 
-    public async register(options?: ListOptions): Promise<void> {
+    public async emitMethod(method: LifecycleMethod, options?: ListOptions): Promise<void> {
         for (const hook of this.list(options)) {
-            const [error] = await tryCatch(() => this.executeHookMethod(hook, 'onRegister'))
+            const map = {
+                register: () => Promise.all([hook.register(), hook.onRegister()]),
+                load: () => Promise.all([hook.load(), hook.onLoad()]),
+                boot: () => Promise.all([hook.boot(), hook.onBoot()]),
+                shutdown: () => Promise.all([hook.shutdown(), hook.onShutdown()]),
+            }
+
+            const [error] = await tryCatch(() => map[method]())
 
             if (error) {
                 Object.assign(error, { hookId: hook.hook_id })
-                this.logger.error('error in hook register: ', error)
+                this.logger.error(`error in hook ${method}:`, error)
                 continue
             }
 
             if (this.debug) {
-                this.logger.debug('register ' + hook.hook_id)
+                this.logger.debug(`${method} ` + hook.hook_id)
             }
         }
+    }
+
+    public async emit(payload: LifecycleMethod | LifecycleMethod[], options?: ListOptions): Promise<void> {
+        const methods = Array.isArray(payload) ? payload : [payload]
+
+        for (const method of methods) {
+            await this.emitMethod(method, options)
+        }
+    }
+
+    public async register(options?: ListOptions): Promise<void> {
+        return this.emit('register', options)
     }
 
     public async load(options?: ListOptions): Promise<void> {
-        for (const hook of this.list(options)) {
-            const [error] = await tryCatch(() => this.executeHookMethod(hook, 'onLoad'))
-
-            if (error) {
-                Object.assign(error, { hookId: hook.hook_id })
-                this.logger.error('error in hook load:', error)
-                continue
-            }
-
-            if (this.debug) {
-                this.logger.debug('load ' + hook.hook_id)
-            }
-        }
+        return this.emit('load', options)
     }
 
     public async boot(options?: ListOptions): Promise<void> {
-        const hooks = this.list(options)
-
-        for (const hook of hooks) {
-            const [error] = await tryCatch(() => this.executeHookMethod(hook, 'onBoot'))
-
-            if (error) {
-                Object.assign(error, { hookId: hook.hook_id })
-                this.logger.error('error in hook boot:', error)
-                continue
-            }
-
-            if (this.debug) {
-                this.logger.debug('boot ' + hook.hook_id)
-            }
-        }
+        return this.emit('boot', options)
     }
 
     public async shutdown(options?: ListOptions): Promise<void> {
-        for (const hook of this.list(options)) {
-            const [error] = await tryCatch(() => this.executeHookMethod(hook, 'onShutdown'))
-
-            if (error) {
-                Object.assign(error, { hookId: hook.hook_id })
-                this.logger.error('error in hook shutdown:', error)
-                continue
-            }
-
-            if (this.debug) {
-                this.logger.debug('shutdown ' + hook.hook_id)
-            }
-        }
+        await this.emit('shutdown', options)
     }
 
     public clear(): void {
         this.hooks.clear()
     }
-
 }
