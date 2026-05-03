@@ -13,7 +13,7 @@ program
     .name('zkit')
     .description('CLI tool for zenith-kit')
 
-const commandsDir = resolve(__dirname, '..', 'commands-kit')
+const commandsDir = resolve(__dirname, '..', 'cli', 'commands')
 
 for (const file of readdirSync(commandsDir)) {
     if (!file.endsWith('.js')) continue

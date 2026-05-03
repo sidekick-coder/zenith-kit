@@ -20,7 +20,7 @@ const prebuild = () => ({
                 'src/client/layouts',
                 // 'src/client/services',
                 // 'src/client/guards',
-                // 'src/client/css',
+                'src/client/css',
             ],
             filename: 'src/client/components.ts'
         })

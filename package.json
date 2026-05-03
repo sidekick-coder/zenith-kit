@@ -45,7 +45,7 @@
             "import": "./extras/vite.js",
             "require": "./extras/vite.js"
         },
-        "./styles": "./dist/client/styles.css",
+        "./styles": "./dist/components/styles.css",
         "./client-globals": {
             "types": "./src/client/zenith-env.d.ts"
         }
@@ -94,6 +94,7 @@
         "class-variance-authority": "^0.7.1",
         "cli-table3": "^0.6.5",
         "clsx": "^2.1.1",
+        "cosmiconfig": "^9.0.1",
         "date-fns": "^4.1.0",
         "dotenv": "^17.4.2",
         "embla-carousel-vue": "^8.6.0",
