@@ -38,6 +38,7 @@ export default defineConfig([
                 'kysely',
                 'chalk',
                 'commander',
+                '@unhead/vue',
             ]
         },
         hooks(hooks) {
@@ -71,6 +72,7 @@ export default defineConfig([
             neverBundle: [
                 'vue',
                 'vue-router',
+                '@unhead/vue',
             ]
         },
         hooks(hooks) {
