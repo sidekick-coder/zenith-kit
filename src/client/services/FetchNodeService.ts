@@ -1,7 +1,7 @@
 import type { FetchOptions } from './FetchService.ts'
 import FetchService from './FetchService.ts'
 // import type RouterService from '#server/services/RouterService.ts'
-import CookieService from '#shared/services/CookieService.ts'
+import CokkieMapEntity from '#shared/entities/CookieMapEntity.ts'
 import config from '#client/facades/config.ts'
 import container from '#client/facades/container.ts'
 import { parseUrlParams, parseUrlQuery } from '#shared/utils/parseRouteUrl.ts'
@@ -35,7 +35,7 @@ export default class FetchNodeService extends FetchService {
         const router =  container.get<any>('RouterService')
         const method = options.method || 'GET'
         const route = router.resolve(method, url)
-        const cookie = new CookieService({
+        const cookie = new CokkieMapEntity({
             prefix: config.get('cookie.prefix', '')
         })
         

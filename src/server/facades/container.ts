@@ -1,4 +1,4 @@
-import { ContainerService } from "#shared/index.ts";
+import ContainerService from "#shared/services/ContainerService.ts";
 
 const container = (globalThis as any).serverContainer || new ContainerService()
 

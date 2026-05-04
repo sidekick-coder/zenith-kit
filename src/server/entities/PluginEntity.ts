@@ -1,13 +1,13 @@
 import { join } from 'path'
 import RouterFileBaseRoutingService from '#server/services/RouterFileBaseRoutingService.ts'
 import router from '#server/facades/router.ts'
-import PluginDiscoverEntity from './PluginDiscoverEntity'
+import PluginEntryEntity from './PluginEntryEntity.ts'
 
 interface AddApiFolderOptions {
     prefix?: string
 }
 
-export default class PluginEntity extends PluginDiscoverEntity {
+export default class PluginEntity extends PluginEntryEntity {
     public staticPath(...parts: string[]) {
         return join('/static', 'modules', this.id, ...parts)
     }
@@ -27,7 +27,7 @@ export default class PluginEntity extends PluginDiscoverEntity {
             .load()
     }
 
-    public static fromPluginDiscoverEntity<T>(this: new () => T, entity: PluginDiscoverEntity): T {
+    public static fromPluginDiscoverEntity<T>(this: new () => T, entity: PluginEntryEntity): T {
         const contructor = (typeof this === 'function' ? this : PluginEntity) as any
 
         const instance = new contructor() as any

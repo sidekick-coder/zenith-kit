@@ -1,12 +1,17 @@
-export default class CookieService {
-    public static __container_entry_key = 'CookieService'
+export interface CookieMapEntityOptions {
+    cookies?: Map<string, string>
+    prefix?: string
+}
+
+export default class CookieMapEntity {
+    public static __container_entry_key = 'CookieMapEntity'
 
     public cookies: Map<string, string>
     public prefix: string
 
-    constructor(data: Partial<CookieService> = {}) {
-        this.cookies = data.cookies || new Map<string, string>()
-        this.prefix = data.prefix || ''
+    constructor(data?: CookieMapEntityOptions) {
+        this.cookies = data?.cookies || new Map<string, string>()
+        this.prefix = data?.prefix || ''
     }
 
     public load(cookies: Record<string, string> | Map<string, string>) {
@@ -29,6 +34,8 @@ export default class CookieService {
         return this.cookies.get(fullName) || defaultValue
     }
 
+    // @ts-expect-error - We want to allow any options to be passed here, as they may be used by the underlying cookie
+    //  eslint-disable-next-line @typescript-eslint/no-unused-vars
     public set(name: string, value: string, options?: any) {
         const fullName = this.prefix + name
 
