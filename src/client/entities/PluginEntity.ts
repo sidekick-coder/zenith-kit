@@ -7,4 +7,8 @@ export default class PluginEntity extends composeWith(Base) {
     public addPagesFolder(imports: any, options?: AutoOptions) {
         router.auto(imports, options)
     }
+
+    public async load() {
+        // This method can be used to load additional data from the plugin's directory if needed
+    }
 }
