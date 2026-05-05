@@ -18,9 +18,9 @@ import * as acorn from 'acorn'
  * @returns {import('vite').Plugin}
  */
 export default function (options) {
-    const include = options.include || '**/*.{js,ts,vue}'
-    const exclude = options.exclude || 'node_modules/**'
-    const imports = options.imports || []
+    const include = options?.include || '**/*.{js,ts,vue}'
+    const exclude = options?.exclude || 'node_modules/**'
+    const imports = options?.imports || []
 
     const filter = createFilter(include, exclude)
 

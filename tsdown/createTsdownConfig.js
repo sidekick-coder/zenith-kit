@@ -13,7 +13,7 @@ import path from 'path'
  *
  * @param {Options} options
  */
-export default function createServerTsDownConfig(options) {
+export default function (options) {
     const tsConfigPath = path.resolve(import.meta.dirname, '..', 'tsconfig.server.json')
 
     return defineConfig({

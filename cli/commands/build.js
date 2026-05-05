@@ -1,7 +1,9 @@
 import { Command } from 'commander'
-import { build } from 'tsdown'
-import createServerTsDownConfig from '../../extras/tsdown.js'
+import * as tsdown from 'tsdown'
+import * as vite from 'vite'
 import path from 'path'
+import createTsdownConfig from '../../tsdown/createTsdownConfig.js'
+import createViteConfig from '../../vite/createViteConfig.js'
 
 const command = new Command('build')
 
@@ -10,12 +12,28 @@ command
     .action(async () => {
         const cwd = process.cwd()
 
-        const config = createServerTsDownConfig({
+        const tsdownConfig = createTsdownConfig({
             entry: path.resolve(cwd, 'src/server/index.ts'),
             outDir: path.resolve(cwd, 'dist/server'),
         })
 
-        await build(config)
+        await tsdown.build(tsdownConfig)
+
+        const viteNodeConfig = createViteConfig({
+            entry: path.resolve(cwd, 'src/client/index.ts'),
+            outDir: path.resolve(cwd, 'dist/client-node'),
+            ssr: true
+        })
+
+        await vite.build(viteNodeConfig)
+
+        const viteBrowserConfig = createViteConfig({
+            entry: path.resolve(cwd, 'src/client/index.ts'),
+            outDir: path.resolve(cwd, 'dist/client-browser'),
+            ssr: false
+        })
+
+        await vite.build(viteBrowserConfig)
     })
 
 export default command

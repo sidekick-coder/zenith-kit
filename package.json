@@ -43,8 +43,8 @@
             "require": "./dist/components/index.es.js"
         },
         "./vite": {
-            "import": "./extras/vite.js",
-            "require": "./extras/vite.js"
+            "import": "./vite/plugins/vite.js",
+            "require": "./vite/plugins/vite.js"
         },
         "./styles": "./dist/components/styles.css",
         "./client-globals": {
