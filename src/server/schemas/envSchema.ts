@@ -47,7 +47,7 @@ const plugin = v.object({
 
 const pluginRecord = v.record(v.string(), plugin)
 
-export const envSchema = v.object({
+export const envSchema = v.looseObject({
     NODE_ENV: v.optional(v.union([v.literal('development'), v.literal('production'), v.literal('test')]), 'development'),
 
     ZENITH_BASE_PATH: v.string(),
@@ -80,3 +80,4 @@ export const envSchema = v.object({
 
     ZENITH_PLUGINS: v.optional(v.pipe(keyValue, pluginRecord)),
 })
+

@@ -10,6 +10,13 @@ interface ListOptions {
     exclude?: string | string[]
 }
 
+export interface LifecycleServiceOptions {
+    debug?: boolean
+    hooks?: Map<string, LifecycleHook>
+    logger?: LoggerService
+    onError?: (error: Error, context: { hookId: string; method: LifecycleMethod }) => void
+}
+
 export default class LifecycleService {
     public static __container_entry_key = 'LifecycleService'
 
@@ -17,10 +24,20 @@ export default class LifecycleService {
     public logger: LoggerService
     public debug = false
 
-    constructor(data: Partial<LifecycleService> = {}) {
+    constructor(data: LifecycleServiceOptions = {}) {
         this.debug = data.debug ?? this.debug
         this.hooks = data.hooks ?? new Map()
         this.logger = data.logger ?? new LoggerService()
+        
+        if (data.onError) {
+            this.onError = data.onError
+        }
+    }
+
+    public onError(error: Error, context: { hookId: string; method: LifecycleMethod }) {
+        Object.assign(error, { context })
+
+        this.logger.error(`Error in hook ${context.method} (${context.hookId}):`, error)
     }
 
     public mapAliases(args: string[]) {
@@ -110,8 +127,7 @@ export default class LifecycleService {
             const [error] = await tryCatch(() => map[method]())
 
             if (error) {
-                Object.assign(error, { hookId: hook.hook_id })
-                this.logger.error(`error in hook ${method}:`, error)
+                this.onError(error, { hookId: hook.hook_id, method })
                 continue
             }
 

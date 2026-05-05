@@ -56,7 +56,7 @@ export default class RouterFileBaseRoutingService {
     }
 
     public async loadFiles() {
-        const files = fg.sync('**/*.(ts|js)', { cwd: this.directory })
+        const files = fg.sync('**/*.(ts|js|mjs)', { cwd: this.directory })
 
         if (this.debug) {
             this.logger.debug(`Found ${files.length} route files in ${this.directory}`, {
@@ -69,7 +69,7 @@ export default class RouterFileBaseRoutingService {
 
         for (const file of files) {
             // Remove extension
-            let routePath = file.replace(/\.(ts|js)$/, '')
+            let routePath = file.replace(/\.(ts|js|mjs)$/, '')
             
             // Determine HTTP method from suffix
             let method: 'get' | 'post' | 'patch' | 'delete' | 'put' = 'get'

@@ -4,6 +4,7 @@ import * as vite from 'vite'
 import path from 'path'
 import createTsdownConfig from '../../tsdown/createTsdownConfig.js'
 import createViteConfig from '../../vite/createViteConfig.js'
+import config from '../config.js'
 
 const command = new Command('build')
 
@@ -12,9 +13,17 @@ command
     .action(async () => {
         const cwd = process.cwd()
 
+        const entry = {
+            index: 'src/server/index.ts',
+        }
+
+        if (config?.server?.entries) {
+            Object.assign(entry, config.server.entries)
+        }
+
         const tsdownConfig = createTsdownConfig({
-            entry: path.resolve(cwd, 'src/server/index.ts'),
-            outDir: path.resolve(cwd, 'dist/server'),
+            root: cwd,
+            entry: entry,
         })
 
         await tsdown.build(tsdownConfig)
