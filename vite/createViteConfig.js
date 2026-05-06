@@ -3,11 +3,6 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import zenith from './plugins/zenith.js'
 
-const externals = [
-    'vue',
-    'vue-router',
-]
-
 
 /**
  * @typedef {Object} Options
@@ -24,14 +19,6 @@ const externals = [
  * @param {Options} options
  */
 export default function(options) {
-    function modulePath(moduleName) {
-        if (options.ssr) {
-            return `${moduleName}`
-        }
-
-        return `vendor/${moduleName}`
-    }
-
     return defineConfig({
         plugins: [
             vue({
@@ -45,7 +32,10 @@ export default function(options) {
             }),
             tailwindcss(),
             zenith({
-                imports: externals,
+                imports: [
+                    'vue',
+                    'vue-router',
+                ],
             })
         ],
         build: {
@@ -54,9 +44,6 @@ export default function(options) {
             manifest: true,
             ssr: options.ssr || false,
             ssrManifest: options.ssr || false,
-            rollupOptions: {
-                external: externals,
-            },
             lib: {
                 name: options.name,
                 entry: options.entry,

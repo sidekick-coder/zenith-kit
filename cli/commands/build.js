@@ -17,8 +17,8 @@ command
             index: 'src/server/index.ts',
         }
 
-        if (config?.server?.entries) {
-            Object.assign(entry, config.server.entries)
+        if (config?.build?.server?.entries) {
+            Object.assign(entry, config.build.server.entries)
         }
 
         const tsdownConfig = createTsdownConfig({

@@ -3,7 +3,7 @@ import createWrapper from '../utils/createWrapper.js'
 import { EnvService } from '../../dist/server/index.mjs'
 import { BaseException } from '../../dist/shared/index.mjs'
 import path from 'node:path'
-import config from '../config.js'
+import { kitConfig } from '../config.js'
 
 const command = new Command('dev')
 
@@ -11,7 +11,7 @@ command
     .description('Start development server with watch mode')
     .action(async () => {
         const cwd = process.cwd()
-        const id = config.module_id || path.basename(cwd)
+        const id = kitConfig.module_id
 
         EnvService.dotEnvConfig({
             path: path.join(cwd, '.env'),
