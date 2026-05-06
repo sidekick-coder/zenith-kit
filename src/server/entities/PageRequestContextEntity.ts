@@ -79,4 +79,17 @@ export default class PageRequestContextEntity {
         this.setBrowserContainerValue(key, value)
     }
 
+    public setBrowserConfigValue(key: string, value: any) {
+        this.browserConfig.set(key, value)
+    }
+
+    public setNodeConfigValue(key: string, value: any) {
+        this.nodeConfig.set(key, value)
+    }
+
+    public setConfigValue(key: string, value: any) {
+        this.setNodeConfigValue(key, value)
+        this.setBrowserConfigValue(key, value)
+    }
+
 }
