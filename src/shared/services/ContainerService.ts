@@ -1,3 +1,5 @@
+import BaseException from "#shared/exceptions/BaseException.ts"
+
 type Constructor<T = object> = new (...args: any[]) => T
 
 type EntryKey = string | symbol | Constructor
@@ -58,6 +60,10 @@ export default class ContainerService {
 
     public get<T>(payload: EntryKey): T {
         const key = this.getKey(payload)
+
+        if (!this.entries.has(key)) {
+            throw new BaseException(`Entry with key "${String(key)}" not found in container.`)
+        }
 
         const entry = this.entries.get(key)
 
