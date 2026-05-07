@@ -8,7 +8,8 @@ export interface LayoutBreadcrumbItem {
 import {
     ref,
     computed,
-    onMounted
+    onMounted,
+    onServerPrefetch
 } from 'vue'
 import type { PropType } from 'vue'
 import { useRoute, type RouteLocationNormalizedGeneric } from 'vue-router'
@@ -48,7 +49,6 @@ defineOptions({ inheritAttrs: false, })
 useHead({ bodyAttrs: { class: 'admin', }, })
 
 const open = ref(true)
-const loading = ref(true)
 
 const props = defineProps({
     layoutId: {
@@ -96,12 +96,6 @@ const breadcrumbs = defineModel('breadcrumbs', {
 
 const items = ref<any[]>([])
 
-onMounted(() => {
-    items.value = menu.list({
-        layout: props.layoutId,
-        allowed: true,
-    })
-})
 
 const computedBreadcrumbs = computed(() => {
     if (breadcrumbs.value) {
@@ -143,7 +137,17 @@ function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
 }
 
 onMounted(() => {
-    loading.value = false
+    items.value = menu.list({
+        layout: props.layoutId,
+        allowed: true,
+    })
+})
+
+onServerPrefetch(() => {
+    items.value = menu.list({
+        layout: props.layoutId,
+        allowed: true,
+    })
 })
 </script>
 
