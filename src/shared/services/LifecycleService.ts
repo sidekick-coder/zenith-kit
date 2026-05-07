@@ -103,6 +103,11 @@ export default class LifecycleService {
         }
 
         for (const hook of instances) {
+            if (!hook.hook_id) {
+                this.logger.warn('Skipping hook without hook_id:', hook)
+                continue
+            }
+
             this.hooks.set(hook.hook_id, hook)
 
             if (this.debug) {
