@@ -11,7 +11,7 @@ import {
     onMounted
 } from 'vue'
 import type { PropType } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, type RouteLocationNormalizedGeneric } from 'vue-router'
 import { truncate } from 'lodash-es'
 import { useHead } from '@unhead/vue'
 import menu from '#client/facades/menu.ts'
@@ -41,7 +41,7 @@ import {
 import Icon from '#client/components/Icon.vue'
 import { cn } from '#client/lib/utils.ts'
 import UserMenu from '#client/components/UserMenu.vue'
-
+import container from '#client/facades/container.ts'
 
 defineOptions({ inheritAttrs: false, })
 
@@ -49,7 +49,6 @@ useHead({ bodyAttrs: { class: 'admin', }, })
 
 const open = ref(true)
 const loading = ref(true)
-const route = useRoute()
 
 const props = defineProps({
     layoutId: {
@@ -95,51 +94,53 @@ const breadcrumbs = defineModel('breadcrumbs', {
     default: null,
 })
 
-const items = computed(() =>
-    menu.list({
+const items = ref<any[]>([])
+
+onMounted(() => {
+    items.value = menu.list({
         layout: props.layoutId,
         allowed: true,
     })
-)
+})
 
-// const computedBreadcrumbs = computed(() => {
-//     if (breadcrumbs.value) {
-//         return breadcrumbs.value
-//     }
-//
-//     return generateBreadcrumbsFromRoute()
-// })
+const computedBreadcrumbs = computed(() => {
+    if (breadcrumbs.value) {
+        return breadcrumbs.value
+    }
 
-// function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
-//     if (!route?.path) {
-//         return []
-//     }
-//
-//     const pathSegments = route.path.split('/').filter(segment => segment !== '')
-//     const breadcrumbItems: LayoutBreadcrumbItem[] = []
-//
-//     let currentPath = ''
-//     for (let i = 0; i < pathSegments.length; i++) {
-//         currentPath += `/${pathSegments[i]}`
-//         const segment = pathSegments[i]
-//
-//         if (segment.startsWith(':')) {
-//             continue
-//         }
-//
-//         const label = segment
-//             .split('-')
-//             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-//             .join(' ')
-//
-//         breadcrumbItems.push({
-//             label: $t(label),
-//             to: i === pathSegments.length - 1 ? undefined : currentPath,
-//         })
-//     }
-//
-//     return breadcrumbItems
-// }
+    return generateBreadcrumbsFromRoute()
+})
+
+function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
+     if (!container.has('route')) return [] 
+
+     const route = container.get<RouteLocationNormalizedGeneric>('route')
+
+    const pathSegments = route.path.split('/').filter(segment => segment !== '')
+    const breadcrumbItems: LayoutBreadcrumbItem[] = []
+
+    let currentPath = ''
+    for (let i = 0; i < pathSegments.length; i++) {
+        currentPath += `/${pathSegments[i]}`
+        const segment = pathSegments[i]
+
+        if (segment.startsWith(':')) {
+            continue
+        }
+
+        const label = segment
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ')
+
+        breadcrumbItems.push({
+            label: label,
+            to: i === pathSegments.length - 1 ? undefined : currentPath,
+        })
+    }
+
+    return breadcrumbItems
+}
 
 onMounted(() => {
     loading.value = false
@@ -197,16 +198,16 @@ onMounted(() => {
                 <div class="flex items-center gap-2">
                     <SidebarTrigger class="-ml-1" />
 
-                    <Breadcrumb v-if="breadcrumbs?.length">
+                    <Breadcrumb v-if="computedBreadcrumbs?.length">
                         <BreadcrumbList class="md:hidden">
                             <BreadcrumbItem>
-                                <BreadcrumbPage>{{ truncate(breadcrumbs.at(-1)?.label) }}</BreadcrumbPage>
+                                <BreadcrumbPage>{{ truncate(computedBreadcrumbs.at(-1)?.label) }}</BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                         <BreadcrumbList class="hidden md:flex">
-                            <template v-for="(item, index) in breadcrumbs" :key="index">
+                            <template v-for="(item, index) in computedBreadcrumbs" :key="index">
                                 <BreadcrumbItem>
-                                    <template v-if="index === breadcrumbs.length - 1">
+                                    <template v-if="index === computedBreadcrumbs.length - 1">
                                         <BreadcrumbPage>{{ truncate(item.label) }}</BreadcrumbPage>
                                     </template>
                                     <template v-else>
@@ -217,7 +218,7 @@ onMounted(() => {
                                         </BreadcrumbLink>
                                     </template>
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator v-if="index !== breadcrumbs.length - 1" />
+                                <BreadcrumbSeparator v-if="index !== computedBreadcrumbs.length - 1" />
                             </template>
                         </BreadcrumbList>
                     </Breadcrumb>
