@@ -2,6 +2,7 @@ import LoggerService from './LoggerService.ts'
 import type LifecycleHook from '#shared/entities/LifecycleHook.ts'
 import type { Constructor } from '#shared/utils/compose.ts'
 import { tryCatch } from '../utils/tryCatch.ts'
+import { orderBy } from 'lodash-es'
 
 type LifecycleMethod = 'register' | 'load' | 'boot' | 'shutdown'
 
@@ -81,11 +82,7 @@ export default class LifecycleService {
             hooks = hooks.filter(hook => ids.includes(hook.hook_id))
         }
 
-        hooks.sort((a, b) => {
-            const orderA = a.order ?? 0
-            const orderB = b.order ?? 0
-            return orderA - orderB
-        })
+        hooks = orderBy(hooks, ['order'], ['asc'])
 
         return hooks
     }
@@ -121,6 +118,14 @@ export default class LifecycleService {
     }
 
     public async emitMethod(method: LifecycleMethod, options?: ListOptions): Promise<void> {
+        const hooks = this.list(options) 
+
+        if (this.debug) {
+            this.logger.debug(`emitting ${method} for hooks:`, {
+                hooks: hooks.map(hook => hook.hook_id)
+            })
+        }
+
         for (const hook of this.list(options)) {
             const map = {
                 register: () => Promise.all([hook.register(), hook.onRegister()]),
