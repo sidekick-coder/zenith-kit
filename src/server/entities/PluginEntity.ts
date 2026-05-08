@@ -2,6 +2,8 @@ import { join } from 'path'
 import RouterFileBaseRoutingService from '#server/services/RouterFileBaseRoutingService.ts'
 import router from '#server/facades/router.ts'
 import PluginEntryEntity from './PluginEntryEntity.ts'
+import container from '#server/facades/container.ts'
+import { RouterService } from '#server/index.ts'
 
 interface AddApiFolderOptions {
     prefix?: string
@@ -17,6 +19,8 @@ export default class PluginEntity extends PluginEntryEntity {
     }
 
     public async addApiFolder(directory: string, options: AddApiFolderOptions = {}) {
+        if (!container.has(RouterService)) return
+
         const prefix = options.prefix || `/api/${this.id}`
 
         await RouterFileBaseRoutingService
