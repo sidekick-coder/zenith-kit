@@ -8,6 +8,7 @@ export default defineConfig([
         tsconfig: 'tsconfig.shared.json',
         dts: true,
         minify: true,
+        sourcemap: 'inline',
         hooks(hooks) {
             hooks.hook('build:before', async () => {
                 generateIndexFile({
@@ -31,6 +32,7 @@ export default defineConfig([
         outDir: 'dist/server',
         dts: true,
         minify: true,
+        sourcemap: 'inline',
         tsconfig: 'tsconfig.server.json',
         deps: {
             neverBundle: [
@@ -67,6 +69,7 @@ export default defineConfig([
         outDir: 'dist/client',
         dts: true,
         minify: true,
+        sourcemap: 'inline',
         tsconfig: 'tsconfig.client.json',
         deps: {
             neverBundle: [

@@ -86,6 +86,7 @@ export default class ArtisanWrapperService {
         this.args = [
             '--no-warnings',
             '--experimental-strip-types',
+            '--enable-source-maps',
             path.join(this.appBasePath, 'server', 'cli.ts'),
             ...forwardArgs,
         ];
