@@ -1,6 +1,6 @@
 {
     "name": "@sidekick-coder/zenith-kit",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "license": "MIT",
     "description": "Package to use with zenith framework",
     "author": "Henrique Oliveira <henriqueoliwork@gmail.com>",
