@@ -65,11 +65,15 @@ export default class SeeederService {
 
     public async listSource(source: SeederSource) {
         const entries = await fs.promises.readdir(source.directory)
+                const extensions = ['.js', '.ts', '.mjs', '.mts']
+
 
         const items: SeederEntity[] = []
 
         for (const entry of entries) {
-            if (!entry.endsWith('.js') && !entry.endsWith('.ts')) continue
+            if (!extensions.includes(path.extname(entry))) {
+                continue
+            }
 
             const fullPath = path.join(source.directory, entry)
             const name = path.basename(entry, path.extname(entry))

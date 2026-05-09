@@ -6,6 +6,7 @@ import EmmitterService from '#shared/services/EmmitterService.ts'
 import LoggerService from '#shared/services/LoggerService.ts'
 import type { Kysely } from 'kysely'
 import MigrationEntity from '#server/entities/MigrationEntity.ts'
+import { orderBy } from 'lodash-es'
 
 export interface MigrationSource {
     id: string;
@@ -72,11 +73,12 @@ export default class MigratorService {
 
     public async listSource(source: MigrationSource) {
         const entries = await fs.promises.readdir(source.directory)
+        const extensions = ['.js', '.ts', '.mjs', '.mts']
 
-        const migrations: MigrationEntity[] = []
+        const items: MigrationEntity[] = []
 
         for (const entry of entries) {
-            if (!entry.endsWith('.js') && !entry.endsWith('.ts')) continue
+            if (!extensions.some(ext => entry.endsWith(ext))) continue
 
             const fullPath = path.join(source.directory, entry)
             const name = path.basename(entry, path.extname(entry))
@@ -88,25 +90,22 @@ export default class MigratorService {
                 executedAt: null,
             })
 
-            migrations.push(entity)
+            items.push(entity)
         }
 
-        return migrations
+        return items
     }
 
     public async list(filters?: ListFilters) {
         await this.ensureMigrationsTable()
 
-        const migrations = [] as MigrationEntity[]
+        let items = [] as MigrationEntity[]
 
         for await (const source of this.sources) {
-            const sourceMigrations = await this.listSource(source)
+            const migrations = await this.listSource(source)
 
-            migrations.push(...sourceMigrations)
+            items.push(...migrations)
         }
-
-        // Sort all migrations by name
-        migrations.sort((a, b) => a.name.localeCompare(b.name))
 
         // Get executed migrations from database
         const executed = await this.db
@@ -119,20 +118,20 @@ export default class MigratorService {
                 e.source = 'root'
             }
 
-            const m = migrations.find(m => m.name === e.name)
+            const m = items.find(m => m.name === e.name)
 
             if (!m) continue
 
             m.executedAt = new Date(e.executed_at)
         }
 
-        let result = migrations
-
         if (filters?.source) {
-            result = migrations.filter(m => m.source === filters.source)
+            items = items.filter(m => m.source === filters.source)
         }
 
-        return result
+        items = orderBy(items, ['source', 'name'], ['asc', 'asc'])
+
+        return items
     }
 
     private async migrateUp(migration: MigrationEntity): Promise<void> {
