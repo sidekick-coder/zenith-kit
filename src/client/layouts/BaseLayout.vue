@@ -12,7 +12,6 @@ import {
     onServerPrefetch
 } from 'vue'
 import type { PropType } from 'vue'
-import { useRoute, type RouteLocationNormalizedGeneric } from 'vue-router'
 import { truncate } from 'lodash-es'
 import { useHead } from '@unhead/vue'
 import menu from '#client/facades/menu.ts'
@@ -43,6 +42,7 @@ import Icon from '#client/components/Icon.vue'
 import { cn } from '#client/lib/utils.ts'
 import UserMenu from '#client/components/UserMenu.vue'
 import container from '#client/facades/container.ts'
+import route from '#client/facades/route.ts'
 
 defineOptions({ inheritAttrs: false, })
 
@@ -107,8 +107,6 @@ const computedBreadcrumbs = computed(() => {
 
 function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
      if (!container.has('route')) return [] 
-
-     const route = container.get<RouteLocationNormalizedGeneric>('route')
 
     const pathSegments = route.path.split('/').filter(segment => segment !== '')
     const breadcrumbItems: LayoutBreadcrumbItem[] = []
