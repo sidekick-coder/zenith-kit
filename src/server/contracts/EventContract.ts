@@ -1,8 +1,9 @@
 import type MigrationEntity from "#server/entities/MigrationEntity.ts"
 import type PageRequestContextEntity from "#server/entities/PageRequestContextEntity.ts"
+import type { SeederEvents} from "#server/services/SeederService.ts"
 import type { UserEntity } from "#shared/index.ts"
 
-export interface EventContract {
+export interface EventContract extends SeederEvents {
 
     // migrator
     'migrator:before-migrate': {

@@ -147,6 +147,8 @@ export default class MigratorService {
             })
             .execute()
 
+        this.logger.info(`${migration.name} migrated successfully`)
+
     }
 
     private async migrateDown(migration: MigrationEntity): Promise<void> {
@@ -158,6 +160,7 @@ export default class MigratorService {
             .where('module', '=', migration.source)
             .execute()
 
+        this.logger.info(`${migration.name} rolled back successfully`)
     }
 
     public async migrateFile(filename: string): Promise<MigrationResult> {
