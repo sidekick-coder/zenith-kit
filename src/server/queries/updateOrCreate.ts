@@ -3,7 +3,7 @@ import type { SelectFrom, SerializableResult, SerializeOptions, UpdateFrom } fro
 import { create } from './create.ts'
 import { update } from './update.ts'
 import { findOne } from './findOne.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
 
 export interface UpdateOrCreateOptions<T extends keyof Database> extends SerializeOptions<T> {
     debug?: boolean

@@ -1,7 +1,7 @@
 import type { Insertable } from 'kysely'
 import type { SerializableResult, SerializeOptions } from './common.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
 import normalizers from '#server/normalizers/index.ts'
 
 export interface CreateOptions<T extends keyof Database> extends SerializeOptions<T> {

@@ -1,5 +1,5 @@
 import { CreateTableBuilder } from 'kysely'
-import db from '#server/facades/db.facade.ts'
+import db from '#server/facades/database.ts'
 
 declare module 'kysely' {
   interface CreateTableBuilder<TB extends string, C extends string = never> {

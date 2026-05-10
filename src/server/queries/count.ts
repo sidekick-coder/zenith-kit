@@ -1,6 +1,6 @@
 import type { SelectFrom } from './common.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
 
 export interface CountOptions<T extends keyof Database> {
     query?: (qb: SelectFrom<T>) => SelectFrom<T>

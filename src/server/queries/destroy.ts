@@ -1,6 +1,6 @@
 import type { ExpressionWrapper, ExpressionBuilder } from 'kysely'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
 
 type DeleteFrom<T extends keyof Database> = ReturnType<typeof db.deleteFrom<T>>
 

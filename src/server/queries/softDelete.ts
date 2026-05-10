@@ -2,8 +2,8 @@ import { CreateTableBuilder  } from 'kysely'
 import type { ColumnType, ExpressionBuilder } from 'kysely'
 import type { Selectable } from 'kysely'
 import { now } from './common.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
 
 type WhereCapable<QB> = {
   where: (...args: any[]) => QB

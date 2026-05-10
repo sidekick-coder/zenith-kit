@@ -1,7 +1,7 @@
 import type { Updateable, ExpressionBuilder, ExpressionWrapper } from 'kysely'
 import type { UpdateFrom, SerializableResult, SerializeOptions } from './common.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
 import normalizers from '#server/normalizers/index.ts'
 
 export interface UpdateOptions<T extends keyof Database> extends SerializeOptions<T> {

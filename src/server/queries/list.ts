@@ -1,7 +1,7 @@
 import type { ExpressionBuilder, ExpressionWrapper } from 'kysely'
 import type { SelectFrom, SerializeOptions, SerializableResult } from './common.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
 
 export interface ListOptions<T extends keyof Database>  extends SerializeOptions<T> {
     limit?: number

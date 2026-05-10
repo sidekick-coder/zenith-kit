@@ -2,9 +2,9 @@ import type { ExpressionBuilder, ExpressionWrapper, Selectable } from 'kysely'
 import type { SelectFrom } from './common.ts'
 import { list } from './list.ts'
 import { count } from './count.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
-import Pagination from '#shared/entities/pagination.entity.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
+import Pagination from '#shared/entities/PaginationEntity.ts'
 
 export interface PaginateOptions<T extends keyof Database> {
     debug?: boolean

@@ -1,7 +1,7 @@
 import {  sql  } from 'kysely'
 import type { Selectable, SelectQueryBuilder, ExpressionBuilder as KExpressionBuilder } from 'kysely'
-import db from '#server/facades/db.facade.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
+import db from '#server/facades/database.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
 
 export type SelectFrom<T extends keyof Database> =
     ReturnType<typeof db.selectFrom<T>>

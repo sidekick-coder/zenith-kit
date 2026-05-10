@@ -2,8 +2,8 @@ import type { ExpressionBuilder, ExpressionWrapper, Insertable } from 'kysely'
 import type { SelectFrom, SerializableResult, SerializeOptions } from './common.ts'
 import { list } from './list.ts'
 import { create } from './create.ts'
-import type { Database } from '#server/contracts/database.contract.ts'
-import db from '#server/facades/db.facade.ts'
+import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
+import db from '#server/facades/database.ts'
 
 export interface FirstOrCreateOptions<T extends keyof Database> extends SerializeOptions<T> {
     debug?: boolean
