@@ -3,10 +3,8 @@ import createWrapper from '../cli/utils/createWrapper.js'
 import { EnvService } from '../dist/server/index.mjs'
 import { BaseException } from '../dist/shared/index.mjs'
 import path from 'node:path'
-import { kitConfig } from '../cli/config.js'
 
 const cwd = process.cwd()
-const id = kitConfig.module_id
 
 EnvService.dotEnvConfig({
     path: path.join(cwd, '.env'),
@@ -24,5 +22,5 @@ const wrapper = createWrapper({
 wrapper
     .addEnv('ZENITH_BASE_PATH', process.env.ZKIT_ZENITH_BASE_PATH)
     .addEnv('ZENITH_CONFIG_FS_PATH', path.join(cwd, 'config'))
-    .addEnv('ZENITH_PLUGINS', `${id}.directory=${cwd}`)
+    .addEnv('ZENITH_PLUGINS_DIRS', cwd)
     .run()
