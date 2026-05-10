@@ -1,4 +1,4 @@
-import $fetch from '#client/facades/fetch.ts'
+import $fetch from '#client/facades/fetcher.ts'
 import User from '#shared/entities/UserEntity.ts'
 
 interface LogoutOptions {

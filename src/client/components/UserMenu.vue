@@ -2,7 +2,7 @@
 import { computed, ref, onMounted } from 'vue'
 import auth from '#client/facades/auth.ts'
 
-import $fetch from '#client/facades/fetch.ts'
+import $fetch from '#client/facades/fetcher.ts'
 import di from '#client/facades/container.ts'
 import {
     Avatar,

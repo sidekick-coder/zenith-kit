@@ -13,7 +13,7 @@ import {
 import Label from './ui/label/Label.vue'
 import Button from './ZButton.vue'
 import { Input } from '#client/components/ui/input/index.ts'
-import $fetch from '#client/facades/fetch.ts'
+import $fetch from '#client/facades/fetcher.ts'
 import { cn } from '#client/lib/utils.ts'
 import logger from '#client/facades/logger.ts'
 

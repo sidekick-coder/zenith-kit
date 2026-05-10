@@ -22,7 +22,7 @@ import ComboboxTrigger from '#client/components/ui/combobox/ComboboxTrigger.vue'
 import { Avatar } from '#client/components/ui/avatar'
 import AvatarImage from '#client/components/ui/avatar/AvatarImage.vue'
 import AvatarFallback from '#client/components/ui/avatar/AvatarFallback.vue'
-import $fetch from '#client/facades/fetch.ts'
+import $fetch from '#client/facades/fetcher.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 
 defineOptions({ inheritAttrs: false, })

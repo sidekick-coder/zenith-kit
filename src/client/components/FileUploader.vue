@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import $fetch from '#client/facades/fetch.ts'
+import $fetch from '#client/facades/fetcher.ts'
 import { $file } from '#client/utils/file.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 import Button from '#client/components/ZButton.vue'

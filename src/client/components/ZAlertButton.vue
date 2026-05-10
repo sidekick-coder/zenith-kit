@@ -14,7 +14,7 @@ import {
     AlertDialogTrigger,
 } from '#client/components/ui/alert-dialog/index.ts'
 
-import $fetch from '#client/facades/fetch.ts'
+import $fetch from '#client/facades/fetcher.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 
 defineOptions({ inheritAttrs: false })

@@ -1,4 +1,4 @@
-import $original from "#client/facades/fetch.ts";
+import $original from "#client/facades/fetcher.ts";
 
-/** @deprecated Use $fetch facade */
+/** @deprecated Use fetcher facade */
 export const $fetch = $original;
