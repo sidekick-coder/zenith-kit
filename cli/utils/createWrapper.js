@@ -1,4 +1,4 @@
-import { ArtisanWrapperService } from '../../dist/server/index.mjs';
+import { CliWrapperService } from '../../dist/server/index.mjs';
 
 /** @typedef CreateWrapperOptions
  * @property {string} [zenithDirectory] - The base path of the project. If not provided, it will be read from the ZENITH_BASE_PATH environment variable.
@@ -6,11 +6,11 @@ import { ArtisanWrapperService } from '../../dist/server/index.mjs';
 * */
 
 /**
- * Creates and runs the ArtisanWrapperService with the provided options.
+ * Creates and runs the CliWrapperService with the provided options.
  * @param {CreateWrapperOptions} options - The options for creating the wrapper.
  */
 export default function createWrapper(options) {
-    return ArtisanWrapperService
+    return CliWrapperService
         .create()
         .setBasePath(options.zenithDirectory)
 }

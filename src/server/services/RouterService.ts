@@ -16,8 +16,17 @@ interface LoadOptions {
     debug?: boolean;
 }
 
+export interface RouterEvents {
+    'router:registered': {
+        router: RouterService
+    }
+    'router:loaded': {
+        router: RouterService
+    }
+}
 
-export default class Router<C = {}> extends compose(Hooks) {
+
+export default class RouterService<C = {}> extends compose(Hooks) {
     public static __container_entry_key = 'RouterService'
 
     public routes: Route[] = []
@@ -25,14 +34,14 @@ export default class Router<C = {}> extends compose(Hooks) {
     public middlewares: MiddlewareRegister[] = []
     public prefixes: string[] = []
 
-    public groups: Router<any>[] = []
+    public groups: RouterService<any>[] = []
     public groupPrefixes: string[] = []
 
     public debug = false
     public logger = new LoggerService()
     public metadata: Record<string, any> = {}
 
-    constructor(data: Partial<Router<C>> = {}) {
+    constructor(data: Partial<RouterService<C>> = {}) {
         super()
         this.routes = data.routes || []
         this.middlewares = data.middlewares || []
@@ -50,7 +59,7 @@ export default class Router<C = {}> extends compose(Hooks) {
             context,
         })
 
-        return this as Router<C & MiddlewareHandleResult<[typeof middleware]>>
+        return this as RouterService<C & MiddlewareHandleResult<[typeof middleware]>>
     }
 
     public prefix(prefix: string) {
@@ -136,7 +145,7 @@ export default class Router<C = {}> extends compose(Hooks) {
 
 
     public group() {
-        const group = new Router<C>({
+        const group = new RouterService<C>({
             listeners: this.listeners, // Inherit listeners from parent
             debug: this.debug,
         })

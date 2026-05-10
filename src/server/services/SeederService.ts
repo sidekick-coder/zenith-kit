@@ -34,7 +34,7 @@ export interface SeederEvents {
     };
 }
 
-export interface MigratorServiceOptions {
+export interface SeederServiceOptions {
     db: Kysely<any>;
     sources?: SeederSource[];
     debug?: boolean;
@@ -51,7 +51,7 @@ export default class SeeederService {
     public db: Kysely<any>
     public sources: SeederSource[]
 
-    constructor(options: MigratorServiceOptions) {
+    constructor(options: SeederServiceOptions) {
         this.debug = options.debug ?? this.debug
         this.emmitter = options.emmitter || new EmmitterService()
         this.logger = options.logger || new LoggerService()

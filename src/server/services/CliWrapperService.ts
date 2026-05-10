@@ -2,7 +2,7 @@ import cp from 'child_process';
 import path from 'path';
 import { LoggerService } from '#shared/index.ts';
 
-export default class ArtisanWrapperService {
+export default class CliWrapperService {
     public process: cp.ChildProcess | null = null;
     public appBasePath: string;
     public env = new Map<string, any>();
@@ -13,7 +13,7 @@ export default class ArtisanWrapperService {
     public logger = new LoggerService();
 
     public static create() {
-        return new ArtisanWrapperService();
+        return new CliWrapperService();
     }
 
     public setBasePath(path: string) {

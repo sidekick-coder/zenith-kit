@@ -1,7 +1,7 @@
-import ArtisanService from '#server/services/ArtisanService.ts'
+import CliService from '#server/services/CliService.ts'
 import di from '#server/facades/container.ts'
 
-export default class ArteTesterService extends ArtisanService {
+export default class ArteTesterService extends CliService {
     constructor() {
         super() 
 
@@ -16,7 +16,7 @@ export default class ArteTesterService extends ArtisanService {
             },
         })
 
-        di.set(ArtisanService, this)
+        di.set(CliService, this)
 
         return
     }

@@ -2,8 +2,7 @@ import { join } from 'path'
 import RouterFileBaseRoutingService from '#server/services/RouterFileBaseRoutingService.ts'
 import router from '#server/facades/router.ts'
 import PluginEntryEntity from './PluginEntryEntity.ts'
-import container from '#server/facades/container.ts'
-import { RouterService } from '#server/index.ts'
+import emmitter from '#server/facades/emmitter.ts'
 
 interface AddApiFolderOptions {
     prefix?: string
@@ -19,16 +18,16 @@ export default class PluginEntity extends PluginEntryEntity {
     }
 
     public async addApiFolder(directory: string, options: AddApiFolderOptions = {}) {
-        if (!container.has(RouterService)) return
+        emmitter.on('router:registered', async () => {
+            const prefix = options.prefix || `/api/${this.id}`
 
-        const prefix = options.prefix || `/api/${this.id}`
-
-        await RouterFileBaseRoutingService
-            .create(directory)
-            .setPrefix(prefix)
-            .setRouter(router)
-            .setModule(this.id)
-            .load()
+            await RouterFileBaseRoutingService
+                .create(directory)
+                .setPrefix(prefix)
+                .setRouter(router)
+                .setModule(this.id)
+                .load()
+        })
     }
 
     public static fromPluginDiscoverEntity<T>(this: new () => T, entity: PluginEntryEntity): T {
@@ -36,7 +35,7 @@ export default class PluginEntity extends PluginEntryEntity {
 
         const instance = new contructor() as any
 
-        let payload = { 
+        let payload = {
             id: entity.id,
             name: entity.name,
             version: entity.version,
