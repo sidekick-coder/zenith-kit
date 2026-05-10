@@ -6,4 +6,5 @@ export default class PluginEntity extends compose(BaseEntity) {
     public name: string
     public version: string
     public enabled: boolean
+    public aliases: string[]
 }

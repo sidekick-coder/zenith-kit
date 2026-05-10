@@ -18,6 +18,7 @@ export default defineConfig([
                         'src/shared/schemas',
                         'src/shared/exceptions',
                         'src/shared/facades',
+                        'src/shared/mixins',
                         'src/shared/entities',
                     ],
                     filename: 'src/shared/index.ts'

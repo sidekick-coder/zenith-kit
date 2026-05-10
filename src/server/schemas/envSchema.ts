@@ -41,12 +41,6 @@ const stringArray = v.pipe(
     )
 )
 
-const plugin = v.object({
-    directory: v.string(),
-})
-
-const pluginRecord = v.record(v.string(), plugin)
-
 export const envSchema = v.looseObject({
     NODE_ENV: v.optional(v.union([v.literal('development'), v.literal('production'), v.literal('test')]), 'development'),
 
@@ -67,6 +61,7 @@ export const envSchema = v.looseObject({
     ZENITH_CONFIG_DEBUG: v.optional(boolean, 'false'),
     ZENITH_CONFIG_DRIVER: v.optional(v.picklist(['fs', 's3']), 'fs'),
     ZENITH_CONFIG_FS_PATH: v.optional(v.string()),
+
     ZENITH_CONFIG_S3_BUCKET: v.optional(v.string()),
     ZENITH_CONFIG_S3_REGION: v.optional(v.string()),
     ZENITH_CONFIG_S3_ACCESS_KEY_ID: v.optional(v.string()),
@@ -75,9 +70,6 @@ export const envSchema = v.looseObject({
     ZENITH_CONFIG_S3_ENDPOINT: v.optional(v.string()),
     ZENITH_CONFIG_S3_PREFIX: v.optional(v.string(), ''),
 
-
-    ZENITH_MODULE_EXTRAS: v.optional(keyValue),
-
-    ZENITH_PLUGINS: v.optional(v.pipe(keyValue, pluginRecord)),
+    ZENITH_PLUGINS_DIRS: v.optional(stringArray),
 })
 
