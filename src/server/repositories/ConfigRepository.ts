@@ -7,7 +7,6 @@ import type { Pagination, FindManyOptions, PaginateOptions, DeleteManyOptions } 
 
 export default class ConfigRepository<
     TEntity = Record<string, any>,
-    TPrimaryKey = any,
     TOptions = Record<string, any>
 > {
     constructor(
@@ -63,13 +62,13 @@ export default class ConfigRepository<
         return items[0] ?? null
     }
 
-    async findById(id: TPrimaryKey, options?: TOptions): Promise<TEntity | null> {
+    async findById(id: string, options?: TOptions): Promise<TEntity | null> {
         const items = this.query(options)
 
         return items.find(item => (item as any)[this.primaryKey] === id) ?? null
     }
 
-    async findByIdOrFail(id: TPrimaryKey, options?: TOptions): Promise<TEntity> {
+    async findByIdOrFail(id: string, options?: TOptions): Promise<TEntity> {
         const item = await this.findById(id, options)
 
         if (!item) {
@@ -125,7 +124,7 @@ export default class ConfigRepository<
         return created
     }
 
-    async updateById(id: TPrimaryKey, data: Partial<TEntity>): Promise<TEntity> {
+    async updateById(id: string, data: Partial<TEntity>): Promise<TEntity> {
         const items = this.getItems()
         const index = items.findIndex(item => (item as any)[this.primaryKey] === id)
 
@@ -139,7 +138,7 @@ export default class ConfigRepository<
         return items[index]
     }
 
-    async deleteById(id: TPrimaryKey): Promise<void> {
+    async deleteById(id: string): Promise<void> {
         await this.findByIdOrFail(id)
 
         const items = this.getItems().filter(item => (item as any)[this.primaryKey] !== id)
