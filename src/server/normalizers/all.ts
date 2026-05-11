@@ -31,7 +31,7 @@ export function fromDb(value: Record<string, any>) {
     const result = { ...value }
 
     for (const key in result) {
-        // result[key] = parseValue(result[key])
+        result[key] = parseValue(result[key])
     }
 
     return result

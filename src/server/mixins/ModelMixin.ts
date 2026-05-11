@@ -18,7 +18,7 @@ import db from '#server/facades/database.ts'
 import type { SelectQueryBuilder } from 'kysely'
 
 export type ModelListOptions<T extends keyof Database> = Omit<ListOptions<T>, 'serialize'>
-export type ModelFindOptions<T extends keyof Database> = Omit<FindOneOptions<T>, 'serialize'|'orderBy'>
+export type ModelFindOptions<T extends keyof Database> = Omit<FindOneOptions<T>, 'serialize' | 'orderBy'>
 export type ModelPaginateOptions<T extends keyof Database> = Omit<PaginateOptions<T>, 'serialize'>
 export type ModelCountOptions<T extends keyof Database> = CountOptions<T>
 export type ModelCreateOptions<T extends keyof Database> = Omit<CreateOptions<T>, 'serialize'>
@@ -31,12 +31,12 @@ export type ModelEntity = ReturnType<ReturnType<typeof ModelMixin<any>>>
 
 export default function ModelMixin<Table extends keyof Database>(table: Table, primaryKey: keyof Database[Table] = 'id' as any) {
     return function ModelExtend<TBase extends Constructor>(Base: TBase) {
-        return class extends Base {            
+        return class extends Base {
             public static __model = {
                 table,
                 primaryKey,
             }
-            
+
             public static serialize<T>(this: new () => T, row: any): Promise<T> {
                 const instance = new this() as any
 
@@ -68,7 +68,7 @@ export default function ModelMixin<Table extends keyof Database>(table: Table, p
             }
 
             public static async list<T>(this: new () => T, o?: ModelListOptions<Table>): Promise<T[]> {
-                const constructor = this as any 
+                const constructor = this as any
 
                 const items = await queries.list(table, {
                     ...o,
@@ -97,11 +97,11 @@ export default function ModelMixin<Table extends keyof Database>(table: Table, p
                     await emitHook(constructor, 'serialized', row)
                 }
 
-                await emitHook(constructor, 'afterFind', row)                
+                await emitHook(constructor, 'afterFind', row)
 
                 return row as any
             }
-            
+
 
             public static async findOneOrFail<T>(this: new () => T, o?: ModelFindOptions<Table>): Promise<T> {
                 const constructor = this as any
@@ -121,7 +121,7 @@ export default function ModelMixin<Table extends keyof Database>(table: Table, p
             public static async find<T>(this: new () => T, id: any): Promise<T | null> {
                 const constructor = this as any
 
-                const row = await queries.findOne(table,{
+                const row = await queries.findOne(table, {
                     serialize: row => constructor.serialize(row),
                     where: (qb: any) => qb(primaryKey as string, '=', id)
                 }) as any
@@ -179,11 +179,11 @@ export default function ModelMixin<Table extends keyof Database>(table: Table, p
                 return row as any
             }
 
-            public static exists<T>(this: new () => T, o?: ModelListOptions<Table>): boolean {
+            public static exists<T>(this: new () => T, o?: ModelListOptions<Table>): Promise<boolean> {
                 return queries.exists(table, { query: o?.query }) as any
             }
 
-            public static count<T>(this: new () => T, o?: ModelCountOptions<Table>): number {
+            public static count<T>(this: new () => T, o?: ModelCountOptions<Table>): Promise<number> {
                 return queries.count(table, o) as any
             }
 
@@ -209,7 +209,7 @@ export default function ModelMixin<Table extends keyof Database>(table: Table, p
             public static async createMany<T>(this: new () => T, values: Array<ModelCreateOptions<Table>['values']>): Promise<T[]> {
                 const constructor = this as any
 
-                const rows  = []
+                const rows = []
 
                 for await (const value of values) {
                     await emitHook(constructor, 'beforeCreate', value)
@@ -284,7 +284,7 @@ export default function ModelMixin<Table extends keyof Database>(table: Table, p
 
             public static updateOrCreate<T>(this: new (...args: any[]) => T, o: ModelUpdateOrCreateOptions<Table>): T {
                 const constructor = this as any
-                 
+
                 return queries.updateOrCreate(table, {
                     debug: o.debug,
                     where: o.where,

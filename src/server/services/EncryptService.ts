@@ -3,6 +3,7 @@ import ms from 'ms'
 import { format } from 'date-fns'
 import EnvService from './EnvService';
 import LoggerService from '#shared/services/LoggerService.ts';
+import { BaseException } from '#shared/index.ts';
 
 interface URLOptions {
     data?: any;
@@ -18,7 +19,7 @@ interface EncryptServiceOptions {
 }
 
 export default class EncryptService {
-    public static __container_entry_key = 'EncryptService' 
+    public static __container_entry_key = 'EncryptService'
 
     public debug = false
     public env: EnvService
@@ -30,8 +31,11 @@ export default class EncryptService {
     constructor(options: EncryptServiceOptions) {
         this.env = options.env || new EnvService()
         this.logger = options.logger || new LoggerService()
-        this.debug = options.debug || false 
-        this.key = options.key ? Buffer.from(options.key, 'hex') : null
+        this.debug = options.debug || false
+
+        if (options.key) {
+            this.key = crypto.scryptSync(options.key, 'salt', 32)
+        }
     }
 
     public static create(options: EncryptServiceOptions) {
@@ -55,9 +59,8 @@ export default class EncryptService {
     }
 
     public setKey(key: string) {
-        this.key = Buffer.from(key, 'hex')
+        this.key = crypto.scryptSync(key, 'salt', 32)
     }
-
 
     public encrypt(text: string) {
         if (!this.key) {
@@ -77,7 +80,7 @@ export default class EncryptService {
 
     public decrypt(options: string): string {
         if (!this.key) {
-            throw new Error('Encryption key not set in configuration (app.key).')
+            throw new Error('Encryption key not set')
         }
 
         const [iv, encrypted] = options.split(':')
@@ -129,7 +132,13 @@ export default class EncryptService {
 
         const key = this.encrypt(JSON.stringify(payload))
 
-        const url = new URL(path, env.get('APP_URL'))
+        const appUrl = this.env.get('ZENITH_APP_URL')
+
+        if (!appUrl) {
+            throw new BaseException('APP_URL not set in environment variables')
+        }
+
+        const url = new URL(path, appUrl)
 
         url.searchParams.append('key', encodeURIComponent(key))
 

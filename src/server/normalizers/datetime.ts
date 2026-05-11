@@ -6,11 +6,13 @@ export function toDb(value: Date | string | null): string | null {
         return null
     }
 
-    if (db.driver === 'sqlite') {
+    const dialect = (db as any).currentConnectionDialectName
+
+    if (dialect === 'sqlite') {
         return format(new Date(value), 'yyyy-MM-dd HH:mm:ss')
     }
 
-    if (db.driver === 'mysql') {
+    if (dialect === 'mysql') {
         return format(new Date(value), 'yyyy-MM-dd HH:mm:ss')
     }
 

@@ -7,7 +7,9 @@ export function toDb(value: boolean | number | null) {
         return null
     }
 
-    if (db.dialect === 'sqlite') {
+    const dialect = db.currentConnectionDialectName
+
+    if (dialect === 'sqlite') {
         return value ? 1 : 0
     }
 
@@ -19,7 +21,9 @@ export function fromDb(value: any | null): boolean | null {
         return null
     }
 
-    if (db.dialect  === 'sqlite') {
+    const dialect = db.currentConnectionDialectName
+
+    if (dialect  === 'sqlite') {
         return value === 1 ? true : false
     }
 

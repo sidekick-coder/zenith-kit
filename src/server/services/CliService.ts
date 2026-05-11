@@ -5,7 +5,7 @@ import { importAll } from '#server/utils/importAll.ts'
 import { EmmitterService, LoggerService, tryCatch } from '#shared/index.ts'
 
 export interface CliEvents {
-    'cli:before-load': {
+    'cli:registered': {
         cli: CliService
     }
 }
@@ -70,6 +70,7 @@ export default class CliService extends CliCommand {
 
     public async loadDir(dir: string) {
         const mods = await importAll(dir, {
+            exclude: ['.test.ts', '.spec.ts', '.test.js', '.spec.js'],
             onError: ({ error, filename }) => {
                 Object.assign(error, { filename })
 
@@ -83,7 +84,6 @@ export default class CliService extends CliCommand {
             }
 
             if (!mod.default) {
-                this.logger.warn(`file ${mod.filename} does not have a default export, skipping`)
                 continue
             }
 
@@ -110,8 +110,6 @@ export default class CliService extends CliCommand {
     }
 
     public async load() {
-        await this.emmitter.emitAndWait('cli:before-load', { cli: this })
-
         for (const dir of this.dirs) {
             await this.loadDir(dir)
         }
