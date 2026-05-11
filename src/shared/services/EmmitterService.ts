@@ -30,13 +30,29 @@ export default class EmmitterService<Events extends Record<string, any> = Record
     private debug: boolean
     private logger: LoggerService
 
-    public load(options?: EmmitterServiceOptions) {
+    constructor (options?: EmmitterServiceOptions) {
         this.debug = options?.debug || false
         this.logger = options?.logger || new LoggerService()
 
         if (this.debug) {
             this.logger.debug('emmitter loaded with debug mode enabled')
         }
+    }
+
+    public static create<Events extends Record<string, any> = Record<string, any>>(options?: EmmitterServiceOptions) {
+        return new EmmitterService<Events>(options)
+    }
+
+    public setDebug(debug: boolean) {
+        this.debug = debug
+
+        if (this.debug) {
+            this.logger.debug('debug mode enabled')
+        }
+    }
+
+    public setLogger(logger: LoggerService) {
+        this.logger = logger
     }
 
     public on<K extends keyof Events>(event: K, listener: (args: Events[K]) => void, options?: OnOptions): EmmitterHandler

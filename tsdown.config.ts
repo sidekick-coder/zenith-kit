@@ -56,6 +56,8 @@ export default defineConfig([
                         'src/server/contracts',
                         'src/server/loaders',
                         'src/server/entities',
+                        'src/server/queries',
+                        'src/server/middlewares',
                         'src/server/utils',
                     ],
                     filename: 'src/server/index.ts'

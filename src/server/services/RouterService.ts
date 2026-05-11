@@ -51,6 +51,7 @@ export default class RouterService<C = {}> extends compose(Hooks) {
         this.debug = data.debug || false
         this.metadata = data.metadata || {}
         this.listeners = data.listeners || []
+        this.logger = data.logger || new LoggerService() 
     }
 
     public use<T extends Middleware>(middleware: T, context: RouteContext = 'route') {

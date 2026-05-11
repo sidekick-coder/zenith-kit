@@ -1,14 +1,24 @@
 import { join } from 'path'
 import RouterFileBaseRoutingService from '#server/services/RouterFileBaseRoutingService.ts'
-import router from '#server/facades/router.ts'
 import PluginEntryEntity from './PluginEntryEntity.ts'
 import emmitter from '#server/facades/emmitter.ts'
+import type { RouterEvents } from '#server/services/RouterService.ts'
+import type RouterRegister from '#server/services/RouterRegisterService.ts'
 
 interface AddApiFolderOptions {
     prefix?: string
 }
 
 export default class PluginEntity extends PluginEntryEntity {
+    public apiFolders = new Map<string, AddApiFolderOptions>()
+    public apiDirectories = new Set<string>()
+
+    constructor() {
+        super()
+
+        emmitter.on('router:registered', this.onRouterRegistered.bind(this))
+    }
+
     public staticPath(...parts: string[]) {
         return join('/static', 'modules', this.id, ...parts)
     }
@@ -17,9 +27,11 @@ export default class PluginEntity extends PluginEntryEntity {
         // This method can be used to load additional data from the plugin's directory if needed
     }
 
-    public async addApiFolder(directory: string, options: AddApiFolderOptions = {}) {
-        emmitter.on('router:registered', async () => {
-            const prefix = options.prefix || `/api/${this.id}`
+    public async onRouterRegistered(ctx: RouterEvents['router:registered']) {
+        const router = ctx.router as RouterRegister
+
+        for (const [directory, options] of this.apiFolders) {
+            const prefix = options.prefix || `/api/`
 
             await RouterFileBaseRoutingService
                 .create(directory)
@@ -27,7 +39,21 @@ export default class PluginEntity extends PluginEntryEntity {
                 .setRouter(router)
                 .setModule(this.id)
                 .load()
-        })
+        }
+
+        for (const apiDir of this.apiDirectories) {
+            router.addDir(apiDir, {
+                module: this.id,
+            })
+        }
+    }
+
+    public addApiFolder(directory: string, options: AddApiFolderOptions = {}) {
+        this.apiFolders.set(directory, options)
+    }
+
+    public addRouterFolder(directory: string) {
+        this.apiDirectories.add(directory)
     }
 
     public static fromPluginDiscoverEntity<T>(this: new () => T, entity: PluginEntryEntity): T {
