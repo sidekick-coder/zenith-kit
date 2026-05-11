@@ -158,4 +158,5 @@ async function handleLogout() {
             </DropdownMenu>
         </SidebarMenuItem>
     </SidebarMenu>
+
 </template>

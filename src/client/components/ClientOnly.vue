@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+defineOptions({
+    inheritAttrs: false
+})
+
 const show = ref(false)
 
 onMounted(() => {
@@ -9,8 +13,5 @@ onMounted(() => {
 </script>
 <template>
     <slot v-if="show" />
-    <slot
-        v-else
-        name="fallback"
-    />
+    <slot v-else name="fallback" />
 </template>

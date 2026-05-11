@@ -32,6 +32,7 @@ const prebuild = () => ({
 const externals = [
     'vue',
     'vue-router',
+    'vee-validate',
 ]
 
 export default defineConfig({

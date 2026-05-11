@@ -8,8 +8,6 @@ export interface LayoutBreadcrumbItem {
 import {
     ref,
     computed,
-    onMounted,
-    onServerPrefetch
 } from 'vue'
 import type { PropType } from 'vue'
 import { truncate } from 'lodash-es'
@@ -43,6 +41,7 @@ import { cn } from '#client/lib/utils.ts'
 import UserMenu from '#client/components/UserMenu.vue'
 import container from '#client/facades/container.ts'
 import route from '#client/facades/route.ts'
+import ClientOnly from '#client/components/ClientOnly.vue'
 
 defineOptions({ inheritAttrs: false, })
 
@@ -106,7 +105,7 @@ const computedBreadcrumbs = computed(() => {
 })
 
 function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
-     if (!container.has('route')) return [] 
+    if (!container.has('route')) return []
 
     const pathSegments = route.path.split('/').filter(segment => segment !== '')
     const breadcrumbItems: LayoutBreadcrumbItem[] = []
@@ -134,18 +133,9 @@ function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
     return breadcrumbItems
 }
 
-onMounted(() => {
-    items.value = menu.list({
-        layout: props.layoutId,
-        allowed: true,
-    })
-})
-
-onServerPrefetch(() => {
-    items.value = menu.list({
-        layout: props.layoutId,
-        allowed: true,
-    })
+items.value = menu.list({
+    layout: props.layoutId,
+    allowed: true,
 })
 </script>
 
@@ -189,7 +179,9 @@ onServerPrefetch(() => {
 
             <slot name="sidebar-footer" :open>
                 <SidebarFooter>
-                    <UserMenu :links="userMenuLinks" />
+                    <ClientOnly>
+                        <UserMenu :links="userMenuLinks" />
+                    </ClientOnly>
                 </SidebarFooter>
             </slot>
         </Sidebar>
@@ -201,12 +193,12 @@ onServerPrefetch(() => {
                     <SidebarTrigger class="-ml-1" />
 
                     <Breadcrumb v-if="computedBreadcrumbs?.length">
-                        <BreadcrumbList class="md:hidden">
+                        <BreadcrumbList class="md:hidden!">
                             <BreadcrumbItem>
                                 <BreadcrumbPage>{{ truncate(computedBreadcrumbs.at(-1)?.label) }}</BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
-                        <BreadcrumbList class="hidden md:flex">
+                        <BreadcrumbList class="hidden! md:flex!">
                             <template v-for="(item, index) in computedBreadcrumbs" :key="index">
                                 <BreadcrumbItem>
                                     <template v-if="index === computedBreadcrumbs.length - 1">
