@@ -1,4 +1,5 @@
 import { get, set, has, unset } from 'lodash-es'
+import { flatten } from '../utils'
 
 interface Entry {
     key: string
@@ -179,5 +180,9 @@ export default class ConfigService {
 
     public clear(): void {
         this.entries.clear()
+    }
+
+    public dump(): Record<string, any> {
+        return flatten(this.toRecord())
     }
 }

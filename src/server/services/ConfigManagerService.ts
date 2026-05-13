@@ -61,6 +61,7 @@ export default class ConfigManagerService {
         const service = new ConfigFSService({
             directory: this.env.get('ZENITH_CONFIG_FS_PATH'),
             debug: this.env.get('ZENITH_CONFIG_DEBUG'),
+            format: this.env.get('ZENITH_CONFIG_FS_FORMAT')!,
             logger: this.logger,
         })
 

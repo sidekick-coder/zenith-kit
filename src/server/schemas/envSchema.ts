@@ -45,6 +45,7 @@ export const envSchema = v.looseObject({
     NODE_ENV: v.optional(v.union([v.literal('development'), v.literal('production'), v.literal('test')]), 'development'),
 
     ZENITH_BASE_PATH: v.string(),
+    ZENITH_STORAGE_PATH: v.optional(v.string()),
 
     ZENITH_APP_URL: v.optional(v.string(), 'http://localhost:3000'),
     ZENITH_PORT: v.optional(v.pipe(v.string(), v.transform((value) => parseInt(value))), '3000'),
@@ -61,6 +62,7 @@ export const envSchema = v.looseObject({
     ZENITH_CONFIG_DEBUG: v.optional(boolean, 'false'),
     ZENITH_CONFIG_DRIVER: v.optional(v.picklist(['fs', 's3']), 'fs'),
     ZENITH_CONFIG_FS_PATH: v.optional(v.string()),
+    ZENITH_CONFIG_FS_FORMAT: v.optional(v.picklist(['json', 'yml']), 'json'),
 
     ZENITH_CONFIG_S3_BUCKET: v.optional(v.string()),
     ZENITH_CONFIG_S3_REGION: v.optional(v.string()),

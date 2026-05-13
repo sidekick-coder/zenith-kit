@@ -21,6 +21,7 @@ const wrapper = createWrapper({
 
 wrapper
     .addEnv('ZENITH_BASE_PATH', process.env.ZKIT_ZENITH_BASE_PATH)
+    .addEnv('ZENITH_STORAGE_PATH', path.join(cwd, 'storage'))
     .addEnv('ZENITH_CONFIG_FS_PATH', path.join(cwd, 'config'))
     .addEnv('ZENITH_PLUGINS_DIRS', cwd)
     .run()
