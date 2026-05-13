@@ -83,7 +83,7 @@ export default class CliService extends CliCommand {
                 this.logger.debug(`imported file ${filename} from ${dir}`)
             }
 
-            if (!mod.default) {
+            if (!mod.default || Object.keys(mod.default).length === 0) {
                 continue
             }
 
