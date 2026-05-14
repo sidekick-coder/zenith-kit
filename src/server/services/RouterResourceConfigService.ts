@@ -23,6 +23,9 @@ export default class RouterResourceConfig extends RouterResourceService {
         const items = await this.model.list()
 
         return {
+            page: 1,
+            total: items.length,
+            total_pages: 1,
             items: items
         }
     }

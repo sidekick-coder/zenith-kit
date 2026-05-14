@@ -11,11 +11,6 @@ const page = defineModel('page', {
     required: true,
 })
 
-const total = defineModel('total', {
-    type: Number,
-    required: true,
-})
-
 const totalPages = defineModel('totalPages', {
     type: Number,
     required: true,

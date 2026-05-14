@@ -1,5 +1,5 @@
 <script lang="ts">
-export function defineLegacyDialogFormFields<T extends Record<string, FormField | ((data: any) => FormField)>>(field: T) {
+export function defineDialogFormFields<T extends Record<string, FormField | ((data: any) => FormField)>>(field: T) {
     return field
 }
 </script>
@@ -7,7 +7,7 @@ export function defineLegacyDialogFormFields<T extends Record<string, FormField 
 import { useForm } from 'vee-validate'
 import * as v from 'valibot'
 import { toTypedSchema } from '@vee-validate/valibot'
-import { computed, ref, watch  } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 import type { BaseSchema } from 'valibot'
 import { toast } from 'vue-sonner'
@@ -15,7 +15,6 @@ import ClientOnly from './ClientOnly.vue'
 import FormAutoFieldList from './FormAutoFieldList.vue'
 import type { FormField } from './FormAutoFieldList.vue'
 
-import $fetch from '#client/facades/fetcher.ts'
 import Button from '#client/components/ZButton.vue'
 import {
     Dialog,
@@ -27,16 +26,16 @@ import {
     DialogTrigger,
 } from '#client/components/ui/dialog/index.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
-import { validator } from '#shared/index.ts'
+import validator from '#shared/facades/validator.ts'
 
 const props = defineProps({
     title: {
         type: String,
-        default: $t('Form'),
+        default: () => $t('Form'),
     },
     description: {
         type: String,
-        default: $t('Fill in the details below to create a new item'),
+        default: () => $t('Fill in the details below to create a new item'),
     },
     schema: {
         type: Object as () => T,
@@ -45,19 +44,6 @@ const props = defineProps({
     values: {
         type: Object as () => Partial<v.InferInput<T>>,
         default: () => ({}),
-    },
-    fetch: {
-        type: [String, Function] as PropType<string | ((data: any) => Promise<any>)>,
-        default: null,
-    },
-    fetchMethod: {
-        type: String,
-        default: 'POST',
-    },
-    /** @deprecated use fetchMethod instead */
-    method: {
-        type: String,
-        default: null,
     },
     handle: {
         type: Function as PropType<(data: v.InferInput<T>) => Promise<any>>,
@@ -69,7 +55,7 @@ const props = defineProps({
     },
     submitText: {
         type: String,
-        default: $t('Save'),
+        default: () => $t('Save'),
     },
     toastOnSuccess: {
         type: String,
@@ -113,23 +99,12 @@ const errorsWihoutFields = computed(() => {
 
         result[key] = value
     }
-    
+
     return result
 })
 
-function doFetch(data: v.InferInput<T>) {
-    if (typeof props.fetch === 'function') {
-        return props.fetch(data)
-    }
-
-    return $fetch.fetch(props.fetch as string, {
-        method:  props.method || props.fetchMethod,
-        data,
-    })
-}
-
 const onSubmit = handleSubmit(async (data) => {
-    if (!props.fetch && !props.handle) {
+    if (!props.handle) {
         open.value = false
         return
     }
@@ -137,11 +112,7 @@ const onSubmit = handleSubmit(async (data) => {
     loading.value = true
 
     const [error, response] = await tryCatch(() => {
-        if (props.handle) {
-            return props.handle(data)
-        }
-
-        return doFetch(data)
+        return props.handle(data)
     })
 
     if (error) {
@@ -153,7 +124,7 @@ const onSubmit = handleSubmit(async (data) => {
     if (props.toastOnSuccess) {
         toast.success(props.toastOnSuccess)
     }
-    
+
     setTimeout(() => {
         open.value = false
         loading.value = false
@@ -181,36 +152,23 @@ defineExpose({ setFieldValue, })
             <DialogTrigger v-if="$slots.default">
                 <slot />
             </DialogTrigger>
-    
+
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{{ title }}</DialogTitle>
                     <DialogDescription>{{ description }}</DialogDescription>
                 </DialogHeader>
-                <form
-                    class="space-y-4 py-2"
-                    @submit.prevent="onSubmit"
-                >
+                <form class="space-y-4 py-2" @submit.prevent="onSubmit">
                     <FormAutoFieldList :fields="formatedFields" />
-    
-                    <div
-                        v-if="Object.keys(errorsWihoutFields).length"
-                        class="mb-2 text-sm text-red-600"
-                    >
-                        <div
-                            v-for="(message, field) in errorsWihoutFields"
-                            :key="field"
-                        >
+
+                    <div v-if="Object.keys(errorsWihoutFields).length" class="mb-2 text-sm text-red-600">
+                        <div v-for="(message, field) in errorsWihoutFields" :key="field">
                             {{ message }}
                         </div>
                     </div>
-                    
+
                     <DialogFooter>
-                        <Button
-                            type="submit"
-                            class="w-full"
-                            :loading
-                        >
+                        <Button type="submit" class="w-full" :loading>
                             {{ submitText }}
                         </Button>
                     </DialogFooter>
@@ -219,4 +177,3 @@ defineExpose({ setFieldValue, })
         </Dialog>
     </ClientOnly>
 </template>
-

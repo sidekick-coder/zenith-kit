@@ -2,10 +2,11 @@ import type MigrationEntity from "#server/entities/MigrationEntity.ts"
 import type PageRequestContextEntity from "#server/entities/PageRequestContextEntity.ts"
 import type { CliEvents } from "#server/services/CliService.ts"
 import type { RouterEvents } from "#server/services/RouterService.ts"
-import type { SeederEvents} from "#server/services/SeederService.ts"
+import type { SchedulerEvents } from "#server/services/SchedulerService.ts"
+import type { SeederEvents } from "#server/services/SeederService.ts"
 import type { UserEntity } from "#shared/index.ts"
 
-export interface EventContract extends SeederEvents, RouterEvents, CliEvents {
+export interface EventContract extends SeederEvents, RouterEvents, CliEvents, SchedulerEvents {
 
     // migrator
     'migrator:before-migrate': {

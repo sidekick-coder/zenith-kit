@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
 import { ref  } from 'vue'
 import type { PropType } from 'vue'
-import ZDataTable from '#client/components/ZDataTable.vue'
+import DataTable from '#client/components/DataTable.vue'
 import ClientOnly from '#client/components/ClientOnly.vue'
 import ZButton from '#client/components/ZButton.vue'
 import Icon from '#client/components/Icon.vue'
@@ -127,7 +127,7 @@ defineExpose({
 
         <slot name="header-append" />
 
-        <ZDataTable
+        <DataTable
             v-if="fetch"
             ref="tableRef"
             v-model:fetch-query="fetchQuery"
@@ -192,6 +192,6 @@ defineExpose({
                     </ZAlertButton>
                 </div>
             </template>
-        </ZDataTable>
+        </DataTable>
     </div>
 </template>
