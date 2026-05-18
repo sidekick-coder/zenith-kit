@@ -81,6 +81,7 @@
         "@vitejs/plugin-vue": "^6.0.6",
         "@vue/language-core": "^3.1.8",
         "@vue/tsconfig": "^0.9.1",
+        "@vueuse/router": "^14.3.0",
         "class-variance-authority": "^0.7.1",
         "cli-table3": "^0.6.5",
         "clsx": "^2.1.1",
