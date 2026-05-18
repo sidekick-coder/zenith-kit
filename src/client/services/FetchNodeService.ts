@@ -1,6 +1,5 @@
 import type { FetchOptions } from './FetchService.ts'
 import FetchService from './FetchService.ts'
-// import type RouterService from '#server/services/RouterService.ts'
 import CokkieMapEntity from '#shared/entities/CookieMapEntity.ts'
 import config from '#client/facades/config.ts'
 import container from '#client/facades/container.ts'

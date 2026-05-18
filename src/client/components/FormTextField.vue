@@ -7,16 +7,16 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '#client/components/ui/form'
+} from '#client/components/ui/form/index.ts'
 
-import { Input } from '#client/components/ui/input'
-import { Button } from '#client/components/ui/button'
+import { Input } from '#client/components/ui/input/index.ts'
+import { Button } from '#client/components/ui/button/index.ts'
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '#client/components/ui/dropdown-menu'
+} from '#client/components/ui/dropdown-menu/index.ts'
 
 defineProps({
     name: {

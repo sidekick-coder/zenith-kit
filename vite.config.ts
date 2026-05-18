@@ -1,9 +1,7 @@
 import { createLogger, defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
-// import { importReplacer } from './src/build/vite'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
-import dts from 'vite-plugin-dts'
 
 const logger = createLogger()
 
@@ -13,7 +11,7 @@ const prebuild = () => ({
         generateIndexFile({
             glob: '**/*.{ts,vue,css}',
             folders: [
-                // 'src/client/composables',
+                'src/client/composables',
                 // 'src/client/utils',
                 // 'src/client/facades',
                 'src/client/components',
