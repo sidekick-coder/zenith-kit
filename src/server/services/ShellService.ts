@@ -1,6 +1,5 @@
 import { spawn } from 'child_process'
-import logger from '#server/facades/logger.ts'
-import type LoggerService from '#shared/services/LoggerService.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
 import ShellExecption from '#shared/exceptions/ShellException.ts'
 
 interface CommandOptions {
@@ -9,15 +8,20 @@ interface CommandOptions {
     shell?: boolean
 }
 
+export interface ShellServiceOptions {
+    debug?: boolean
+    logger?: LoggerService
+}
+
 export default class ShellService {
     public static __container_entry_key = 'ShellService'
 
     public debug: boolean
     public logger: LoggerService
 
-    public init(data: Partial<ShellService> = {}) {
-        this.debug = data.debug || false
-        this.logger = data.logger || logger.child({ label: 'shell' })
+    constructor(options: ShellServiceOptions = {}) {
+        this.debug = options.debug ?? false
+        this.logger = options.logger || new LoggerService()
 
         if (this.debug) {
             this.logger.debug('initialized in debug mode')
@@ -51,6 +55,7 @@ export default class ShellService {
                     this.logger.debug('command executed', {
                         bin,
                         args,
+                        fullCommand: `${bin} ${args.join(' ')}`,
                         output: data
                     })
                 }
@@ -76,7 +81,7 @@ export default class ShellService {
                 this.logger.error('Command execution error', {
                     bin,
                     args,
-                    error: error.message
+                    error: error?.message || error
                 })
 
                 reject(error)
