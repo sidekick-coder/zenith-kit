@@ -36,7 +36,7 @@ export default class ConfigFSService extends ConfigService {
     public async write(entry: string, data: any) {
         const ext = this.format === 'yml' ? 'yml' : 'json'
         const filename = path.join(this.directory, `${entry}.${ext}`)
-        const content = this.format === 'yml' ? yaml.dump(data) : JSON.stringify(data, null, 4)
+        const content = this.format === 'yml' ? yaml.dump(data, { indent: 4 }) : JSON.stringify(data, null, 4)
 
         await fs.promises.writeFile(filename, content, 'utf-8')
     }
@@ -44,7 +44,7 @@ export default class ConfigFSService extends ConfigService {
     public writeSync(entry: string, data: any) {
         const ext = this.format === 'yml' ? 'yml' : 'json'
         const filename = path.join(this.directory, `${entry}.${ext}`)
-        const content = this.format === 'yml' ? yaml.dump(data) : JSON.stringify(data, null, 4)
+        const content = this.format === 'yml' ? yaml.dump(data, { indent: 4 }) : JSON.stringify(data, null, 4)
 
         fs.writeFileSync(filename, content, 'utf-8')
     }
