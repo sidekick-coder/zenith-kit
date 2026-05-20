@@ -58,15 +58,17 @@ async function doFetch() {
 
     loading.value = true
 
-    const [error, response] = await tryCatch(() => {
-        if (typeof props.fetch === 'string') {
-            return $fetch(props.fetch, { method: props.fetchMethod })
-        }
+    let [error, response]: [Error | null, any] = [null, null]
 
-        if (typeof props.fetch === 'function') {
-            return props.fetch()
-        }        
-    })
+    if (typeof props.fetch === 'string') {
+        [error, response] = await $fetch.try(props.fetch, { method: props.fetchMethod })
+    }
+
+    if (typeof props.fetch === 'function') {
+        const fn = props.fetch as () => Promise<any>
+
+        [error, response] = await tryCatch(() => fn())
+    }
 
     if (error) {
         loading.value = false
@@ -75,7 +77,7 @@ async function doFetch() {
 
     setTimeout(() => {
         loading.value = false
-        
+
         if (props.toastOnSuccess) {
             toast.success(props.toastOnSuccess)
         }
@@ -97,19 +99,13 @@ function onConfirm() {
 <template>
     <ClientOnly>
         <template #fallback>
-            <Button
-                v-bind="$attrs"
-                :loading="loading"
-            >
+            <Button v-bind="$attrs" :loading="loading">
                 <slot />
             </Button>
         </template>
         <AlertDialog>
             <AlertDialogTrigger as-child>
-                <Button
-                    v-bind="$attrs"
-                    :loading="loading"
-                >
+                <Button v-bind="$attrs" :loading="loading">
                     <slot />
                 </Button>
             </AlertDialogTrigger>
@@ -124,10 +120,7 @@ function onConfirm() {
                     <AlertDialogCancel :disabled="loading">
                         {{ $t('Cancel') }}
                     </AlertDialogCancel>
-                    <AlertDialogAction
-                        :disabled="loading"
-                        @click="onConfirm"
-                    >
+                    <AlertDialogAction :disabled="loading" @click="onConfirm">
                         {{ $t('Confirm') }}
                     </AlertDialogAction>
                 </AlertDialogFooter>
