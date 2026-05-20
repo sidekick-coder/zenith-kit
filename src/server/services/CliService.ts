@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import { printTable, printObject } from '../utils/printTable.ts'
 import { importAll } from '#server/utils/importAll.ts'
 import { EmmitterService, LoggerService, tryCatch } from '#shared/index.ts'
+import * as inquirer from '@inquirer/prompts'
 
 export interface CliEvents {
     'cli:registered': {
@@ -15,6 +16,7 @@ export class CliCommand extends CommanderCommand {
     public table = printTable
     public object = printObject
     public colors = chalk
+    public inquirer = inquirer
 
     public needs: Set<string> = new Set()
     public need(...args: string[]): this {
