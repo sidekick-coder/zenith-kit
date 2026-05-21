@@ -72,6 +72,6 @@ export const envSchema = v.looseObject({
     ZENITH_CONFIG_S3_ENDPOINT: v.optional(v.string()),
     ZENITH_CONFIG_S3_PREFIX: v.optional(v.string(), ''),
 
-    ZENITH_PLUGINS_DIRS: v.optional(stringArray),
+    ZENITH_PLUGINS_DIRS: v.optional(stringArray, ''),
 })
 
