@@ -17,7 +17,7 @@ export default class LoggerService {
         // Implementation here
     }
     
-    public error(message: string, meta?: any): void {
+    public error(message: string | Error, meta?: any): void {
         // Implementation here
     }
 
