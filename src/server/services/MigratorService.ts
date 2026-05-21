@@ -22,6 +22,7 @@ export interface Migration {
 
 export interface ListFilters {
     source?: string;
+    name?: string | string[];
 }
 
 interface MigrationResult {
@@ -72,6 +73,13 @@ export default class MigratorService {
     }
 
     public async listSource(source: MigrationSource) {
+
+        if (!fs.existsSync(source.directory)) {
+            this.logger.warn(`Migration source directory does not exist: ${source.directory}`)
+
+            return []
+        }
+
         const entries = await fs.promises.readdir(source.directory)
         const extensions = ['.js', '.ts', '.mjs', '.mts']
 
@@ -129,6 +137,12 @@ export default class MigratorService {
             items = items.filter(m => m.source === filters.source)
         }
 
+        if (filters?.name) {
+            const names = Array.isArray(filters.name) ? filters.name : [filters.name]
+
+            items = items.filter(m => names.includes(m.name))
+        }
+
         items = orderBy(items, ['source', 'name'], ['asc', 'asc'])
 
         return items
@@ -162,7 +176,7 @@ export default class MigratorService {
         this.logger.info(`${migration.name} rolled back successfully`)
     }
 
-    public async migrateFile(filename: string): Promise<MigrationResult> {
+    private async migrateFile(filename: string): Promise<MigrationResult> {
         await this.ensureMigrationsTable()
 
         const migrations = await this.list()
@@ -207,7 +221,7 @@ export default class MigratorService {
         }
     }
 
-    public async rollbackFile(filename: string): Promise<MigrationResult> {
+    private async rollbackFile(filename: string): Promise<MigrationResult> {
         await this.ensureMigrationsTable()
 
         const migrations = await this.list()
@@ -302,7 +316,6 @@ export default class MigratorService {
         migrations = migrations.filter(m => m.executedAt)
 
         migrations.sort((a, b) => b.name.localeCompare(a.name))
-
 
         if (filters.steps !== undefined) {
             migrations = migrations.slice(0, filters.steps)
