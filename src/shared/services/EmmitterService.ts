@@ -161,12 +161,10 @@ export default class EmmitterService<Events extends Record<string, any> = Record
     public async emitAndWait<K extends keyof Events>(event: K, args: Events[K]): Promise<void>
     public async emitAndWait(event: string, args?: any): Promise<void>
     public async emitAndWait(event: string, args?: any) {
-
-
         const handlers = this.handlers.filter(h => h.event === event)
 
         if (this.debug) {
-            this.logger.debug('emitting event', {
+            this.logger.debug('emitting event and wait', {
                 handlers: handlers.length,
                 event,
                 args
