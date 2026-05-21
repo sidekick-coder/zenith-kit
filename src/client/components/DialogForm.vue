@@ -7,7 +7,7 @@ export function defineLegacyDialogFormFields<T extends Record<string, FormField 
 import { useForm } from 'vee-validate'
 import * as v from 'valibot'
 import { toTypedSchema } from '@vee-validate/valibot'
-import { computed, ref, watch  } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 import type { BaseSchema } from 'valibot'
 import { toast } from 'vue-sonner'
@@ -113,7 +113,7 @@ const errorsWihoutFields = computed(() => {
 
         result[key] = value
     }
-    
+
     return result
 })
 
@@ -123,7 +123,7 @@ function doFetch(data: v.InferInput<T>) {
     }
 
     return $fetch.fetch(props.fetch as string, {
-        method:  props.method || props.fetchMethod,
+        method: props.method || props.fetchMethod,
         data,
     })
 }
@@ -153,14 +153,13 @@ const onSubmit = handleSubmit(async (data) => {
     if (props.toastOnSuccess) {
         toast.success(props.toastOnSuccess)
     }
-    
-    setTimeout(() => {
-        open.value = false
-        loading.value = false
-        resetForm()
-        emit('submit', response)
-    }, 1000)
 
+    await new Promise(resolve => setTimeout(resolve, 1000)) // wait for animation to finish
+
+    open.value = false
+    loading.value = false
+    resetForm()
+    emit('submit', response)
 })
 
 watch(open, () => {
@@ -181,36 +180,23 @@ defineExpose({ setFieldValue, })
             <DialogTrigger v-if="$slots.default">
                 <slot />
             </DialogTrigger>
-    
+
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{{ title }}</DialogTitle>
                     <DialogDescription>{{ description }}</DialogDescription>
                 </DialogHeader>
-                <form
-                    class="space-y-4 py-2"
-                    @submit.prevent="onSubmit"
-                >
+                <form class="space-y-4 py-2" @submit.prevent="onSubmit">
                     <FormAutoFieldList :fields="formatedFields" />
-    
-                    <div
-                        v-if="Object.keys(errorsWihoutFields).length"
-                        class="mb-2 text-sm text-red-600"
-                    >
-                        <div
-                            v-for="(message, field) in errorsWihoutFields"
-                            :key="field"
-                        >
+
+                    <div v-if="Object.keys(errorsWihoutFields).length" class="mb-2 text-sm text-red-600">
+                        <div v-for="(message, field) in errorsWihoutFields" :key="field">
                             {{ message }}
                         </div>
                     </div>
-                    
+
                     <DialogFooter>
-                        <Button
-                            type="submit"
-                            class="w-full"
-                            :loading
-                        >
+                        <Button type="submit" class="w-full" :loading>
                             {{ submitText }}
                         </Button>
                     </DialogFooter>
@@ -219,4 +205,3 @@ defineExpose({ setFieldValue, })
         </Dialog>
     </ClientOnly>
 </template>
-
