@@ -140,7 +140,7 @@ export default class SchedulerService {
         return this.routines.some(routine => routine.id === id)
     }
 
-    public startRoutine(id: RoutineEntity['id']): void {
+    public async startRoutine(id: RoutineEntity['id']) {
         const routine = this.routines.find(r => r.id === id)
 
         if (!routine) {
@@ -172,6 +172,11 @@ export default class SchedulerService {
         logger.info(`${routine.id} routine started`)
     }
 
+    public async addAndStart(routine: Omit<RoutineEntity, 'job'>) {
+        this.add(routine)
+
+        await this.startRoutine(routine.id)
+    }
 
     public async stopRoutine(id: RoutineEntity['id']) {
         const routine = this.routines.find(r => r.id === id)
@@ -189,10 +194,16 @@ export default class SchedulerService {
         this.logger.info(`${routine.id} routine stopped`)
     }
 
+    public async stopAndRemove(id: RoutineEntity['id']) {
+        await this.stopRoutine(id)
+
+        this.remove(id)
+    }
+
 
     public async boot() {
         for (const routine of this.routines) {
-            this.startRoutine(routine.id)
+            await this.startRoutine(routine.id)
         }
     }
 

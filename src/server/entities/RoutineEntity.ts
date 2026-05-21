@@ -4,23 +4,40 @@ export interface RoutineHandler {
     (): void | Promise<void>
 }
 
+export interface RoutineEntityOptions {
+    id: string
+    cron: string
+    handler?: RoutineHandler
+}
+
 export default class RoutineEntity {
     public id: string
     public cron: string
     public job?: Job
 
-    constructor() {
-        if (!this.id) {
-            throw new Error('RoutineEntity id is required')
-        }
-
-        if (!this.cron) {
-            throw new Error('RoutineEntity cron is required')
-        }
-
+    public static create(){
+        return new RoutineEntity()
     }
 
-    public async handle() {
+    public handle: RoutineHandler = () => {
         throw new Error('RoutineEntity handler not implemented')
+    }
+
+    public setId(id: string) {
+        this.id = id
+
+        return this
+    }
+
+    public setCron(cron: string) {
+        this.cron = cron
+
+        return this
+    }
+
+    public setHandler(handler: RoutineHandler) {
+        this.handle = handler
+
+        return this
     }
 }
