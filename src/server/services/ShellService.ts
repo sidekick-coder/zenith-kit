@@ -97,6 +97,7 @@ export default class ShellService {
             this.logger.debug('executing command', {
                 bin,
                 args,
+                fullCommand: `${bin} ${args.join(' ')}`,
             })
         }
         return new Promise((resolve, reject) => {

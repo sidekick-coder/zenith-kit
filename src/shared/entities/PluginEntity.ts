@@ -7,4 +7,6 @@ export default class PluginEntity extends compose(BaseEntity) {
     public version: string
     public enabled: boolean
     public aliases: string[]
+    public version_channel: string
+    public version_available_channels: string[]
 }
