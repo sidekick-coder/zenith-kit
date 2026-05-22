@@ -81,6 +81,7 @@ export default class ShellService {
                 this.logger.error('Command execution error', {
                     bin,
                     args,
+                    fullCommand: `${bin} ${args.join(' ')}`,
                     error: error?.message || error
                 })
 
@@ -128,6 +129,7 @@ export default class ShellService {
                         bin,
                         args,
                         code,
+                        fullCommand: `${bin} ${args.join(' ')}`,
                         errorOutput
                     })
 
