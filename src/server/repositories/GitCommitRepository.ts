@@ -80,4 +80,8 @@ export default class GitCommitRepository {
             cursor_next: items.length < limit ? null : cursor_next,
         }
     }
+
+    public async checkout(hash: string): Promise<void> {
+        await this.shell.command('git', ['checkout', hash], { cwd: this.cwd })
+    }
 }
