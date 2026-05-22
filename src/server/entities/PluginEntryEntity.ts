@@ -1,3 +1,4 @@
+import config from '#server/facades/config.ts'
 import container from '#server/facades/container.ts'
 import GitBranchRepository from '#server/repositories/GitBranchRepository.ts'
 import GitCommitRepository from '#server/repositories/GitCommitRepository.ts'
@@ -11,6 +12,14 @@ export default class PluginEntryEntity extends composeWith(Base) {
 
     public makePath(...parts: string[]) {
         return join(this.directory, ...parts)
+    }
+
+    public set: typeof config.set = (key, value, source) => {
+        config.set(`plugins.registry.${this.id}.${key}`, value, source)
+    }
+
+    public get: typeof config.get = (key, defaultValue) => {
+        return config.get(`plugins.registry.${this.id}.${key}`, defaultValue)
     }
 
     public get commits() {
