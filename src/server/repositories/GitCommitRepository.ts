@@ -12,6 +12,13 @@ export interface GitCommitListOptions {
     branches?: string | string[]
 }
 
+export interface GitCommitListResult {
+    items: GitCommitEntity[]
+    cursor_previous: string | null
+    cursor_current: string | null
+    cursor_next: string | null
+}
+
 // %H = full hash, %h = short hash, %s = subject, %an = author name, %ae = author email, %aI = author date (ISO 8601), %b = body
 const LOG_FORMAT = ['%H', '%h', '%s', '%an', '%ae', '%aI', '%b'].join('%x09')
 const COMMIT_SEPARATOR = '---COMMIT---'
@@ -25,7 +32,7 @@ export default class GitCommitRepository {
         this.shell = options.shell ?? new ShellService()
     }
 
-    async list(options?: GitCommitListOptions): Promise<GitCommitEntity[]> {
+    async list(options?: GitCommitListOptions): Promise<GitCommitListResult> {
         const limit = options?.limit ?? 20
         const cursor = options?.cursor
 
@@ -44,7 +51,7 @@ export default class GitCommitRepository {
 
         const output = await this.shell.executeCommandWithOutput('git', args, { cwd: this.cwd })
 
-        return output
+        const items = output
             .split(COMMIT_SEPARATOR)
             .map((block) => block.trim())
             .filter(Boolean)
@@ -62,5 +69,15 @@ export default class GitCommitRepository {
                     body: bodyParts.join('\t').trim(),
                 })
             })
+
+        const cursor_current = items[0]?.hash ?? null
+        const cursor_next = items[items.length - 1]?.hash ?? null
+
+        return {
+            items,
+            cursor_previous: cursor ?? null,
+            cursor_current,
+            cursor_next: items.length < limit ? null : cursor_next,
+        }
     }
 }
