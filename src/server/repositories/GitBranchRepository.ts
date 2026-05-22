@@ -18,7 +18,7 @@ export default class GitBranchRepository {
     async list(): Promise<GitBranchEntity[]> {
         const output = await this.shell.executeCommandWithOutput(
             'git',
-            ['branch', '-a', `--format=%(HEAD)|%(refname:short)|%(refname)|%(upstream:remotename)`],
+            ['branch', '-a', `--format='%(HEAD)|%(refname:short)|%(refname)|%(upstream:remotename)'`],
             { cwd: this.cwd },
         )
 
