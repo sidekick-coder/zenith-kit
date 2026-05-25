@@ -1,12 +1,9 @@
-import { exec } from 'node:child_process'
-import { promisify } from 'node:util'
-import { writeFile, unlink } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import LoggerService from '../../shared/services/LoggerService.ts'
-
-const execAsync = promisify(exec)
+import { tmpPath } from '#server/utils/basePath.ts'
+import { tryCatch } from '#shared/index.ts'
+import ShellService from '#server/services/ShellService.ts'
 
 export interface GitRepoInfo {
     directory: string
@@ -20,103 +17,131 @@ export interface GitGatewayOptions {
     cwd: string
     sshKey?: string
     sshKeyFile?: string
-    sshKeyTmpFileName?: string
     logger?: LoggerService
+    shell?: ShellService
     debug?: boolean
 }
 
-function escapeShellArgument(value: string): string {
-    return `'${value.replace(/'/g, `'\\''`)}'`
+interface GitGatewayExecuteOptions {
+    args: string
+    cwd?: string
+    sshKey?: string
+    sshKeyFile?: string
+    logger?: LoggerService
+    shell?: ShellService
+    debug?: boolean
 }
 
 export class GitGateway {
     private readonly cwd: string
     private readonly sshKey?: string
     private readonly sshKeyFile?: string
-    private readonly sshKeyTmpFileName?: string
     private readonly logger: LoggerService = new LoggerService()
     private readonly debug: boolean
+    private readonly shell: ShellService
 
     constructor(options: GitGatewayOptions) {
-        Object.assign(this, options)
+        this.cwd = options.cwd
+        this.sshKey = options.sshKey
+        this.sshKeyFile = options.sshKeyFile
+        this.logger = options.logger ?? new LoggerService()
+        this.shell = options.shell ?? new ShellService({ logger: this.logger, debug: options.debug })
+        this.debug = options.debug ?? false
     }
 
-    private async buildEnv() {
-        const result = {
-            sshKeyFile: undefined as string | undefined,
-            env: process.env,
-            cleanup: async () => { },
+    public static async execute(options: GitGatewayExecuteOptions): Promise<string> {
+        const cwd = options.cwd
+        const sshKey = options.sshKey
+        const sshKeyFile = options.sshKeyFile
+        const logger = options.logger ?? new LoggerService()
+        const debug = options.debug ?? false
+        const args = options.args
+        const shell = options.shell ?? new ShellService({ logger, debug })
+
+        const env: Record<string, string> = { }
+
+        if (sshKeyFile) {
+            env.GIT_SSH_COMMAND = `ssh -i ${sshKeyFile} -o StrictHostKeyChecking=no`
         }
 
-        if (this.sshKeyFile) {
-            result.env.GIT_SSH_COMMAND = `ssh -i ${escapeShellArgument(this.sshKeyFile)} -o StrictHostKeyChecking=no`
-            result.sshKeyFile = this.sshKeyFile
+        if (sshKey) {
+            const tempFile = tmpPath('git-clone-ssh-key-' + randomUUID())
+
+            await writeFile(tempFile, sshKey, { mode: 0o600 })
+
+            env.GIT_SSH_COMMAND = `ssh -i ${tempFile} -o StrictHostKeyChecking=no`
         }
 
-        if (this.sshKey) {
-            const tempFile = this.sshKeyTmpFileName ?? join(tmpdir(), `git-ssh-key-${randomUUID()}`)
+        const command = `git ${args}`
 
-            await writeFile(tempFile, this.sshKey, { mode: 0o600 })
-
-            result.env.GIT_SSH_COMMAND = `ssh -i ${escapeShellArgument(tempFile)} -o StrictHostKeyChecking=no`
-            result.sshKeyFile = tempFile
-            result.cleanup = async () => {
-                try {
-                    await unlink(tempFile)
-                } catch (err) {
-                    this.logger.warn(`Failed to delete temporary SSH key file: ${tempFile}`, { error: err })
-                }
-            }
-        }
-
-        return result
-    }
-
-    async run(args: string): Promise<string> {
-
-        const { env, sshKeyFile, cleanup } = await this.buildEnv()
-
-        if (this.debug) {
-            this.logger.debug('git ' + args, {
-                cwd: this.cwd,
+        if (debug) {
+            logger.debug(command, {
+                cwd: cwd,
                 sshKeyFile,
             })
         }
 
-        try {
-            const { stdout } = await execAsync(`git ${args}`, {
-                cwd: this.cwd,
-                env,
-            })
-            return stdout.trim()
-        } finally {
-            await cleanup()
-        }
+        return shell.executeCommandWithOutput('git', args.split(' '), {
+            cwd: cwd,
+            env: {
+                ...process.env,
+                ...env,
+            },
+        })
+    }
+
+    public static async clone(repoUrl: string, targetDir: string, options: Omit<GitGatewayOptions, 'cwd'>) {
+        await GitGateway.execute({
+            sshKey: options.sshKey,
+            sshKeyFile: options.sshKeyFile,
+            logger: options.logger,
+            debug: options.debug,
+            shell: options.shell,
+            args: `clone '${repoUrl}' '${targetDir}'`,
+        })
+
+        return new GitGateway({ ...options, cwd: targetDir })
+    }
+
+
+    async run(args: string): Promise<string> {
+        return await GitGateway.execute({
+            cwd: this.cwd,
+            sshKey: this.sshKey,
+            sshKeyFile: this.sshKeyFile,
+            logger: this.logger,
+            debug: this.debug,
+            shell: this.shell,
+            args,
+        })
     }
 
     async tryRun(args: string): Promise<string | null> {
-        try {
-            return await this.run(args)
-        } catch {
+        const [error, response] = await tryCatch(() => this.run(args))
+
+        if (error) {
+            this.logger.error(error)
             return null
         }
+
+        return response
     }
 
-    async checkout(ref: string): Promise<void> {
-        await this.run(`checkout ${ref}`)
+    async checkout(ref: string) {
+        return this.run(`checkout ${ref}`)
     }
 
-    async fetch(): Promise<void> {
-        await this.run('fetch --all --prune')
+    async fetchAll() {
+        return this.run('fetch --all --prune')
     }
 
     async pull(): Promise<void> {
-        await this.fetch()
+        await this.fetchAll()
 
         const upstream = await this.tryRun('rev-parse --abbrev-ref --symbolic-full-name @{upstream}')
 
         if (upstream) {
-            await this.run('pull --ff-only')
+            await this.run(`pull --ff-only`)
         }
     }
 
@@ -127,6 +152,7 @@ export class GitGateway {
         const shortHash = await this.run('rev-parse --short HEAD')
 
         const remotesOutput = await this.tryRun('remote')
+
         const remotes = remotesOutput
             ? remotesOutput.split('\n').filter(Boolean)
             : []

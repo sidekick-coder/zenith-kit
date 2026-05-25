@@ -105,7 +105,7 @@ export default class ShellService {
             const child = spawn(bin, args, {
                 cwd: options.cwd || process.cwd(),
                 stdio: 'pipe',
-                shell: true,
+                shell: options.shell !== undefined ? options.shell : true,
                 env: options.env || process.env
             })
 
