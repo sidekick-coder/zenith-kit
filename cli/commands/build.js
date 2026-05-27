@@ -31,7 +31,10 @@ command
         const viteNodeConfig = createViteConfig({
             entry: path.resolve(cwd, 'src/client/index.ts'),
             outDir: path.resolve(cwd, 'dist/client-node'),
-            ssr: true
+            ssr: true,
+            env: {
+                NODE_ENV: 'production'
+            }
         })
 
         await vite.build(viteNodeConfig)
@@ -39,7 +42,10 @@ command
         const viteBrowserConfig = createViteConfig({
             entry: path.resolve(cwd, 'src/client/index.ts'),
             outDir: path.resolve(cwd, 'dist/client-browser'),
-            ssr: false
+            ssr: false,
+            env: {
+                NODE_ENV: 'production'
+            }
         })
 
         await vite.build(viteBrowserConfig)

@@ -9,6 +9,7 @@ import zenith from './plugins/zenith.js'
  * @property {string} [name] - Library name (default: `server`)
  * @property {string} [entry] - Entry file or directory (default: `src/server/index.ts`)
  * @property {string} [outDir] - Output directory (default: `dist/server`)
+ * @property {Object} [env] - Environment variables to replace in the code (default: `{}`)
  * @property {boolean} [ssr] - Whether to build for SSR (default: `false`). If `true`, external dependencies will be treated as CommonJS modules. If `false`, they will be treated as ES modules.
  */
 
@@ -20,6 +21,9 @@ import zenith from './plugins/zenith.js'
  */
 export default function(options) {
     return defineConfig({
+        define: {
+            'process.env': options.env || {}
+        },
         plugins: [
             vue({
                 template: {
@@ -35,6 +39,7 @@ export default function(options) {
                 imports: [
                     'vue',
                     'vue-router',
+                    'vee-validate'
                 ],
             })
         ],
