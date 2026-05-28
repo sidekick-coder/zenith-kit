@@ -1,6 +1,7 @@
 import { createLogger, defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
+import dts from 'vite-plugin-dts'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
 
 const logger = createLogger()
@@ -45,11 +46,11 @@ export default defineConfig({
                 }
             }
         }),
-        // dts({
-        //     entryRoot: 'src/client/index.ts',
-        //     tsconfigPath: 'tsconfig.client.json',
-        //     bundleTypes: true,
-        // }),
+        dts({
+            entryRoot: 'src/client/components.ts',
+            tsconfigPath: 'tsconfig.client.json',
+            bundleTypes: true,
+        }),
         tailwindcss(),
         prebuild(),
     ],

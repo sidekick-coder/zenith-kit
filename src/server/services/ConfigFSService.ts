@@ -11,6 +11,7 @@ import { tryCatch } from '#shared/utils/tryCatch.ts'
 export interface ConfigFSServiceOptions {
     directory?: string
     format?: 'json' | 'yml'
+    formatOptions?: Record<string, any>
     debug?: boolean
     logger?: LoggerService
 }
@@ -19,7 +20,9 @@ export default class ConfigFSService extends ConfigService {
     public logger: LoggerService
     public debug = false
     public format: 'json' | 'yml' = 'json'
+    public formatOptions: Record<string, any> = {}
     public directory: string
+
 
     constructor(options: ConfigFSServiceOptions = {}) {
         super()
@@ -27,6 +30,7 @@ export default class ConfigFSService extends ConfigService {
         this.directory = options.directory ?? basePath('config')
         this.logger = options.logger ?? logger.child({ label: 'config' })
         this.format = options.format ?? 'json'
+        this.formatOptions = options.formatOptions ?? {}
 
         if (this.debug) {
             this.logger.debug('service initialized in debug mode')
@@ -36,7 +40,12 @@ export default class ConfigFSService extends ConfigService {
     public async write(entry: string, data: any) {
         const ext = this.format === 'yml' ? 'yml' : 'json'
         const filename = path.join(this.directory, `${entry}.${ext}`)
-        const content = this.format === 'yml' ? yaml.dump(data, { indent: 4 }) : JSON.stringify(data, null, 4)
+
+        let content = JSON.stringify(data, null, this.formatOptions.indent || 4)
+
+        if (this.format === 'yml') {
+            content = yaml.dump(data, this.formatOptions)
+        }
 
         await fs.promises.writeFile(filename, content, 'utf-8')
     }
@@ -44,7 +53,12 @@ export default class ConfigFSService extends ConfigService {
     public writeSync(entry: string, data: any) {
         const ext = this.format === 'yml' ? 'yml' : 'json'
         const filename = path.join(this.directory, `${entry}.${ext}`)
-        const content = this.format === 'yml' ? yaml.dump(data, { indent: 4 }) : JSON.stringify(data, null, 4)
+
+        let content = JSON.stringify(data, null, 4)
+
+        if (this.format === 'yml') {
+            content = yaml.dump(data, this.formatOptions)
+        }
 
         fs.writeFileSync(filename, content, 'utf-8')
     }
