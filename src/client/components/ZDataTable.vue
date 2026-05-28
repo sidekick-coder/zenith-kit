@@ -29,11 +29,16 @@ import { get } from 'lodash-es'
 import Checkbox from './ui/checkbox/Checkbox.vue'
 import { computed } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
+import { cn } from '#client/lib/utils.ts'
 
 const props = defineProps({
     itemKey: {
         type: String as () => keyof T | (string & {}),
         default: null
+    },
+    class: {
+        type: String,
+        default: ''
     },
     enableSelection: {
         type: Boolean,
@@ -44,6 +49,11 @@ const props = defineProps({
 const selected = defineModel('selected', {
     type: Array as () => (string | number)[],
     default: () => []
+})
+
+const loading = defineModel('loading', {
+    type: Boolean,
+    default: false
 })
 
 const rows = defineModel('rows', {
@@ -127,7 +137,7 @@ function setSort(column: DataTableColumn<T>) {
         return
     }
 
-    sort.value.push({ 
+    sort.value.push({
         key: column.id!,
         direction: 'asc'
     })
@@ -144,7 +154,7 @@ function isSortingDesc(column: DataTableColumn<T>) {
 </script>
 
 <template>
-    <Table>
+    <Table :wrapper-class="cn('border rounded-lg', props.class, loading ? 'opacity-50 pointer-events-none' : '')">
         <TableHeader>
             <TableRow>
                 <TableHead v-if="enableSelection" class="w-[50px]" />
@@ -156,21 +166,22 @@ function isSortingDesc(column: DataTableColumn<T>) {
                                 {{ c.label }}
                             </slot>
                         </div>
-                        
-                        <ArrowUp 
-                            v-if="c.sortable !== false"
-                            :size="12" 
-                            :class="[
-                                isSorting(c) ? '' : 'opacity-0 group-hover:opacity-100',
-                                isSortingDesc(c) ? 'rotate-180' : ''
-                            ]" 
-                        />
-                        
+
+                        <ArrowUp v-if="c.sortable !== false" :size="12" :class="[
+                            isSorting(c) ? '' : 'opacity-0 group-hover:opacity-100',
+                            isSortingDesc(c) ? 'rotate-180' : ''
+                        ]" />
+
                     </div>
                 </TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
+            <TableRow v-if="formated.length === 0">
+                <TableCell :colspan="formatedColumns.length + (enableSelection ? 1 : 0)" class="text-center py-4">
+                    {{ $t('No data') }}
+                </TableCell>
+            </TableRow>
             <TableRow v-for="(r, ri) of formated" :key="ri">
                 <TableCell v-if="enableSelection" class="w-[50px]">
                     <Checkbox :model-value="isSelected(r)" @update:model-value="toggle(r)" />
