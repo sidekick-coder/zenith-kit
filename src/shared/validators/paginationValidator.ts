@@ -13,3 +13,9 @@ export const base = (options: PaginationParams = {}) => v.object({
     orderBy: v.optional(options.orderFields ? array(v.picklist(options.orderFields)) : array(v.string()), []),
     orderDirection: v.optional(array(v.union([v.literal('asc'), v.literal('desc')])), []),
 })
+
+export function pagination(options: PaginationParams = {}) {
+    return base(options)
+}
+
+pagination.base = base

@@ -60,3 +60,14 @@ export const object = () => v.pipe(
     }),
 )
 
+export function url() {
+    return object()
+}
+
+url.number = number
+url.boolean = boolean 
+url.date = date 
+url.datetime = datetime
+url.array = array
+url.arrayNumber = arrayNumber
+url.object = object
