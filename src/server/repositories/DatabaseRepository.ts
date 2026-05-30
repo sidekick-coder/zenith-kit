@@ -60,11 +60,11 @@ export default class DatabaseRepository<
 
         qb = qb.selectAll()
 
-        if (options?.limit) {
+        if (options?.limit !== undefined) {
             qb = qb.limit(options.limit)
         }
 
-        if (options?.offset) {
+        if (options?.offset !== undefined) {
             qb = qb.offset(options.offset)
         }
 
@@ -139,28 +139,64 @@ export default class DatabaseRepository<
         }
     }
 
+    protected async beforeCreate(data: Partial<TEntity>): Promise<Partial<TEntity>> {
+        return data
+    }
+
+    // @ts-expect-error ignore non used parameter it will be used by the child class
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected async afterCreate(data: TEntity): Promise<void> {}
+
     public async create(data: Partial<TEntity>) {
+        data = await this.beforeCreate(data) 
+
         let qb = this.db.insertInto(this.table as any) as any
 
         qb = qb.values(data).returningAll()
 
         const result = await qb.executeTakeFirst()
 
+        await this.afterCreate(result)
+
         return result as any
     }
 
+    protected async beforeCreateMany(data: Partial<TEntity>[]): Promise<Partial<TEntity>[]> {
+        return data
+    }
+
+    protected async afterCreateMany(data: TEntity[]): Promise<TEntity[]> {
+        return data
+    }
+
     public async createMany(data: Partial<TEntity>[]) {
+        data = await this.beforeCreateMany(data) 
+
         let qb = this.db.insertInto(this.table as any) as any
 
         qb = qb.values(data).returningAll()
 
         const result = await qb.execute()
 
+        await this.afterCreateMany(result)
+
         return result as any[]
     }
 
+    // @ts-expect-error ignore non used parameter it will be used by the child class
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected async beforeUpdate(data: Partial<TEntity>, id: TPrimaryKey): Promise<Partial<TEntity>> {
+        return data
+    }
+
+    protected async afterUpdate(data: TEntity): Promise<TEntity> {
+        return data
+    }
+
     public async updateById(id: TPrimaryKey, data: Partial<TEntity>) {
-        const row = await this.findByIdOrFail(id)
+        data = await this.beforeUpdate(data, id) 
+
+        const row: Record<string, any> = await this.findByIdOrFail(id)
 
         let qb = this.db.updateTable(this.table as any) as any
 
@@ -168,24 +204,56 @@ export default class DatabaseRepository<
             .where(this.primaryKey, '=', row[this.primaryKey])
             .returningAll()
 
-        await qb.executeTakeFirst()
+        const updated = await qb.executeTakeFirst()
+
+        await this.afterUpdate(updated)
+    }
+
+    // @ts-expect-error ignore non used parameter it will be used by the child class
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected async beforeDelete(id: TPrimaryKey): Promise<void> {
+
+    }
+
+    // @ts-expect-error ignore non used parameter it will be used by the child class
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected async afterDelete(id: TPrimaryKey): Promise<void> {
+
     }
 
     public async deleteById(id: TPrimaryKey) {
-        const row = await this.findByIdOrFail(id)
+        await this.beforeDelete(id)
+
+        const row: Record<string, any> = await this.findByIdOrFail(id)
 
         let qb = this.db.deleteFrom(this.table as any) as any
 
         qb = qb.where(this.primaryKey, '=', row[this.primaryKey])
 
         await qb.executeTakeFirst()
+
+        await this.afterDelete(id)
+    }
+
+    protected beforeDeleteMany(options?: DeleteManyOptions & TOptions){
+        return options
+
+    }
+
+    // @ts-expect-error ignore non used parameter it will be used by the child class
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected afterDeleteMany(options?: DeleteManyOptions & TOptions): Promise<void> | void {
+
     }
 
     async deleteMany(options?: DeleteManyOptions & TOptions) {
+        options = this.beforeDeleteMany(options )
+
         const deleteOptions = {
             ...options,
             qb: this.db.deleteFrom(this.table as any)
         }
+
 
         let qb = this.query(deleteOptions as any) as any
 
@@ -194,5 +262,7 @@ export default class DatabaseRepository<
         }
 
         await qb.execute()
+
+        await this.afterDeleteMany(options)
     }
 }
