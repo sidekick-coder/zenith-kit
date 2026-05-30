@@ -70,6 +70,12 @@ export default class ContainerService {
         return entry
     }
 
+    public unset(payload: EntryKey): void {
+        const key = this.getKey(payload)
+
+        this.entries.delete(key)
+    }
+
     public singleton<T>(classConstructor: Constructor<T>): T {
         const key = classConstructor.name
         const existingInstance = this.entries.get(key)

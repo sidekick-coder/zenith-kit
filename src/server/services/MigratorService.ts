@@ -7,6 +7,7 @@ import LoggerService from '#shared/services/LoggerService.ts'
 import type { Kysely } from 'kysely'
 import MigrationEntity from '#server/entities/MigrationEntity.ts'
 import { orderBy } from 'lodash-es'
+import { BaseException } from '#shared/index.ts'
 
 export interface MigrationSource {
     id: string;
@@ -386,12 +387,10 @@ export default class MigratorService {
     public async latestOrFail(filters: ListFilters = {}): Promise<MigrationResult[]> {
         const results = await this.latest(filters)
 
-        if (results.some(r => r.result === 'failed')) {
-            const error = new Error('Failed to run all migrations')
+        const failed = results.find(r => r.result === 'failed')
 
-            Object.assign(error, { results })
-
-            throw error
+        if (failed) {
+            throw failed.error || new BaseException(`Migration failed: ${failed.name}`)
         }
 
         return results

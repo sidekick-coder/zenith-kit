@@ -52,15 +52,21 @@
         }
     },
     "scripts": {
-        "build": "npm run build:tsdown && npm run build:vite",
         "build:tsdown": "tsdown",
         "build:vite": "vite build",
+        "build": "npm-run-all -p build:*",
+        "test:unit": "vitest --project unit",
+        "test:int": "vitest -p integration",
+        "test": "npm-run-all -p test:*",
         "release": "node artisan.js release"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",
         "@eslint/json": "^0.14.0",
-        "@types/bcrypt": "^6.0.0"
+        "@faker-js/faker": "^10.4.0",
+        "@types/bcrypt": "^6.0.0",
+        "better-sqlite3": "^12.10.0",
+        "npm-run-all": "^4.1.5"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.1039.0",
