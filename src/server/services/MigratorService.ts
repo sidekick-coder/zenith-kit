@@ -41,6 +41,22 @@ export interface MigratorServiceOptions {
     logger?: LoggerService
 }
 
+export interface MigratorServiceEvents {
+    'migrator:before-migrate': {
+        migrations: MigrationEntity[]
+    }
+    'migrator:after-migrate': {
+        migrations: MigrationEntity[]
+    }
+    'migrator:before-rollback': {
+        migrations: MigrationEntity[]
+    }
+    'migrator:after-rollback': {
+        migrations: MigrationEntity[]
+    }
+
+}
+
 export default class MigratorService {
     public static __container_entry_key = 'MigratorService'
 

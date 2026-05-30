@@ -1,7 +1,7 @@
 import type { ColumnType, Generated } from 'kysely'
 
 export interface SoftDeleteTable {
-    deleted_at?: ColumnType<Date, string | undefined, never> | null
+    deleted_at?: ColumnType<Date | string | null, Date | string | undefined, Date | string | null>
 }
 
 export interface TimestampTable {

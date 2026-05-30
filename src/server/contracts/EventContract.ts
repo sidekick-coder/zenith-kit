@@ -1,34 +1,12 @@
-import type MigrationEntity from "#server/entities/MigrationEntity.ts"
 import type PageRequestContextEntity from "#server/entities/PageRequestContextEntity.ts"
+import type { UserRepositoryEvents } from "#server/repositories/UserRepository.ts"
 import type { CliEvents } from "#server/services/CliService.ts"
+import type { MigratorServiceEvents } from "#server/services/MigratorService.ts"
 import type { RouterEvents } from "#server/services/RouterService.ts"
 import type { SchedulerEvents } from "#server/services/SchedulerService.ts"
 import type { SeederEvents } from "#server/services/SeederService.ts"
-import type { UserEntity } from "#shared/index.ts"
 
-export interface EventContract extends SeederEvents, RouterEvents, CliEvents, SchedulerEvents {
-
-    // migrator
-    'migrator:before-migrate': {
-        migrations: MigrationEntity[]
-    }
-    'migrator:after-migrate': {
-        migrations: MigrationEntity[]
-    }
-    'migrator:before-rollback': {
-        migrations: MigrationEntity[]
-    }
-    'migrator:after-rollback': {
-        migrations: MigrationEntity[]
-    }
-    // user
-    'user:before-create': { user: UserEntity }
-    'user:after-create': { user: UserEntity }
-    'user:before-update': { user: UserEntity }
-    'user:after-update': { user: UserEntity }
-    'user:before-delete': { user: UserEntity }
-    'user:after-delete': { user: UserEntity }
-
+export interface EventContract extends SeederEvents, RouterEvents, CliEvents, SchedulerEvents, MigratorServiceEvents, UserRepositoryEvents {
     // page request
     'page:request:start': PageRequestContextEntity
     'page:request:before-render': PageRequestContextEntity
