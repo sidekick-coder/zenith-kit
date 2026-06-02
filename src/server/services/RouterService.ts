@@ -4,6 +4,7 @@ import type { Handler, Middleware, MiddlewareHandleResult } from '#server/contra
 import { compose } from '#shared/utils/compose.ts'
 import Hooks from '#shared/mixins/HooksMixin.ts'
 import { LoggerService } from '#shared/index.ts'
+import { matchPath } from '#shared/utils/matchPaths.ts'
 
 type RouteContext = 'global' | 'group' | 'route'
 
@@ -51,7 +52,7 @@ export default class RouterService<C = {}> extends compose(Hooks) {
         this.debug = data.debug || false
         this.metadata = data.metadata || {}
         this.listeners = data.listeners || []
-        this.logger = data.logger || new LoggerService() 
+        this.logger = data.logger || new LoggerService()
     }
 
     public use<T extends Middleware>(middleware: T, context: RouteContext = 'route') {
@@ -172,7 +173,7 @@ export default class RouterService<C = {}> extends compose(Hooks) {
                     return false
                 }
 
-                return this.matchPath(r.path, path)
+                return matchPath(r.path, path)
             })
 
         if (!route) {
@@ -200,45 +201,6 @@ export default class RouterService<C = {}> extends compose(Hooks) {
         }
 
         return route.handler(ctx)
-    }
-
-    public matchPath(routePath: string, requestPath: string): boolean {
-        // Split paths into segments
-        const routeSegments = routePath.split('/').filter(Boolean)
-        const requestSegments = requestPath.split('/').filter(Boolean)
-
-        // Check each segment
-        for (let i = 0; i < routeSegments.length; i++) {
-            const routeSegment = routeSegments[i]
-            const requestSegment = requestSegments[i]
-
-            // If route segment is a wildcard (*), it matches everything from this point
-            if (routeSegment === '*') {
-                return true
-            }
-
-            // If we've run out of request segments but still have route segments, no match
-            if (i >= requestSegments.length) {
-                return false
-            }
-
-            // If route segment is a parameter (starts with :), it matches any value
-            if (routeSegment.startsWith(':')) {
-                continue
-            }
-
-            // Otherwise, segments must match exactly
-            if (routeSegment !== requestSegment) {
-                return false
-            }
-        }
-
-        // If we have more request segments than route segments (and no wildcard), no match
-        if (requestSegments.length > routeSegments.length) {
-            return false
-        }
-
-        return true
     }
 
     public clear() {

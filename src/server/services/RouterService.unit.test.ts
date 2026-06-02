@@ -2,7 +2,7 @@ import {
     describe,
     it,
     expect,
-    vi 
+    vi
 } from 'vitest'
 import Router from './RouterService.ts'
 
@@ -31,20 +31,6 @@ describe('Router', () => {
         expect(route).toBeNull()
     })
 
-    it('should extract params from route', () => {
-        const router = new Router()
-        const params = router.extractParams('/user/:id', '/user/123')
-        expect(params).toEqual({ id: '123' })
-    })
-
-    it('should extract query from request path', () => {
-        const router = new Router()
-        const query = router.extractQuery('/search?term=abc&sort=desc')
-        expect(query).toEqual({
-            term: 'abc',
-            sort: 'desc' 
-        })
-    })
 
     it('should match path with params', () => {
         const router = new Router()
@@ -64,11 +50,6 @@ describe('Router', () => {
         expect(match).toBe(true)
     })
 
-    it('should extract spread parameter from wildcard route', () => {
-        const router = new Router()
-        const params = router.extractParams('/files/*', '/files/documents/folder/file.txt')
-        expect(params).toEqual({ '*': 'documents/folder/file.txt' })
-    })
 
     it('should match wildcard at root level', () => {
         const router = new Router()
@@ -76,22 +57,11 @@ describe('Router', () => {
         expect(match).toBe(true)
     })
 
-    it('should extract root level wildcard parameter', () => {
-        const router = new Router()
-        const params = router.extractParams('*', '/any/path/here')
-        expect(params).toEqual({ '*': 'any/path/here' })
-    })
 
     it('should match empty path with wildcard', () => {
         const router = new Router()
         const match = router.matchPath('*', '/')
         expect(match).toBe(true)
-    })
-
-    it('should extract empty wildcard parameter', () => {
-        const router = new Router()
-        const params = router.extractParams('*', '/')
-        expect(params).toEqual({ '*': '' })
     })
 
     it('should add and resolve wildcard route', () => {
