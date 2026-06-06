@@ -1,10 +1,8 @@
-import type { Kysely } from 'kysely'
 import container from './container'
 import type { DatabaseContract } from '#server/contracts/DatabaseContract.ts'
+import DatabaseGateway from '#server/gateways/DatabaseGateway.ts'
 
-export const key = 'database'
-
-const database = container.proxy<Kysely<DatabaseContract>>(key)
+const database = container.proxy<DatabaseGateway<DatabaseContract>>(DatabaseGateway)
 
 export default database
 
