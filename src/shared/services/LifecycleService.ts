@@ -35,6 +35,11 @@ export default class LifecycleService {
         }
     }
 
+    public setOnError(handler: Required<LifecycleServiceOptions>['onError']) {
+        this.onError = handler
+    }
+
+
     public onError(error: Error, context: { hookId: string; method: LifecycleMethod }) {
         Object.assign(error, { context })
 

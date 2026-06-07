@@ -25,6 +25,8 @@ export interface UserRepositoryEvents {
 
 export default class UserRepository extends DatabaseRepository<UserEntity, number, UserRepositoryQueryOptions> {
     public static __container_entry_key = 'UserRepository'
+    public autoCreatedAt = true 
+    public autoUpdatedAt = true
 
     constructor(db: DatabaseRepository['db']) {
         super(db, 'users', 'id')

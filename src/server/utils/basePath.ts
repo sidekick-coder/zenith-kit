@@ -1,9 +1,9 @@
 import path from 'path'
 
-const BASE_PATH = process.env.ZENITH_BASE_PATH!
-const STORAGE_PATH = process.env.ZENITH_STORAGE_PATH || path.join(BASE_PATH || '', 'storage')
 
 export function basePath(...args: string[]): string {
+    const BASE_PATH = process.env.ZENITH_BASE_PATH!
+
     if (!BASE_PATH) {
         throw new Error('ZENITH_BASE_PATH environment variable is not set')
     }
@@ -12,10 +12,15 @@ export function basePath(...args: string[]): string {
 }
 
 export function storagePath(...args: string[]): string {
+    const BASE_PATH = process.env.ZENITH_BASE_PATH!
+    const STORAGE_PATH = process.env.ZENITH_STORAGE_PATH || path.join(BASE_PATH || '', 'storage')
+
     return path.resolve(STORAGE_PATH, ...args)
 }
 
 export function relativeToBasePath(...args: string[]): string {
+    const BASE_PATH = process.env.ZENITH_BASE_PATH!
+
     if (!BASE_PATH) {
         throw new Error('ZENITH_BASE_PATH environment variable is not set')
     }

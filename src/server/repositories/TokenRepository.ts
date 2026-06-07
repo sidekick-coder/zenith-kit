@@ -2,17 +2,26 @@ import DatabaseRepositoryInfer from '#server/mixins/DatabaseRepositoryInferMixin
 import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
 import { compose, mixin } from '#shared/utils/index.ts'
 import type { Token } from '#shared/schemas/tokenSchema.ts'
+import { randomBytes } from 'crypto'
 
 export interface TokenRepositoryQueryOptions {
     id?: number | number[]
-    search?: string 
+    search?: string
     type?: string | string[]
+}
+
+export interface TokenRepositoryGenerateOptions {
+    user_id: number
+    type?: string
+    expires_in_hours?: number
 }
 
 export default class TokenRepository extends compose(
     mixin(DatabaseRepository),
     DatabaseRepositoryInfer<Token, Token['id'], TokenRepositoryQueryOptions>()
 ) {
+    public autoCreatedAt: boolean = true
+    public autoUpdatedAt: boolean = false
 
     constructor(db: DatabaseRepository['db']) {
         super(db, 'tokens', 'id')
@@ -50,5 +59,20 @@ export default class TokenRepository extends compose(
         const item = await qb.executeTakeFirst()
 
         return item || null
+    }
+
+    async generate(options: TokenRepositoryGenerateOptions) {
+        const token = randomBytes(64).toString('hex')
+
+        const expiresAt = options.expires_in_hours
+            ? new Date(Date.now() + options.expires_in_hours * 60 * 60 * 1000)
+            : null
+
+        return await this.create({
+            user_id: options.user_id,
+            token,
+            type: options.type || 'auth',
+            expires_at: expiresAt
+        })
     }
 }

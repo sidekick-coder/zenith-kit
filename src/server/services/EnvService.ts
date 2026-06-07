@@ -5,6 +5,7 @@ import { envSchema } from '#server/schemas/envSchema.ts'
 import type { EnvSchema } from '#server/schemas/envSchema.ts'
 
 export default class EnvService {
+    public static __container_entry_key = 'EnvService'
     private env: EnvSchema | null = null
     private files: string[] = []
 
