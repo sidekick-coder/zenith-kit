@@ -33,9 +33,9 @@ export interface EmmitterServiceOptions {
 export default class EmmitterService<Events extends Record<string, any> = Record<string, any>> {
     public static __container_entry_key = 'EmmitterService'
 
-    private handlers: EmmitterHandler[] = []
-    private debug: boolean
-    private logger: LoggerService
+    public handlers: EmmitterHandler[] = []
+    public debug: boolean
+    public logger: LoggerService
 
     constructor (options?: EmmitterServiceOptions) {
         this.debug = options?.debug || false

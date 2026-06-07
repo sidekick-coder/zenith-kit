@@ -97,7 +97,6 @@ const colorInput = computed({
 })
 
 watch(format, (newFormat) => {
-    console.log('Format changed to:', newFormat)
     if (newFormat === 'hex') {
         colorInput.value = hex.value
         return

@@ -1,5 +1,7 @@
 import type { Kysely } from 'kysely'
 import BaseException from '#shared/exceptions/BaseException.ts'
+import { now } from '../queries'
+import { set } from 'lodash-es'
 
 export interface Pagination<T = any> {
     items: T[]
@@ -32,6 +34,10 @@ export default class DatabaseRepository<
     TPrimaryKey = any,
     TOptions = Record<string, any>
 > {
+
+    public autoCreatedAt = true
+    public autoUpdatedAt = true
+
     constructor(
         protected db: Kysely<any>, 
         protected table: string, 
@@ -148,6 +154,10 @@ export default class DatabaseRepository<
     protected async afterCreate(data: TEntity): Promise<void> {}
 
     public async create(data: Partial<TEntity>) {
+        if (this.autoCreatedAt) {
+            set(data, 'created_at', now())
+        }
+
         data = await this.beforeCreate(data) 
 
         let qb = this.db.insertInto(this.table as any) as any
@@ -170,6 +180,13 @@ export default class DatabaseRepository<
     }
 
     public async createMany(data: Partial<TEntity>[]) {
+        if (this.autoCreatedAt) {
+            data = data.map(item => {
+                set(item, 'created_at', now())
+
+                return item
+            })
+        }
         data = await this.beforeCreateMany(data) 
 
         let qb = this.db.insertInto(this.table as any) as any
@@ -194,6 +211,10 @@ export default class DatabaseRepository<
     }
 
     public async updateById(id: TPrimaryKey, data: Partial<TEntity>) {
+        if (this.autoUpdatedAt) {
+            set(data, 'updated_at', now())
+        }
+
         data = await this.beforeUpdate(data, id) 
 
         const row: Record<string, any> = await this.findByIdOrFail(id)

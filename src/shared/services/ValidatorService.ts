@@ -2,7 +2,7 @@ import * as v from 'valibot'
 import * as extras from '#shared/validators/index.ts'
 import BaseException from '../exceptions/BaseException.ts'
 
-export type Valibot = typeof v & { extras: typeof extras } 
+export type Valibot = typeof v & { extras: typeof extras }
 
 export type ValibotSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>
 export type ValibotSchemaAsync = v.BaseSchemaAsync<unknown, unknown, v.BaseIssue<unknown>>
@@ -15,7 +15,7 @@ export type ValidatorCallbackAsync<T extends ValibotSchemaAsync> = {
     (_v: Valibot): T
 }
 
-export type ValidatorResult<T extends v.ObjectEntries> = v.InferOutput<v.ObjectSchema<T, undefined>>
+export type ValidatorResult<T extends v.BaseSchema<any, any, any>> = v.InferOutput<T>
 
 export type ValidatePayload<T extends ValibotSchema = ValibotSchema> = ValidatorCallback<T> | T
 

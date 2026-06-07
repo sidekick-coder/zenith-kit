@@ -90,48 +90,10 @@ const props = defineProps({
 
 const breadcrumbs = defineModel('breadcrumbs', {
     type: Array as () => LayoutBreadcrumbItem[],
-    default: null,
+    default: () => [],
 })
 
 const items = ref<any[]>([])
-
-
-const computedBreadcrumbs = computed(() => {
-    if (breadcrumbs.value) {
-        return breadcrumbs.value
-    }
-
-    return generateBreadcrumbsFromRoute()
-})
-
-function generateBreadcrumbsFromRoute(): LayoutBreadcrumbItem[] {
-    if (!container.has('route')) return []
-
-    const pathSegments = route.path.split('/').filter(segment => segment !== '')
-    const breadcrumbItems: LayoutBreadcrumbItem[] = []
-
-    let currentPath = ''
-    for (let i = 0; i < pathSegments.length; i++) {
-        currentPath += `/${pathSegments[i]}`
-        const segment = pathSegments[i]
-
-        if (segment.startsWith(':')) {
-            continue
-        }
-
-        const label = segment
-            .split('-')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ')
-
-        breadcrumbItems.push({
-            label: label,
-            to: i === pathSegments.length - 1 ? undefined : currentPath,
-        })
-    }
-
-    return breadcrumbItems
-}
 
 items.value = menu.list({
     layout: props.layoutId,
@@ -187,21 +149,22 @@ items.value = menu.list({
         </Sidebar>
 
         <SidebarInset variant="sidebar">
-            <header v-if="!hideBreadcrumbs"
+
+            <header v-if="!hideBreadcrumbs && breadcrumbs?.length"
                 class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/70 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
                 <div class="flex items-center gap-2">
                     <SidebarTrigger class="-ml-1" />
 
-                    <Breadcrumb v-if="computedBreadcrumbs?.length">
+                    <Breadcrumb v-if="breadcrumbs?.length">
                         <BreadcrumbList class="md:hidden!">
                             <BreadcrumbItem>
-                                <BreadcrumbPage>{{ truncate(computedBreadcrumbs.at(-1)?.label) }}</BreadcrumbPage>
+                                <BreadcrumbPage>{{ truncate(breadcrumbs.at(-1)?.label) }}</BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                         <BreadcrumbList class="hidden! md:flex!">
-                            <template v-for="(item, index) in computedBreadcrumbs" :key="index">
+                            <template v-for="(item, index) in breadcrumbs" :key="index">
                                 <BreadcrumbItem>
-                                    <template v-if="index === computedBreadcrumbs.length - 1">
+                                    <template v-if="index === breadcrumbs.length - 1">
                                         <BreadcrumbPage>{{ truncate(item.label) }}</BreadcrumbPage>
                                     </template>
                                     <template v-else>
@@ -212,12 +175,13 @@ items.value = menu.list({
                                         </BreadcrumbLink>
                                     </template>
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator v-if="index !== computedBreadcrumbs.length - 1" />
+                                <BreadcrumbSeparator v-if="index !== breadcrumbs.length - 1" />
                             </template>
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
             </header>
+
             <div>
                 <div :class="cn(
                     'dashboard-layout-content h-full overflow-auto lg:max-w-[calc(100dvw-8px-var(--sidebar-width))] group-has-data-[collapsible=icon]/sidebar-wrapper:max-w-[calc(100dvw-var(--sidebar-width-icon))]',

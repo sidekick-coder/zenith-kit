@@ -46,11 +46,11 @@ export default defineConfig({
                 }
             }
         }),
-        dts({
-            entryRoot: 'src/client/components.ts',
-            tsconfigPath: 'tsconfig.client.json',
-            bundleTypes: true,
-        }),
+        // dts({
+        //     entryRoot: 'src/client/components.ts',
+        //     tsconfigPath: 'tsconfig.client.json',
+        //     bundleTypes: true,
+        // }),
         tailwindcss(),
         prebuild(),
     ],
