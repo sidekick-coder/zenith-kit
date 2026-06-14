@@ -1,6 +1,7 @@
 <script lang="ts">
 import { computed } from 'vue'
 import type MenuItem from '#client/entities/menuItem.entity.ts'
+import { parseTo } from '#client/utils/parseTo.ts';
 
 </script>
 
@@ -76,7 +77,7 @@ const groupedItems = computed(() => {
                             as-child
                             :is-active="item.to === $route.path"
                         >
-                            <RouterLink :to="item.to ?? '#'">
+                            <RouterLink :to="parseTo(item.to ?? '#')">
                                 {{ item.label }}
                             </RouterLink>
                         </SidebarMenuSubButton>

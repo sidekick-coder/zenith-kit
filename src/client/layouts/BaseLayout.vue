@@ -7,12 +7,12 @@ export interface LayoutBreadcrumbItem {
 <script setup lang="ts">
 import {
     ref,
-    computed,
 } from 'vue'
 import type { PropType } from 'vue'
 import { truncate } from 'lodash-es'
 import { useHead } from '@unhead/vue'
 import menu from '#client/facades/menu.ts'
+import route from '#client/facades/route.ts'
 import AdminLayoutDefaultMenu from './AdminLayoutDefaultMenu.vue'
 import AdminLayoutPlainMenu from './AdminLayoutPlainMenu.vue'
 import Logo from '#client/components/Logo.vue'
@@ -39,9 +39,8 @@ import {
 import Icon from '#client/components/Icon.vue'
 import { cn } from '#client/lib/utils.ts'
 import UserMenu from '#client/components/UserMenu.vue'
-import container from '#client/facades/container.ts'
-import route from '#client/facades/route.ts'
 import ClientOnly from '#client/components/ClientOnly.vue'
+import { parseTo } from '#client/utils/parseTo.ts'
 
 defineOptions({ inheritAttrs: false, })
 
@@ -109,7 +108,7 @@ items.value = menu.list({
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <SidebarMenuButton size="lg" as-child>
-                                <router-link :to="homePath">
+                                <router-link :to="parseTo(homePath)">
                                     <div v-if="icon"
                                         class="size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-md mr-2">
                                         <Icon :name="icon" class="text-lg" />
@@ -169,7 +168,7 @@ items.value = menu.list({
                                     </template>
                                     <template v-else>
                                         <BreadcrumbLink as-child>
-                                            <RouterLink :to="item.to!">
+                                            <RouterLink :to="parseTo(item.to!)">
                                                 {{ truncate(item.label) }}
                                             </RouterLink>
                                         </BreadcrumbLink>

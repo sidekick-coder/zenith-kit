@@ -48,7 +48,9 @@
         },
         "./styles": "./dist/components/styles.css",
         "./client-globals": {
-            "types": "./src/client/zenith-env.d.ts"
+            "types": "./src/client/zenith-env.d.ts",
+            "import": "./src/client/zenith-env.d.ts",
+            "require": "./src/client/zenith-env.d.ts"
         }
     },
     "scripts": {

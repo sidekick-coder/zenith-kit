@@ -1,4 +1,4 @@
-import { createLogger, defineConfig } from 'vite'
+import { createLogger, defineConfig, Plugin, UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import dts from 'vite-plugin-dts'
@@ -34,9 +34,7 @@ const externals = [
     'vee-validate',
 ]
 
-export default defineConfig({
-    customLogger: logger,
-    plugins: [
+const plugins: UserConfig['plugins'] = [
         vue({
             template: {
                 compilerOptions: {
@@ -46,14 +44,21 @@ export default defineConfig({
                 }
             }
         }),
-        // dts({
-        //     entryRoot: 'src/client/components.ts',
-        //     tsconfigPath: 'tsconfig.client.json',
-        //     bundleTypes: true,
-        // }),
-        tailwindcss(),
-        prebuild(),
-    ],
+]
+
+if (process.env.BUILD_TYPES === 'true') {
+    plugins.push(dts({
+        entryRoot: 'src/client/components.ts',
+        tsconfigPath: 'tsconfig.client.json',
+        bundleTypes: true,
+    }))
+}
+
+plugins.push(tailwindcss(), prebuild())
+
+export default defineConfig({
+    customLogger: logger,
+    plugins: plugins,
     build: {
         outDir: 'dist/components',
         minify: false,

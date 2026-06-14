@@ -1,6 +1,7 @@
 <script lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import type MenuItem from '#client/entities/menuItem.entity.ts'
+import { parseTo } from '#client/utils/parseTo.ts'
 
 </script>
 
@@ -137,7 +138,7 @@ watch(groups, (newGroups) => {
                                                 :is-active="child.to === $route.path"
                                                 :tooltip="child.label"
                                             >
-                                                <RouterLink :to="child.to ?? '#'">
+                                                <RouterLink :to="parseTo(child.to ?? '#')">
                                                     {{ child.label }}
                                                 </RouterLink>
                                             </SidebarMenuButton>
@@ -154,7 +155,7 @@ watch(groups, (newGroups) => {
                                 :tooltip="item.label"
                             >
                                 <RouterLink
-                                    :to="item.to ?? '#'"
+                                    :to="parseTo(item.to ?? '#')"
                                     :target="item.target ?? '_self'"
                                 >
                                     <Icon :name="item.icon || 'heroicons:cube'" />
