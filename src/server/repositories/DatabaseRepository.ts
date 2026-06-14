@@ -35,8 +35,8 @@ export default class DatabaseRepository<
     TOptions = Record<string, any>
 > {
 
-    public autoCreatedAt = true
-    public autoUpdatedAt = true
+    public autoCreatedAt = false
+    public autoUpdatedAt = false
 
     constructor(
         protected db: Kysely<any>, 
@@ -153,9 +153,13 @@ export default class DatabaseRepository<
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected async afterCreate(data: TEntity): Promise<void> {}
 
-    public async create(data: Partial<TEntity>) {
+    public async create(data: Partial<TEntity>): Promise<TEntity> {
         if (this.autoCreatedAt) {
             set(data, 'created_at', now())
+        }
+
+        if (this.autoUpdatedAt) {
+            set(data, 'updated_at', now())
         }
 
         data = await this.beforeCreate(data) 
