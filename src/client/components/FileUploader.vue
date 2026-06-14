@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import $fetch from '#client/facades/fetcher.ts'
 import { $file } from '#client/utils/file.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 import Button from '#client/components/ZButton.vue'
@@ -9,6 +8,7 @@ import Icon from '#client/components/Icon.vue'
 import type UploadSession from '#shared/entities/fileUploadSession.entity.ts'
 import type ServerFile from '#shared/entities/FileEntity.ts'
 import acl from '#client/facades/acl.ts'
+import fetcher from '#client/facades/fetcher.ts'
 
 const props = defineProps({
     label: {
@@ -38,7 +38,7 @@ const props = defineProps({
     maxSize: {
         type: Number,
         default: 10 * 1024 * 1024, // 10MB default
-    },    
+    },
     mimetypes: {
         type: String,
         default: '*/*',
@@ -50,7 +50,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits<{
-    (e: 'uploaded', response: ServerFile): void
+    (e: 'uploaded', response: ServerFile | ServerFile[]): void
 }>()
 
 const fileId = defineModel<number | undefined | null>('fileId', { type: Number, })
@@ -73,8 +73,8 @@ const hasPermission = computed(() => {
     return acl.can('create', 'FileUploadSession', data)
 })
 
-async function createSession(file: File){
-    return await $fetch<UploadSession>('/api/file-upload-sessions', {
+async function createSession(file: File) {
+    return await fetcher.post<UploadSession>('/api/file-upload-sessions', {
         method: 'POST',
         data: {
             public: props.public,
@@ -88,14 +88,13 @@ async function createSession(file: File){
 }
 
 async function upload(file: File, url: string) {
-    return await $fetch(url, {
-        method: 'PUT',
+    return await fetcher.put(url, {
         body: file,
     })
 }
 
 async function createServerFile(url: string) {
-    return await $fetch<ServerFile>(url, { method: 'POST', })
+    return await fetcher.post(url)
 }
 async function executeFromFile(file: File) {
     const session = await createSession(file)
@@ -115,54 +114,51 @@ async function execute() {
         multiple: props.multiple,
         accept: props.mimetypes,
     })
-    
+
     if (!file) {
         return
     }
 
     if (props.multiple && Array.isArray(file)) {
         const results: ServerFile[] = []
-        
+
         for (const f of file) {
             const response = await executeFromFile(f)
             results.push(response)
         }
-        
+
         return results
     }
-    
+
     if (!Array.isArray(file)) {
         return await executeFromFile(file)
     }
 }
 
-
-
 async function handle() {
     loading.value = true
-    
+
     const [error, response] = await tryCatch(() => execute())
 
     if (error || !response) {
         loading.value = false
+        console.error(error)
         return
     }
 
-    setTimeout(() => {
-        if (Array.isArray(response)) {
-            for (const res of response) {
-                emit('uploaded', res)
-            }
-            
-            loading.value = false
+    await new Promise(resolve => setTimeout(resolve, 500))
 
-            return
-        }
-
+    if (Array.isArray(response)) {
         emit('uploaded', response)
-        
+
         loading.value = false
-    }, 500)
+
+        return
+    }
+
+    emit('uploaded', response)
+
+    loading.value = false
 }
 
 defineExpose({
@@ -172,32 +168,13 @@ defineExpose({
 </script>
 
 <template>
-    <slot
-        v-if="hasPermission"
-        :handle="handle"
-        :loading="loading"
-    >
-        <Button
-            type="button"
-            variant="outline"
-            :loading="loading"
-            :disabled="disabled"
-            @click="handle"
-        >
-            <Icon 
-                name="Upload" 
-                class="size-4 mr-2" 
-            />
+    <slot v-if="hasPermission" :handle="handle" :loading="loading">
+        <Button type="button" variant="outline" :loading="loading" :disabled="disabled" @click="handle">
+            <Icon name="Upload" class="size-4 mr-2" />
             {{ $t('Upload') }}
         </Button>
     </slot>
-    <Button
-        v-else
-        type="button"
-        variant="outline"
-        disabled
-        class="text-xs text-red-600 mt-1 block"
-    >
+    <Button v-else type="button" variant="outline" disabled class="text-xs text-red-600 mt-1 block">
         {{ $t('Missing permissions for file upload') }}
     </Button>
 </template>
