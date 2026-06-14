@@ -40,7 +40,7 @@ export default class HttpService {
         this.router = options.router || new Router()
         this.emmitter = options.emmitter || new EmmitterService()
         this.env = options.env || new EnvService()
-        this.exception = options.exception || new ExceptionService()
+        this.exception = options.exception || new ExceptionService({ logger: this.logger, env: this.env })
 
         this.app = express()
         this.app.use(cookieParser())

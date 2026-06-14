@@ -25,33 +25,18 @@ export default class ExceptionService {
 
     public handle(error: Error, response: Response) {
 
-        Object.assign(error, {
-            timestamp: new Date().toISOString(),
-            status: response.statusCode,
-        })
+        const errorName = error.name || 'Internal Server Error'
+        const errorMessage = error.message || 'An unexpected error occurred'
+        const errorStatus = (error as any).status || 500
 
-
-
-        if (error instanceof BaseException) {
-
-            if (!this.ignoreCodeErrors.includes(error.statusCode)) {
-                this.logger.error(error)
-            }
-
-            return response.status(error.statusCode).json({
-                error: error.name,
-                message: error.message,
-                stack: this.env.development ? error.stack : undefined,
-            })
+        if (!this.ignoreCodeErrors.includes(errorStatus)) {
+            this.logger.error(error)
         }
 
-        this.logger.error(error)
-
-        const data = BaseException.fromError(error)
-
-        return response.status(500).json({
-            error: error.name || 'Internal Server Error',
-            message: data.message || 'An unexpected error occurred',
+        return response.status(errorStatus).json({
+            error: errorName,
+            message: errorMessage,
+            status: errorStatus,
         })
     }
 }
