@@ -4,6 +4,6 @@ import * as VueRouter from 'vue-router'
 
 export const VUE_ROUTER_CONTAINER_KEY = 'VueRouter'
 
-const vue = container.proxy<typeof VueRouter>(VUE_ROUTER_CONTAINER_KEY)
+const vueRouter = container.proxy<typeof VueRouter>(VUE_ROUTER_CONTAINER_KEY)
 
-export default vue
+export default vueRouter
