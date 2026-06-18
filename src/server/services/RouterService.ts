@@ -71,7 +71,12 @@ export default class RouterService<C = {}> extends compose(Hooks) {
     }
 
     public makePath(args: string): string {
-        return join([...this.groupPrefixes, ...this.prefixes, args], '/')
+        let result = join([...this.groupPrefixes, ...this.prefixes, args], '/')
+
+        // remove duplicate slashes
+        result = result.replace(/\/+/g, '/')
+
+        return result
     }
 
     public add(payload: Pick<Route, 'path' | 'method' | 'handler'>) {
