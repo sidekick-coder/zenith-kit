@@ -10,8 +10,8 @@ export interface PaginationParams {
 export const base = (options: PaginationParams = {}) => v.object({
     page: v.optional(number(), 1),
     limit: v.optional(number(), options.maxLimit || 100),
-    orderBy: v.optional(options.orderFields ? array(v.picklist(options.orderFields)) : array(v.string()), []),
-    orderDirection: v.optional(array(v.union([v.literal('asc'), v.literal('desc')])), []),
+    orderBy: v.nullish(options.orderFields ? array(v.picklist(options.orderFields)) : array(v.string()), []),
+    orderDirection: v.nullish(array(v.union([v.literal('asc'), v.literal('desc')])), []),
 })
 
 export function pagination(options: PaginationParams = {}) {

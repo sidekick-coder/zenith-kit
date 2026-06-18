@@ -410,7 +410,7 @@ if (!props.fetch && !props.initialOption && value.value) {
                                 :value="null"
                                 @click="select(null)"
                             >
-                                {{ $t('Clear selection') }}
+                                {{ $t('Clear') }}
                             </ComboboxItem>
                             
                             <Separator />

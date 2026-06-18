@@ -11,6 +11,8 @@ export interface UseFetchPaginationOptions {
     serialize?: (item: any) => any
     refine?: (items: any[]) => any[]
     limit?: number
+    orderBy?: string | string[] | null
+    orderDirection?: 'asc' | 'desc' | ('asc' | 'desc')[] | null
     debounce?: number
     immediate?: boolean
 }
@@ -38,6 +40,8 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
 
     const query = ref(JSON.parse(JSON.stringify(options.query || {}))) as Ref<Record<string, any>>
     const limit = ref(options.limit || 10)
+    const orderBy = ref(options.orderBy || null)
+    const orderDirection = ref(options.orderDirection || null)
 
     const total = computed(() => response.value.total)
     const totalPages = computed(() => response.value.total_pages)
@@ -63,6 +67,8 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
         const params = JSON.parse(JSON.stringify({
             page: page.value,
             limit: limit.value,
+            orderBy: orderBy.value ? orderBy.value : undefined,
+            orderDirection: orderDirection.value ? orderDirection.value : undefined,
             ...query.value
         }))
 
@@ -107,6 +113,7 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
     }
 
     watch([page, limit], load)
+    watch([orderBy, orderDirection], reset, { deep: true })
 
     watchDebounced(
         () => JSON.parse(JSON.stringify(query.value)),
@@ -115,6 +122,7 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
             debounce: options.debounce || 1000
         }
     )
+
 
     async function hydrate() {
         if (!hydrated.has(key) && items.value.length) {
@@ -130,6 +138,8 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
     return {
         page,
         limit,
+        orderBy,
+        orderDirection,
         total,
         totalPages,
         items,

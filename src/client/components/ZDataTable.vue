@@ -12,7 +12,7 @@ import Checkbox from './ui/checkbox/Checkbox.vue'
 import { computed } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
 import { cn } from '#client/lib/utils.ts'
-import type { DataTableColumn, DataTableSort } from '#client/utils/defineColumns.ts'
+import type { DataTableColumn } from '#client/utils/defineColumns.ts'
 
 const props = defineProps({
     itemKey: {
@@ -24,6 +24,10 @@ const props = defineProps({
         default: ''
     },
     enableSelection: {
+        type: Boolean,
+        default: false
+    },
+    disableSort: {
         type: Boolean,
         default: false
     }
@@ -49,9 +53,14 @@ const columns = defineModel('columns', {
     default: () => []
 })
 
-const sort = defineModel('sort', {
-    type: Object as () => DataTableSort<T>[],
-    default: () => []
+const orderBy = defineModel<string | string[] | null>('orderBy', {
+    type: [String, Array],
+    default: null
+})
+
+const orderDirection = defineModel<string | string[] | null>('orderDirection', {
+    type: [String, Array],
+    default: null
 })
 
 const formatedColumns = computed(() => columns.value.map((c, index) => ({
@@ -104,34 +113,44 @@ function toggle(row: T) {
     selected.value.splice(index, 1)
 }
 
+function getOrderByArray() {
+    return Array.isArray(orderBy.value) ? orderBy.value : orderBy.value ? [orderBy.value] : []
+}
+
+function getOrderDirectionArray() {
+    return Array.isArray(orderDirection.value) ? orderDirection.value : orderDirection.value ? [orderDirection.value] : []
+}
+
 function setSort(column: DataTableColumn<T>) {
-    if (column.sortable === false) return
+    if (props.disableSort || column.sortable === false) return
 
-    const existing = sort.value.find(s => s.key === column.id)
-    const index = sort.value.findIndex(s => s.key === column.id)
+    const obs = getOrderByArray()
+    const ods = getOrderDirectionArray()
+    const index = obs.indexOf(column.id!)
 
-    if (existing && existing.direction === 'desc') {
-        sort.value.splice(index, 1)
-        return
+    if (index !== -1 && ods[index] === 'desc') {
+        obs.splice(index, 1)
+        ods.splice(index, 1)
+    } else if (index !== -1) {
+        ods[index] = 'desc'
+    } else {
+        obs.push(column.id!)
+        ods.push('asc')
     }
 
-    if (existing && existing.direction === 'asc') {
-        existing.direction = 'desc'
-        return
-    }
-
-    sort.value.push({
-        key: column.id!,
-        direction: 'asc'
-    })
+    orderBy.value = obs
+    orderDirection.value = ods
 }
 
 function isSorting(column: DataTableColumn<T>) {
-    return sort.value.some(c => c.key === column.id)
+    return getOrderByArray().includes(column.id!)
 }
 
 function isSortingDesc(column: DataTableColumn<T>) {
-    return sort.value.some(c => c.key === column.id && c.direction === 'desc')
+    const obs = getOrderByArray()
+    const ods = getOrderDirectionArray()
+    const index = obs.indexOf(column.id!)
+    return index !== -1 && ods[index] === 'desc'
 }
 
 </script>
@@ -142,7 +161,14 @@ function isSortingDesc(column: DataTableColumn<T>) {
             <TableRow>
                 <TableHead v-if="enableSelection" class="w-[50px]" />
 
-                <TableHead v-for="(c, index) of formatedColumns" :key="index" class="group" @click="setSort(c)">
+                <TableHead 
+                    v-for="(c, index) of formatedColumns" :key="index" 
+                    class="group" 
+                    :class="[
+                        !disableSort && c.sortable !== false ? 'cursor-pointer select-none' : '',
+                    ]"
+                    @click="setSort(c)"
+                    >
                     <div class="flex items-center">
                         <div class="flex-1">
                             <slot :name="`column-${c.id}`" :column="c">
@@ -150,7 +176,7 @@ function isSortingDesc(column: DataTableColumn<T>) {
                             </slot>
                         </div>
 
-                        <ArrowUp v-if="c.sortable !== false" :size="12" :class="[
+                        <ArrowUp v-if="!disableSort && c.sortable !== false" :size="12" :class="[
                             isSorting(c) ? '' : 'opacity-0 group-hover:opacity-100',
                             isSortingDesc(c) ? 'rotate-180' : ''
                         ]" />
