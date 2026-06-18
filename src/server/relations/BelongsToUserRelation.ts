@@ -1,4 +1,4 @@
-import BelongsTo from './belongsTo.relation.ts'
+import BelongsTo from './BelongsToRelation.ts'
 import User from '#shared/entities/UserEntity.ts'
 
 export default class BelongsToUser extends BelongsTo {

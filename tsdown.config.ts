@@ -57,6 +57,7 @@ export default defineConfig([
                         'src/server/loaders',
                         'src/server/entities',
                         'src/server/queries',
+                        'src/server/relations',
                         'src/server/middlewares',
                         'src/server/utils',
                     ],
@@ -86,6 +87,7 @@ export default defineConfig([
                 generateIndexFile({
                     folders: [
                         'src/client/services',
+                        'src/client/composables',
                         'src/client/repositories',
                         'src/client/mixins',
                         'src/client/facades',

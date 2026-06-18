@@ -7,7 +7,7 @@ import drive from '#server/facades/drive.ts'
 import HooksStatic from '#shared/mixins/HooksMixin.ts'
 import type { DriveUrlOptions } from '#server/contracts/DriveContract.ts'
 import MetadataService from '#server/services/MetadataService.ts'
-import HasMetas from '#server/relations/hasMetas.relation.ts'
+import HasMetas from '#server/relations/HasMetasRelation.ts'
 import Relation from '#server/mixins/RelationsMixin.ts'
 import ModelMixin from '#server/mixins/ModelMixin.ts'
 

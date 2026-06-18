@@ -1,4 +1,4 @@
-import BaseRelation from './base.relation.ts'
+import BaseRelation from './BaseRelation.ts'
 import type { DatabaseContract as  Database } from '#server/contracts/DatabaseContract.ts'
 import db from '#server/facades/database.ts'
 

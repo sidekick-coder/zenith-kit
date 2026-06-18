@@ -1,6 +1,6 @@
 import { set } from 'lodash-es'
-import BelongsTo from './belongsTo.relation.ts'
-import BaseRelation from './base.relation.ts'
+import BelongsTo from './BelongsToRelation.ts'
+import BaseRelation from './BaseRelation.ts'
 import File from '#server/entities/FileEntity.ts'
 
 export class LoadFileMetas extends BaseRelation {
