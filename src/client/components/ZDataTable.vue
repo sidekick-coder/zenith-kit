@@ -1,21 +1,3 @@
-<script lang="ts">
-export interface DataTableColumn<T extends Record<string, any> = Record<string, any>> {
-    id?: string
-    label?: string
-    field?: keyof T | ((row: T) => any) | (string & {})
-    sortable?: boolean
-}
-
-export interface DataTableSort<T extends Record<string, any> = Record<string, any>> {
-    key: keyof T | (string & {})
-    direction?: 'asc' | 'desc'
-}
-
-export function defineColumns<T extends Record<string, any>>(columns: DataTableColumn<T>[]) {
-    return columns
-}
-</script>
-
 <script setup lang="ts" generic="T extends Record<string, any> = Record<string, any>">
 import {
     Table,
@@ -30,6 +12,7 @@ import Checkbox from './ui/checkbox/Checkbox.vue'
 import { computed } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
 import { cn } from '#client/lib/utils.ts'
+import type { DataTableColumn, DataTableSort } from '#client/utils/defineColumns.ts'
 
 const props = defineProps({
     itemKey: {
