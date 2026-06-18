@@ -5,6 +5,7 @@ import BaseException from '../exceptions/BaseException.ts'
 export type Valibot = typeof v & { extras: typeof extras }
 
 export type ValibotSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>
+export type ValibotObjectSchema = v.ObjectSchema<any, any>
 export type ValibotSchemaAsync = v.BaseSchemaAsync<unknown, unknown, v.BaseIssue<unknown>>
 
 export interface ValidatorCallback<T extends ValibotSchema> {
