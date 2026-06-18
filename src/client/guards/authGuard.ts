@@ -1,23 +1,26 @@
-import type { NavigationGuard } from 'vue-router'
+import type { NavigationGuard, RouteLocationNormalized } from 'vue-router'
 import auth from '#client/facades/auth.ts'
 
 export interface AuthGuardOptions {
-    redirect: string
+    redirect: string | ((to: RouteLocationNormalized) => string)
     exclude?: string[]
 }
 
 export function createAuthGuard(options: AuthGuardOptions): NavigationGuard {
     const exclude = options.exclude || ['/auth/login', '/auth/register']
-    
+
     return (to) => {
+
         if (!auth.user && !exclude.includes(to.path)) {
-            return options.redirect
+            const redirectPath = typeof options.redirect === 'function' ? options.redirect(to) : options.redirect
+
+            return redirectPath
         }
     }
 }
 
-const authGuard = createAuthGuard({ 
-    redirect: '/auth/login',
+const authGuard = createAuthGuard({
+    redirect: to => '/auth/login?redirect=' + encodeURIComponent(to.fullPath),
 })
 
 export default authGuard
