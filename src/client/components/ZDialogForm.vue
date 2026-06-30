@@ -57,6 +57,10 @@ const props = defineProps({
         type: String,
         default: () => $t('Save'),
     },
+    closeTimeout: {
+        type: Number,
+        default: 800,
+    },
     toastOnSuccess: {
         type: String,
         default: null,
@@ -125,13 +129,14 @@ const onSubmit = handleSubmit(async (data) => {
         toast.success(props.toastOnSuccess)
     }
 
-    setTimeout(() => {
-        open.value = false
-        loading.value = false
-        resetForm()
-        emit('submit', response)
-    }, 1000)
+    if (props.closeTimeout) {
+        await new Promise(resolve => setTimeout(resolve, props.closeTimeout))
+    }
 
+    open.value = false
+    loading.value = false
+    resetForm()
+    emit('submit', response)
 })
 
 watch(open, () => {
