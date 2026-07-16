@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref, } from 'vue'
+import { watch, ref, computed, type PropType, } from 'vue'
 import Icon from './Icon.vue'
 import ZButton from './ZButton.vue'
 import FormAutoFieldList from './FormAutoFieldList.vue'
@@ -23,7 +23,7 @@ const props = defineProps({
         default: () => validator.create(v => v.record(v.string(), v.any()))
     },
     fields: {
-        type: Object as () => any,
+        type: [Object, Function] as PropType<Record<string, any> | ((values: any) => Record<string, any>)>,
         default: () => ({})
     },
     values: {
@@ -42,6 +42,14 @@ const open = defineModel('open', {
 const { handleSubmit, resetForm, values } = useForm(props.schema, { initialValues: props.values })
 
 const original = ref({} as Record<string, any>)
+
+const innerFields = computed(() => {
+    if (typeof props.fields === 'function') {
+        return props.fields(values)
+    }
+
+    return props.fields
+})
 
 function reset() {
     const current = JSON.parse(JSON.stringify(widget.value.options))
@@ -101,13 +109,13 @@ watch(values, update, { deep: true })
             @submit="onSubmit"
         >
             <div
-                v-if="Object.keys(fields).length === 0"
+                v-if="Object.keys(innerFields).length === 0"
                 class="text-sm text-muted-foreground text-center h-32 flex items-center justify-center"
             >
                 {{ $t('No settings available for this widget.') }}
             </div>
 
-            <FormAutoFieldList :fields="fields" />
+            <FormAutoFieldList :fields="innerFields" />
         </form>
 
         <template #footer>
