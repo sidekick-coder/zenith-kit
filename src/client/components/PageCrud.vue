@@ -13,7 +13,7 @@ import PageSubtitle from '#client/components/PageSubtitle.vue'
 defineProps({
     title: {
         type: String,
-        default: $t('Items')
+        default: () => $t('Items')
     },
     description: {
         type: String,

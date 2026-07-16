@@ -23,21 +23,37 @@
     },
     "exports": {
         "./shared": {
+            "development": {
+                "types": "./src/shared/index.ts",
+                "import": "./src/shared/index.ts"
+            },
             "types": "./dist/shared/index.d.mts",
             "import": "./dist/shared/index.mjs",
             "require": "./dist/shared/index.js"
         },
         "./server": {
+            "development": {
+                "types": "./src/server/index.ts",
+                "import": "./src/server/index.ts"
+            },
             "types": "./dist/server/index.d.mts",
             "import": "./dist/server/index.mjs",
             "require": "./dist/server/index.js"
         },
         "./client": {
+            "development": {
+                "types": "./src/client/index.ts",
+                "import": "./src/client/index.ts"
+            },
             "types": "./dist/client/index.d.mts",
             "import": "./dist/client/index.mjs",
             "require": "./dist/client/index.mjs"
         },
         "./components": {
+            "development": {
+                "types": "./src/client/components.ts",
+                "import": "./src/client/components.ts"
+            },
             "types": "./dist/components/index.d.mts",
             "import": "./dist/components/index.es.js",
             "require": "./dist/components/index.es.js"
@@ -45,12 +61,6 @@
         "./vite": {
             "import": "./vite/plugins/vite.js",
             "require": "./vite/plugins/vite.js"
-        },
-        "./styles": "./dist/components/styles.css",
-        "./client-globals": {
-            "types": "./src/client/zenith-env.d.ts",
-            "import": "./src/client/zenith-env.d.ts",
-            "require": "./src/client/zenith-env.d.ts"
         }
     },
     "scripts": {
@@ -61,6 +71,9 @@
         "test:int": "vitest -p integration",
         "test": "npm-run-all -p test:*",
         "release": "node artisan.js release"
+    },
+    "peerDependencies": {
+        "vue": "^3.5.31"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",

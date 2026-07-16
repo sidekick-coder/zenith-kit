@@ -1,8 +1,3 @@
-<script lang="ts">
-export function defineLegacyDialogFormFields<T extends Record<string, FormField | ((data: any) => FormField)>>(field: T) {
-    return field
-}
-</script>
 <script lang="ts" setup generic="T extends BaseSchema<any, any, any>">
 import { useForm } from 'vee-validate'
 import * as v from 'valibot'
@@ -13,7 +8,6 @@ import type { BaseSchema } from 'valibot'
 import { toast } from 'vue-sonner'
 import ClientOnly from './ClientOnly.vue'
 import FormAutoFieldList from './FormAutoFieldList.vue'
-import type { FormField } from './FormAutoFieldList.vue'
 
 import $fetch from '#client/facades/fetcher.ts'
 import Button from '#client/components/ZButton.vue'
@@ -27,16 +21,20 @@ import {
     DialogTrigger,
 } from '#client/components/ui/dialog/index.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
-import { validator } from '#shared/index.ts'
+import { validator } from '#shared/facades/validator.ts'
 
 const props = defineProps({
     title: {
         type: String,
-        default: $t('Form'),
+        default: () => $t('Form'),
     },
     description: {
         type: String,
-        default: $t('Fill in the details below to create a new item'),
+        default: () => $t('Fill in the details below to create a new item'),
+    },
+    submitText: {
+        type: String,
+        default: () => $t('Save'),
     },
     schema: {
         type: Object as () => T,
@@ -66,10 +64,6 @@ const props = defineProps({
     fields: {
         type: Object as () => Record<keyof v.InferInput<T>, FormField | ((data: any) => FormField)>,
         default: () => ({}),
-    },
-    submitText: {
-        type: String,
-        default: $t('Save'),
     },
     toastOnSuccess: {
         type: String,

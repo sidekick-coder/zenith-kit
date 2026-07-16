@@ -16,6 +16,7 @@ export default defineConfig([
     eslintConfigPrettier,
     {
         rules: {
+            'no-undef': 'off', // let typescript handle this
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-empty-object-type': 'off',
         }

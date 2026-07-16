@@ -6,42 +6,46 @@ import path from 'path'
 export function generateIndexFile(options: any) {
     const folders = options.folders
     const filename = options.filename
-    const glob = options.glob || '**/*.(ts|js)'
+    const patterns = options.patterns || []
     const defaultIgnore = [
-        "**/index.ts",
+        "**/node_modules",
         "**/*.spec.ts",
         "**/*.spec-d.ts",
         "**/*.test.ts",
         "**/*.test-d.ts",
     ]
 
+    if (options.folders) {
+        for (const folder of folders) {
+            patterns.push(`${folder}/**/*.ts`, `${folder}/**/*.js`)
+        }
+    }
+
     const ignore = options.ignore || []
 
     let content = ''
 
-    for (const folder of folders) {
-        const files = fg.sync(`${folder}/${glob}`, {
-            ignore: [...defaultIgnore, ...ignore], 
-        })
+    const files = fg.sync(patterns, {
+        ignore: [...defaultIgnore, ...ignore],
+    })
 
-        for (const file of files) {
-            const filePath = path.relative(path.dirname(filename), file)
-            const extension = path.extname(file)
+    for (const file of files) {
+        const filePath = path.relative(path.dirname(filename), file)
+        const extension = path.extname(file)
 
-            const fileContent = fs.readFileSync(file, 'utf-8')
+        const fileContent = fs.readFileSync(file, 'utf-8')
 
-            let shouldExportDefault = fileContent.includes('export default') && !filePath.includes('generateIndexFile.ts')
+        let shouldExportDefault = fileContent.includes('export default') && !filePath.includes('generateIndexFile.ts')
 
-            if (file.endsWith('.vue')) {
-                shouldExportDefault = true
-            }
+        if (file.endsWith('.vue')) {
+            shouldExportDefault = true
+        }
 
-            content += `export * from './${filePath}'\n`
+        content += `export * from './${filePath}'\n`
 
-            // default export 
-            if (shouldExportDefault) {
-                content += `export { default as ${path.basename(file, extension)} } from './${filePath}'\n`
-            }
+        // default export 
+        if (shouldExportDefault) {
+            content += `export { default as ${path.basename(file, extension)} } from './${filePath}'\n`
         }
     }
 

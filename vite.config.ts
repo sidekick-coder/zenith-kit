@@ -1,4 +1,4 @@
-import { createLogger, defineConfig, Plugin, UserConfig } from 'vite'
+import { createLogger, defineConfig, UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import dts from 'vite-plugin-dts'
@@ -10,18 +10,14 @@ const prebuild = () => ({
     name: 'prebuild',
     buildStart() {
         generateIndexFile({
-            glob: '**/*.{ts,vue,css}',
-            folders: [
-                'src/client/composables',
-                // 'src/client/utils',
-                // 'src/client/facades',
-                'src/client/components',
-                'src/client/layouts',
-                // 'src/client/services',
-                // 'src/client/guards',
-                'src/client/css',
-            ],
-            filename: 'src/client/components.ts'
+            filename: 'src/client/components.ts',
+            patterns: [
+                'src/client/composables/*.ts',
+                'src/client/components/ui/**/index.ts',
+                'src/client/components/*.vue',
+                'src/client/layouts/*.vue',
+                'src/client/css/*.css',
+            ]
         })
 
         logger.info('Generated index.ts for client')
@@ -35,15 +31,15 @@ const externals = [
 ]
 
 const plugins: UserConfig['plugins'] = [
-        vue({
-            template: {
-                compilerOptions: {
-                    isCustomElement: (tag) => {
-                        return ['iconify-icon'].includes(tag)
-                    }
+    vue({
+        template: {
+            compilerOptions: {
+                isCustomElement: (tag) => {
+                    return ['iconify-icon'].includes(tag)
                 }
             }
-        }),
+        }
+    }),
 ]
 
 if (process.env.BUILD_TYPES === 'true') {

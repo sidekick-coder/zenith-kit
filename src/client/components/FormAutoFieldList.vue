@@ -1,26 +1,3 @@
-<script lang="ts">
-export interface FormField {
-    component:
-    'text-field'
-    | 'textarea'
-    | 'select'
-    | 'autocomplete'
-    | 'switch'
-    | 'file-upload'
-    | 'image-upload'
-    | 'color-picker'
-    | 'string-list-input'
-    | 'json-input'
-    | 'date-picker'
-    | 'hidden'
-    [key: string]: any
-}
-
-export function defineFormFields(field: Record<string, FormField>) {
-    return field
-}
-
-</script>
 <script lang="ts" setup generic="T extends BaseSchema<any, any, any>">
 import * as v from 'valibot'
 import { computed } from 'vue'
@@ -36,10 +13,11 @@ import FormJsonInput from './FormJsonInput.vue'
 import FormDatePicker from './FormDatePicker.vue'
 import FormTextField from '#client/components/FormTextField.vue'
 import FormFileUploader from '#client/components/FormFileUploader.vue'
+import type { DefineFormField } from '#client/utils/defineFormFields.ts'
 
 const props = defineProps({
     fields: {
-        type: Object as () => Record<keyof v.InferInput<T>, FormField>,
+        type: Object as () => Record<keyof v.InferInput<T>, DefineFormField>,
         default: () => ({}),
     },
 })

@@ -95,6 +95,7 @@ export default defineConfig([
                         'src/client/entities',
                         'src/client/utils',
                         'src/client/guards',
+                        'src/client/registry',
                     ],
                     filename: 'src/client/index.ts'
                 })
