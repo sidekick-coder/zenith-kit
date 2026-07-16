@@ -1,5 +1,5 @@
 import LoggerService from './LoggerService.ts'
-import type LifecycleHook from '#shared/entities/LifecycleHook.ts'
+import LifecycleHook from '#shared/entities/LifecycleHook.ts'
 import type { Constructor } from '#shared/utils/compose.ts'
 import { tryCatch } from '../utils/tryCatch.ts'
 import { orderBy } from 'lodash-es'
@@ -158,6 +158,16 @@ export default class LifecycleService {
         for (const method of methods) {
             await this.emitMethod(method, options)
         }
+    }
+
+    public on(method: LifecycleMethod, handler: () => Promise<void>): void {
+        const h = new LifecycleHook()
+
+        h.hook_id = `custom:${method}:${Date.now()}`
+
+        h[method] = handler
+
+        this.add(h)
     }
 
     public async register(options?: ListOptions): Promise<void> {
