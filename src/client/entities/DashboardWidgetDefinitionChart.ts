@@ -35,7 +35,7 @@ export default class DashboardWidgetDefinitionChart extends DashboardWidgetDefin
     // return chart options for the chart widget. This can be overridden by plugins to provide custom chart options.
     // @ts-expect-error to be extended later
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async chartOptions(payload: DashboardWidgetData['options']){
+    public async chartOptions(payload: DashboardWidgetData['options']): Promise<any>{
         return {
             grid: {
                 left: '3%',
