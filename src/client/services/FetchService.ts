@@ -10,21 +10,22 @@ export interface FetchOptions extends RequestInit {
 export default class FetchService {
     public static __container_entry_key = 'FetchService'
 
-    protected async handleError(response: Response) {    
-        const contentType = response.headers.get('Content-Type') || ''
-
-        if (!contentType.includes('application/json')) {
-            toast.error($t('Internal Server Error'))
-            return
-        }
-
+    protected async handleError(response: Response) {
         if (response.headers.get('Content-Type')?.includes('json')) {
             const data = await response.json()
                 .catch(() => ({ message: $t('Internal Server Error') }))
 
             if (data.message) {
                 toast.error(data.message)
-            }    
+            }
+
+            return data
+        }
+
+        toast.error($t('Internal Server Error'))
+
+        return {
+            message: $t('Internal Server Error'),
         }
     }
 

@@ -8,11 +8,15 @@ export default class FetchBrowserService extends FetchService {
 
         const response = await fetch(fullUrl, fetchOptions)
 
+
         if (!response.ok) {
-            await this.handleError(response)
-            throw new Error(`HTTP error! status: ${response.status}`)
+            const result = await this.handleError(response)
+
+            throw result
         }
 
-        return this.parseResponse<T>(response)
+        const parsed = await this.parseResponse<T>(response)
+
+        return parsed
     }
 }
