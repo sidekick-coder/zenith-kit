@@ -146,7 +146,7 @@ export default class DashboardWidget {
         styles.set('position', 'absolute')
         styles.set('left', `${x * colSize}px`)
         styles.set('top', `${y * rowSize}px`)
-        styles.set('width', `${cols * colSize}px`)
+        styles.set('width', `${cols * colSize - 4}px`) // Subtract 4px for padding
         styles.set('height', `${rows * rowSize}px`)
 
         return Array.from(styles.entries())
