@@ -3,11 +3,13 @@ import router from '#client/facades/router.ts'
 
 import { useRouteQuery as vueUserRouteQuery } from '@vueuse/router'
 
-export const useRouteQuery: typeof useRouteQuery = (key, defaultValue, options) => {
+const zenithUseRouteQuery= (key: any, defaultValue: any, options: any) => {
     return vueUserRouteQuery(key, defaultValue, {
         route,
         router,
         ...options
     })
 }
+
+export const useRouteQuery = zenithUseRouteQuery as typeof vueUserRouteQuery
 
