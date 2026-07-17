@@ -78,7 +78,7 @@ function createArray(from: number, to: number): number[] {
 <template>
     <div class="flex flex-col sm:flex-row items-center justify-between px-2 gap-4">
         <div class="flex-1 text-sm text-muted-foreground order-2 sm:order-1">
-            {{ $t('Showing :0 of :1 rows', [Math.min(limit, total), total]) }}
+            {{ $t('Showing from :0 to :1 of :2 rows', [(page - 1) * limit, Math.min(page * limit, total), total]) }}
         </div>
         <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-2 order-1 sm:order-2">
             <Select
