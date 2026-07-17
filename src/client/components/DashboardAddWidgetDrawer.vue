@@ -26,7 +26,6 @@ function load() {
 
 function add(widgetDef: DashboardWidgetDefinition) {
     dashboard.value.addWidget({
-        name: widgetDef.name,
         definition_id: widgetDef.id 
     })
 

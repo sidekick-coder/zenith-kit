@@ -97,6 +97,10 @@ export default class Dashboard {
         this.widgets = this.widgets.filter((_, i) => i !== index)
     }
 
+    public removeWidgetById(id: string) {
+        this.widgets = this.widgets.filter((w) => w.id !== id)
+    }
+
     public updateWidget(index: number, widget: DashboardWidget) {
         this.widgets = this.widgets.map((w, i) => i === index ? widget : w)
     }

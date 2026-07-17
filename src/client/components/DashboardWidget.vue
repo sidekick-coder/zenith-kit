@@ -63,7 +63,10 @@ async function startEdit() {
     editing.value = true
     await nextTick()
     if (!inputRef.value) return
-    inputRef.value.value = widget.value.name || 'Widget'
+
+    if (widget.value.name) {
+        inputRef.value.value = widget.value.name || 'Widget'
+    }
     inputRef.value.focus()
     inputRef.value.select()
 }
@@ -93,53 +96,27 @@ function createOptions(from: number, to: number) {
 </script>
 
 <template>
-    <div
-        :style="styles"
-        class="p-2"
-    >
+    <div :style="styles" class="p-2">
         <div class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm h-full overflow-hidden">
             <div class="flex items-center gap-2 border-b px-4 py-3">
-                <input
-                    v-if="editing"
-                    ref="inputRef"
-                    placeholder="Widget"
-                    class="flex-1 bg-transparent text-sm font-medium outline-none"
-                    @keydown.enter="commitEdit"
-                    @keydown.esc="cancelEdit"
-                    @blur="commitEdit"
-                >
+                <input v-if="editing" ref="inputRef" :placeholder="widget.definition.name || $t('Widget')"
+                    class="flex-1 bg-transparent text-sm font-medium outline-none" @keydown.enter="commitEdit"
+                    @keydown.esc="cancelEdit" @blur="commitEdit">
 
-                <span
-                    v-else
-                    class="flex-1 text-sm font-medium"
-                    @click="startEdit"
-                >
-                    {{ widget.name || $t('Widget') }}
+                <span v-else class="flex-1 text-sm font-medium" @click="startEdit">
+                    {{ widget.name || widget.definition.name || $t('Widget') }}
                 </span>
 
                 <div class="flex items-center gap-2">
-                    <component
-                        :is="action.component"
-                        v-for="(action, index) in actions"
-                        :key="index"
-                        v-bind="action.props"
-                    />
+                    <component :is="action.component" v-for="(action, index) in actions" :key="index"
+                        v-bind="action.props" />
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        class="h-7 w-7"
-                        @click="layout = true"
-                    >
+                    <Button variant="ghost" size="icon" class="h-7 w-7" @click="layout = true">
                         <Icon name="LayoutGrid" />
                     </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                class="h-7 w-7"
-                            >
+                            <Button variant="ghost" size="icon" class="h-7 w-7">
                                 <Icon name="EllipsisVertical" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -149,10 +126,8 @@ function createOptions(from: number, to: number) {
                                 <Icon name="Copy" />
                                 {{ $t('Duplicate') }}
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                class="text-destructive focus:text-destructive"
-                                @click="emit('remove')"
-                            >
+                            <DropdownMenuItem class="text-destructive focus:text-destructive"
+                                @click="dashboard.removeWidgetById(widget.id)">
                                 <Icon name="Trash" />
                                 {{ $t('Remove') }}
                             </DropdownMenuItem>
@@ -162,53 +137,27 @@ function createOptions(from: number, to: number) {
             </div>
 
             <div class="flex-1">
-                <component
-                    :is="widgetComponent"
-                    v-if="widgetComponent"
-                />
+                <component :is="widgetComponent" v-if="widgetComponent" />
 
-                <div
-                    v-else
-                    class="flex h-full items-center justify-center text-sm text-muted-foreground"
-                >
+                <div v-else class="flex h-full items-center justify-center text-sm text-muted-foreground">
                     {{ $t('No component found for this widget') }}
                 </div>
             </div>
         </div>
     </div>
 
-    <DashboardDrawer
-        v-model:open="layout"
-        :title="$t('Layout')"
-    >
+    <DashboardDrawer v-model:open="layout" :title="$t('Layout')">
         <div class="px-4 py-3">
-            <DashboardGridUnitInput
-                v-model="widget.x"
-                :label="$t('Position X')"
-                :options="createOptions(0, 11)"
-            />
+            <DashboardGridUnitInput v-model="widget.x" :label="$t('Position X')" :options="createOptions(0, 11)" />
 
-            <DashboardGridUnitInput
-                v-model="widget.y"
-                :label="$t('Position Y')"
-                :options="createOptions(0, 10)"
-                custom
-            />
+            <DashboardGridUnitInput v-model="widget.y" :label="$t('Position Y')" :options="createOptions(0, 10)"
+                custom />
 
-            <DashboardGridUnitInput
-                v-model="widget.columns"
-                :label="$t('Columns')"
-                :options="createOptions(1, 12)"
-                filled
-            />
+            <DashboardGridUnitInput v-model="widget.columns" :label="$t('Columns')" :options="createOptions(1, 12)"
+                filled />
 
-            <DashboardGridUnitInput
-                v-model="widget.rows"
-                :label="$t('Rows')"
-                :options="createOptions(1, 10)"
-                filled
-                custom
-            />
+            <DashboardGridUnitInput v-model="widget.rows" :label="$t('Rows')" :options="createOptions(1, 10)" filled
+                custom />
         </div>
     </DashboardDrawer>
 </template>
