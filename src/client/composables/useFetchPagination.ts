@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref, toRef, watch } from 'vue'
 import type { Ref } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 import { useState } from './useState.ts'
@@ -38,10 +38,10 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
         set: (value) => { response.value.page = value }
     })
 
-    const query = ref(JSON.parse(JSON.stringify(options.query || {}))) as Ref<Record<string, any>>
-    const limit = ref(options.limit || 10)
-    const orderBy = ref(options.orderBy || null)
-    const orderDirection = ref(options.orderDirection || null)
+    const query = toRef(options.query || {}) as Ref<Record<string, any>>
+    const limit = toRef(options.limit || 10) as Ref<number>
+    const orderBy = toRef(options.orderBy || null) as Ref<string | string[] | null>
+    const orderDirection = toRef(options.orderDirection || null) as Ref<'asc' | 'desc' | ('asc' | 'desc')[] | null>
 
     const total = computed(() => response.value.total)
     const totalPages = computed(() => response.value.total_pages)
@@ -65,11 +65,11 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
         loading.value = true
 
         const params = JSON.parse(JSON.stringify({
+            ...query.value,
             page: page.value,
             limit: limit.value,
             orderBy: orderBy.value ? orderBy.value : undefined,
             orderDirection: orderDirection.value ? orderDirection.value : undefined,
-            ...query.value
         }))
 
         const [error, result] = await $fetch.try<Pagination>(url, {
