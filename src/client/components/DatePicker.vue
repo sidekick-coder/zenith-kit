@@ -4,11 +4,11 @@ import { format } from 'date-fns'
 import { fromDate,  getLocalTimeZone } from '@internationalized/date'
 import type { DateValue } from '@internationalized/date'
 import Icon from './Icon.vue'
-import { Calendar } from '#client/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '#client/components/ui/popover'
-import { Button } from '#client/components/ui/button'
-import { Input } from '#client/components/ui/input'
-import { cn } from '#client/lib/utils'
+import { Calendar } from '#client/components/ui/calendar/index.ts'
+import { Popover, PopoverContent, PopoverTrigger } from '#client/components/ui/popover/index.ts'
+import { Button } from '#client/components/ui/button/index.ts'
+import { Input } from '#client/components/ui/input/index.ts'
+import { cn } from '#client/lib/utils.ts'
 
 const props = defineProps({
     placeholder: {
@@ -143,8 +143,8 @@ const calendarValue = computed({
                 />
             </Button>
         </PopoverTrigger>
-        <PopoverContent class="w-auto p-0">
-            <Calendar v-model="calendarValue" />
+        <PopoverContent class="min-w-[320px] w-auto p-0">
+            <Calendar v-model="calendarValue"  />
             <div
                 v-if="mode === 'datetime'"
                 class="p-3 border-t"

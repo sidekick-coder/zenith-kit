@@ -136,7 +136,7 @@ function createOptions(from: number, to: number) {
                 </div>
             </div>
 
-            <div class="flex-1">
+            <div class="flex-1 overflow-hidden">
                 <component :is="widgetComponent" v-if="widgetComponent" />
 
                 <div v-else class="flex h-full items-center justify-center text-sm text-muted-foreground">
