@@ -42,13 +42,11 @@ const plugins: UserConfig['plugins'] = [
     }),
 ]
 
-if (process.env.BUILD_TYPES === 'true') {
-    plugins.push(dts({
-        entryRoot: 'src/client/components.ts',
-        tsconfigPath: './tsconfig.client.json',
-        staticImport: true
-    }))
-}
+plugins.push(dts({
+    entryRoot: 'src/client/components.ts',
+    tsconfigPath: './tsconfig.client.json',
+    staticImport: true
+}))
 
 plugins.push(tailwindcss(), prebuild())
 
