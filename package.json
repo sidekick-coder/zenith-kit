@@ -54,7 +54,7 @@
                 "types": "./src/client/components.ts",
                 "import": "./src/client/components.ts"
             },
-            "types": "./dist/components/index.d.mts",
+            "types": "./dist/components/index.d.ts",
             "import": "./dist/components/index.es.js",
             "require": "./dist/components/index.es.js"
         },

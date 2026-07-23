@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import DashboardDrawer from './DashboardDrawer.vue'
 import ZButton from './ZButton.vue'
 import Icon from './Icon.vue'
@@ -19,6 +19,10 @@ const search = defineModel('search', {
 })
 
 const items = ref<DashboardWidgetDefinition[]>([])
+
+const filteredItems = computed(() => {
+    return items.value.filter(i => i.name.toLowerCase().includes(search.value.toLowerCase()))
+})
 
 function load() {
     items.value = dashboardRegistry.list()
@@ -54,7 +58,7 @@ onMounted(load)
             >
             <div class="flex flex-col gap-2">
                 <div
-                    v-for="item in items.filter(i => i.name.toLowerCase().includes(search.toLowerCase()))"
+                    v-for="item in filteredItems"
                     :key="item.name"
                     class="flex items-center justify-between rounded-md border border-border bg-background px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
                 >

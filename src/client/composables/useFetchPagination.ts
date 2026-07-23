@@ -1,5 +1,5 @@
 import { computed, ref, toRef, watch } from 'vue'
-import type { Ref } from 'vue'
+import type { MaybeRef, Ref } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 import { useState } from './useState.ts'
 import type Pagination from '#shared/entities/PaginationEntity.ts'
@@ -7,7 +7,8 @@ import $fetch from '#client/facades/fetcher.ts'
 
 export interface UseFetchPaginationOptions {
     key?: string
-    query?: Record<string, any>
+    query?: MaybeRef<Record<string, any>>
+    page?: MaybeRef<number>
     serialize?: (item: any) => any
     refine?: (items: any[]) => any[]
     limit?: number
@@ -33,11 +34,7 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
 
     const loading = ref(false)
 
-    const page = computed({
-        get: () => response.value.page,
-        set: (value) => { response.value.page = value }
-    })
-
+    const page = toRef(options.page || 1) as Ref<number>
     const query = toRef(options.query || {}) as Ref<Record<string, any>>
     const limit = toRef(options.limit || 10) as Ref<number>
     const orderBy = toRef(options.orderBy || null) as Ref<string | string[] | null>

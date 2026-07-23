@@ -4,22 +4,28 @@
     ],
     "compilerOptions": {
         "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "types": [
+            "vite/client"
+        ],
         "strict": true,
         "noUnusedLocals": false,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,
         "strictPropertyInitialization": false,
-        "baseUrl": ".",
-        "lib": [
-            "es2023",
-            "dom",
-            "dom.iterable"
-        ]
+        "baseUrl": "src",
+        "paths": {
+            "#client/*": [
+                "client/*"
+            ],
+            "#shared/*": [
+                "shared/*"
+            ]
+        }
     },
     "include": [
-        "src/client/**/**/*.ts",
-        "src/client/**/**/*.vue",
-        "src/shared/**/**/*.ts"
+        "src/client/**/*.ts",
+        "src/client/**/*.vue",
+        "src/shared/**/*.ts"
     ]
 }

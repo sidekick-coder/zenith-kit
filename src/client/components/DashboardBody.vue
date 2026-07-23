@@ -46,7 +46,7 @@ const styles = computed(() => {
 <template>
     <div
         v-if="widgets.length"
-        class="relative h-[calc(100dvh-9rem)] rounded-md overflow-auto"
+        class="relative h-[calc(100dvh-9rem)] rounded-md overflow-scroll dashboard-body zenith-scrollbar"
         :style="styles"
     >
         <DashboardWidget

@@ -1,6 +1,6 @@
 import BaseException from "#shared/exceptions/BaseException.ts"
 
-export interface CookieMapEntityOptions {
+export interface HeaderMapEntityOptions {
     headers?: Record<string, string>
     setHeader?: (name: string, value: string) => void
 }
@@ -10,7 +10,7 @@ export default class HeaderMapEntity {
     public entries: Map<string, string>
     public setHeader?: (name: string, value: string) => void
 
-    constructor(data?: CookieMapEntityOptions) {
+    constructor(data?: HeaderMapEntityOptions) {
         this.entries = new Map<string, string>()
         this.setHeader = data?.setHeader
 

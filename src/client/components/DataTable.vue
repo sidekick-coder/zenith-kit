@@ -1,5 +1,5 @@
-<script lang="ts">
-import { computed, ref  } from 'vue'
+<script setup lang="ts" generic="T extends Record<string, any>">
+import { computed, ref } from 'vue'
 import type { PropType } from 'vue'
 import { get } from 'lodash-es'
 import { syncRef } from '@vueuse/core'
@@ -20,27 +20,9 @@ import {
 import { cn } from '#client/lib/utils.ts'
 import { useBreakpoints } from '#client/composables/useBreakpoint.ts'
 import { useFetchPagination } from '#client/composables/useFetchPagination.ts'
+import type { DataTableColumn } from '#client/utils/defineColumns.ts'
 
-export interface DataTableFetchParams {
-    page: number
-    limit: number
-}
-
-// export interface DataTableColumn<T extends Record<string, any> = any> {
-//     id?: string
-//     label?: string
-//     field?: keyof T | ((row: T) => any) | (string & {})
-//     width?: number
-//     cardClass?: string
-// }
-//
-// export function defineColumns<T extends Record<string, any> = any>(columns: DataTableColumn<T>[]){
-//     return columns
-// }
-</script>
-<script setup lang="ts" generic="T extends Record<string, any>">
-
-defineOptions({ 
+defineOptions({
     inheritAttrs: false
 })
 
@@ -98,8 +80,8 @@ const emit = defineEmits<{
 
 interface Slots {
     default(): any
-    [key: `header-${string}`]: (props: { column: DataTableColumn }) => any
-    [key: `row-${string}`]: (props: { column: DataTableColumn, row: T }) => any
+    [key: `header-${string}`]: (props: { column: DataTableColumn<T> }) => any
+    [key: `row-${string}`]: (props: { column: DataTableColumn<T>, row: T }) => any
 }
 
 defineSlots<Slots>()
@@ -124,8 +106,8 @@ let innerPage = ref(1)
 let innerTotalPages = ref(1)
 let innerTotal = ref(0)
 let innerLimit = ref(10)
-let innerLoad = async () => {}
-let innerReset = async () => {}
+let innerLoad = async () => { }
+let innerReset = async () => { }
 
 
 // fetch
@@ -171,7 +153,7 @@ const isBreak = breakpoints.smaller(breakpoint)
 
 const shouldBreak = computed(() => {
     if (props.noMobile) return false
-    
+
     return isBreak.value
 })
 
@@ -217,7 +199,7 @@ function findKey(row: any) {
 }
 
 
-function findValue(row: any, column: DataTableColumn) {
+function findValue(row: any, column: DataTableColumn<T>) {
     if (typeof column.field === 'function') {
         return column.field(row)
     }
@@ -283,13 +265,13 @@ function select(row: any) {
 }
 
 function unselect(row: any) {
-    const key = findKey(row) 
+    const key = findKey(row)
 
     if (key) {
         selected.value = selected.value.filter(i => findKey(i) !== key)
         return
     }
-    
+
     if (props.selection === 'single') {
         selected.value = []
     }
@@ -307,7 +289,7 @@ function toggle(row: any) {
     select(row)
 }
 
-function selectAll(){
+function selectAll() {
     if (props.rowKey) {
         const newSelected = innerRows.value.filter(r => !selected.value.some(s => findKey(r) === findKey(s)))
         selected.value = [...selected.value, ...newSelected]
@@ -318,7 +300,7 @@ function selectAll(){
     selected.value = [...selected.value, ...newSelected]
 }
 
-function unselectAll(){
+function unselectAll() {
     if (props.rowKey) {
         selected.value = selected.value.filter(s => !innerRows.value.some(r => findKey(r) === findKey(s)))
         return
@@ -327,7 +309,7 @@ function unselectAll(){
     selected.value = selected.value.filter(s => !innerRows.value.includes(s))
 }
 
-function toggleAll(){
+function toggleAll() {
     const allSelected = innerRows.value.every(isSelected)
 
     if (allSelected) return unselectAll()
@@ -336,7 +318,7 @@ function toggleAll(){
 }
 
 
-function onClick(item: any){
+function onClick(item: any) {
     emit('click:row', item)
 }
 
@@ -349,98 +331,55 @@ defineExpose({
 
 <template>
     <!-- Desktop Table View -->
-    <Table
-        v-if="!shouldBreak"
+    <Table v-if="!shouldBreak"
         :wrapper-class="cn('border rounded-lg', props.class, loading ? 'opacity-50 pointer-events-none' : '')"
-        v-bind="$attrs"
-    >
+        v-bind="$attrs">
         <TableHeader>
             <TableRow>
-                <TableHead
-                    v-if="props.selection === 'multiple'"
-                    class="w-10 text-center p-0"
-                    :style="{
-                        height: 'var(--datatable-th-height, 3rem)'
-                    }"
-                >
-                    <Checkbox
-                        class="translate-y-0.5"
+                <TableHead v-if="props.selection === 'multiple'" class="w-10 text-center p-0" :style="{
+                    height: 'var(--datatable-th-height, 3rem)'
+                }">
+                    <Checkbox class="translate-y-0.5"
                         :model-value="selected.length === innerRows.length && innerRows.length > 0"
                         :indeterminate="selected.length > 0 && selected.length < innerRows.length"
-                        @click.stop="toggleAll"
-                    />
+                        @click.stop="toggleAll" />
                 </TableHead>
-                <TableHead
-                    v-for="c in columns"
-                    :key="c.id"
-                    :style="{
-                        width: c.width ? c.width + 'px' : 'auto',
-                        height: 'var(--datatable-th-height, 3rem)'
-                    }"
-                >
-                    <slot
-                        :name="`header-${c.id}`"
-                        :column="c"
-                    >
+                <TableHead v-for="c in columns" :key="c.id" :style="{
+                    width: c.width ? c.width + 'px' : 'auto',
+                    height: 'var(--datatable-th-height, 3rem)'
+                }">
+                    <slot :name="`header-${c.id}`" :column="c">
                         {{ c.label }}
                     </slot>
                 </TableHead>
             </TableRow>
             <TableRow v-if="loading">
-                <TableCell
-                    :colspan="columns.length + (props.selection ? 1 : 0)"
-                    class="p-0"
-                >
+                <TableCell :colspan="columns.length + (props.selection ? 1 : 0)" class="p-0">
                     <div class="h-1 bg-primary w-full animate-pulse" />
                 </TableCell>
             </TableRow>
         </TableHeader>
         <TableBody>
             <TableRow v-if="innerRows.length === 0">
-                <TableCell
-                    :colspan="columns.length + (props.selection ? 1 : 0)"
-                    class="text-center"
-                    :style="{
-                        height: 'var(--datatable-td-height, 3rem)'
-                    }"
-                >
+                <TableCell :colspan="columns.length + (props.selection ? 1 : 0)" class="text-center" :style="{
+                    height: 'var(--datatable-td-height, 3rem)'
+                }">
                     {{ loading ? $t('Loading...') : $t('No data available') }}
                 </TableCell>
             </TableRow>
 
-            <TableRow
-                v-for="row in innerRows.filter(filter)"
-                :key="row.id"
+            <TableRow v-for="row in innerRows.filter(filter)" :key="row.id"
                 :data-state="isSelected(row) ? 'selected' : undefined"
-                :class="cn('hover:bg-muted/20 ', findRowClass(row))"
-                :style="findRowStyle(row)"
-                @click="onClick(row)"
-                @dblclick="emit('dblclick:row', row.original)"
-            >
-                <TableCell
-                    v-if="props.selection"
-                    class="w-10 text-center p-0"
-                >
-                    <Checkbox
-                        class="translate-y-0.5"
-                        :model-value="isSelected(row)"
-                        @click.stop="toggle(row)"
-                    />
+                :class="cn('hover:bg-muted/20 ', findRowClass(row))" :style="findRowStyle(row)" @click="onClick(row)"
+                @dblclick="emit('dblclick:row', row.original)">
+                <TableCell v-if="props.selection" class="w-10 text-center p-0">
+                    <Checkbox class="translate-y-0.5" :model-value="isSelected(row)" @click.stop="toggle(row)" />
                 </TableCell>
-                <TableCell
-                    v-for="c in columns"
-                    :key="c.id"
-                    :style="{
-                        width: c.width ? c.width + 'px' : 'auto',
-                        height: 'var(--datatable-td-height, 3rem)'
-                    }"
-                    class="whitespace-normal"
-                >
-                    <slot
-                        :name="`row-${c.id}`"
-                        :column="c"
-                        :row="row"
-                    >
+                <TableCell v-for="c in columns" :key="c.id" :style="{
+                    width: c.width ? c.width + 'px' : 'auto',
+                    height: 'var(--datatable-td-height, 3rem)'
+                }" class="whitespace-normal">
+                    <slot :name="`row-${c.id}`" :column="c" :row="row">
                         {{ findValue(row, c) }}
                     </slot>
                 </TableCell>
@@ -449,28 +388,17 @@ defineExpose({
     </Table>
 
     <!-- Mobile Card View -->
-    <div
-        v-if="shouldBreak"
-        :class="cn('space-y-4', props.class, loading ? 'opacity-50 pointer-events-none' : '')"
-        v-bind="$attrs"
-    >
+    <div v-if="shouldBreak" :class="cn('space-y-4', props.class, loading ? 'opacity-50 pointer-events-none' : '')"
+        v-bind="$attrs">
         <!-- Loading indicator -->
-        <div
-            v-if="loading"
-            class="h-1 bg-primary w-full animate-pulse rounded"
-        />
+        <div v-if="loading" class="h-1 bg-primary w-full animate-pulse rounded" />
 
         <!-- Select all checkbox for mobile -->
-        <Card
-            v-if="props.selection === 'multiple' && innerRows.length > 0"
-            class="py-2"
-        >
+        <Card v-if="props.selection === 'multiple' && innerRows.length > 0" class="py-2">
             <CardContent class="flex items-center gap-2">
-                <Checkbox
-                    :model-value="selected.length === innerRows.length && innerRows.length > 0"
+                <Checkbox :model-value="selected.length === innerRows.length && innerRows.length > 0"
                     :indeterminate="selected.length > 0 && selected.length < innerRows.length"
-                    @click.stop="toggleAll"
-                />
+                    @click.stop="toggleAll" />
                 <span class="text-sm text-muted-foreground">
                     {{ $t('Select all') }}
                 </span>
@@ -485,45 +413,24 @@ defineExpose({
         </Card>
 
         <!-- Cards -->
-        <Card
-            v-for="row in innerRows"
-            :key="row.id"
-            :data-state="isSelected(row) ? 'selected' : undefined"
-            :class="cn(
-                'cursor-pointer transition-colors hover:bg-muted/20',
-                isSelected(row) ? 'border-primary bg-primary/5' : '',
-                findRowClass(row)
-            )"
-            @click="onClick(row)"
-            @dblclick="emit('dblclick:row', row.original)"
-        >
+        <Card v-for="row in innerRows" :key="row.id" :data-state="isSelected(row) ? 'selected' : undefined" :class="cn(
+            'cursor-pointer transition-colors hover:bg-muted/20',
+            isSelected(row) ? 'border-primary bg-primary/5' : '',
+            findRowClass(row)
+        )" @click="onClick(row)" @dblclick="emit('dblclick:row', row.original)">
             <CardContent class="p-0">
                 <div class="flex items-start gap-2">
-                    <Checkbox
-                        v-if="props.selection"
-                        class="mt-1"
-                        :model-value="isSelected(row)"
-                        @click.stop="toggle(row)"
-                    />
+                    <Checkbox v-if="props.selection" class="mt-1" :model-value="isSelected(row)"
+                        @click.stop="toggle(row)" />
                     <div class="w-full">
-                        <div
-                            v-for="c in columns"
-                            :key="c.id"
-                            :class="cn('space-x-4 flex justify-between items-center  overflow-x-auto border-b px-4 py-3 last:border-b-0', c.cardClass)"
-                        >
+                        <div v-for="c in columns" :key="c.id"
+                            :class="cn('space-x-4 flex justify-between items-center  overflow-x-auto border-b px-4 py-3 last:border-b-0')">
                             <div class="text-xs font-medium text-muted-foreground uppercase tracking-wide min-w-[40%]">
-                                <slot
-                                    :name="`header-${c.id}`"
-                                    :column="c"
-                                >
+                                <slot :name="`header-${c.id}`" :column="c">
                                     {{ c.label }}
                                 </slot>
                             </div>
-                            <slot
-                                :name="`row-${c.id}`"
-                                :column="c"
-                                :row="row"
-                            >
+                            <slot :name="`row-${c.id}`" :column="c" :row="row">
                                 <div class="text-sm font-medium block ">
                                     {{ findValue(row, c) }}
                                 </div>
@@ -535,12 +442,6 @@ defineExpose({
         </Card>
     </div>
 
-    <DataTablePagination
-        v-if="!hidePagination"
-        v-model:page="innerPage"
-        v-model:limit="innerLimit"
-        v-model:total="innerTotal"
-        v-model:total-pages="innerTotalPages"
-        class="mt-4"
-    />
+    <DataTablePagination v-if="!hidePagination" v-model:page="innerPage" v-model:limit="innerLimit"
+        v-model:total="innerTotal" v-model:total-pages="innerTotalPages" class="mt-4" />
 </template>

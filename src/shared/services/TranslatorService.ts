@@ -101,7 +101,7 @@ export default class TranslatorService {
         }
 
         Object.entries(args).forEach(([aKey, aValue]) => {
-            translation = translation.replace(`:${aKey}`, aValue)
+            translation = translation.replace(`:${aKey}`, String(aValue))
         })
 
         return translation
