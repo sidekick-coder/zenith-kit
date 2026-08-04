@@ -43,7 +43,7 @@ const plugins: UserConfig['plugins'] = [
 ]
 
 plugins.push(dts({
-    entryRoot: 'src/client/components.ts',
+    // entryRoot: 'src/client/components.ts',
     tsconfigPath: './tsconfig.client.json',
     staticImport: true
 }))
