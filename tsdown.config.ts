@@ -75,6 +75,11 @@ export default defineConfig([
         minify: true,
         sourcemap: 'inline',
         tsconfig: 'tsconfig.client.json',
+        define: {
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+            'import.meta.env.DEV': process.env.NODE_ENV === 'development' ? "true" : "false",
+            'import.meta.env.PROD': process.env.NODE_ENV === 'production' ? "true" : "false",
+        },
         deps: {
             neverBundle: [
                 'vue',
