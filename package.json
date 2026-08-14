@@ -23,40 +23,40 @@
     },
     "exports": {
         "./shared": {
-            "types": "./dist/shared/index.d.mts",
-            "import": "./dist/shared/index.mjs",
-            "require": "./dist/shared/index.js",
             "development": {
                 "types": "./src/shared/index.ts",
                 "import": "./src/shared/index.ts"
-            }
+            },
+            "types": "./dist/shared/index.d.mts",
+            "import": "./dist/shared/index.mjs",
+            "require": "./dist/shared/index.js"
         },
         "./server": {
-            "types": "./dist/server/index.d.mts",
-            "import": "./dist/server/index.mjs",
-            "require": "./dist/server/index.js",
             "development": {
                 "types": "./src/server/index.ts",
                 "import": "./src/server/index.ts"
-            }
+            },
+            "types": "./dist/server/index.d.mts",
+            "import": "./dist/server/index.mjs",
+            "require": "./dist/server/index.js"
         },
         "./client": {
-            "types": "./dist/client/index.d.mts",
-            "import": "./dist/client/index.mjs",
-            "require": "./dist/client/index.mjs",
             "development": {
                 "types": "./src/client/index.ts",
                 "import": "./src/client/index.ts"
-            }
+            },
+            "types": "./dist/client/index.d.mts",
+            "import": "./dist/client/index.mjs",
+            "require": "./dist/client/index.mjs"
         },
         "./components": {
-            "types": "./dist/components/src/client/components.d.ts",
-            "import": "./dist/components/index.es.js",
-            "require": "./dist/components/index.es.js",
             "development": {
                 "types": "./src/client/components.ts",
                 "import": "./src/client/components.ts"
-            }
+            },
+            "types": "./dist/components/src/client/components.d.ts",
+            "import": "./dist/components/index.es.js",
+            "require": "./dist/components/index.es.js"
         },
         "./vite": {
             "import": "./vite/plugins/vite.js",
