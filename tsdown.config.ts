@@ -1,5 +1,5 @@
 import { defineConfig, globalLogger } from 'tsdown'
-import { generateIndexFile } from './src/server/utils/generateIndexFile'
+import { generateIndexFile } from './src/server/utils/generateIndexFile.ts'
 
 export default defineConfig([
     {
@@ -20,6 +20,7 @@ export default defineConfig([
                         'src/shared/facades',
                         'src/shared/mixins',
                         'src/shared/entities',
+                        'src/shared/loaders',
                     ],
                     filename: 'src/shared/index.ts'
                 })
