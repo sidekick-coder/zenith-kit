@@ -58,6 +58,10 @@
             "import": "./dist/components/index.es.js",
             "require": "./dist/components/index.es.js"
         },
+        "./styles.css": {
+            "import": "./dist/components/styles.css",
+            "require": "./dist/components/styles.css"
+        },
         "./vite": {
             "import": "./vite/plugins/vite.js",
             "require": "./vite/plugins/vite.js"
