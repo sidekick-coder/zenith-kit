@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import dts from 'vite-plugin-dts'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
+import zenith from './vite/plugins/zenith'
 
 const logger = createLogger()
 
@@ -27,7 +28,15 @@ const prebuild = () => ({
 const externals = [
     'vue',
     'vue-router',
+    '@vueuse/core',
+    '@vueuse/router',
     'vee-validate',
+    '@vee-validate/valibot',
+    "@unhead/vue",
+    "vue-router",
+    "vue-sonner",
+    "vee-validate",
+    "reka-ui",
 ]
 
 const plugins: UserConfig['plugins'] = [
@@ -48,7 +57,9 @@ plugins.push(dts({
     staticImport: true
 }))
 
-plugins.push(tailwindcss(), prebuild())
+plugins.push(tailwindcss(), prebuild(), zenith({
+    imports: externals
+}))
 
 export default defineConfig({
     customLogger: logger,
