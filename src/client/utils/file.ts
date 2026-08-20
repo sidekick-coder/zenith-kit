@@ -65,8 +65,7 @@ async function upload(options: UploadOptions){
         form.append('directory', options.directory)
     }
 
-    return $fetch(`/api/drives/${options.driveId}/upload`, {
-        method: 'POST',
+    return $fetch.post(`/api/drives/${options.driveId}/upload`, {
         body: form,
         query: { directory: options.directory, }
     })

@@ -136,7 +136,7 @@ defineExpose({
             :fetch="fetch"
         >
             <template
-                v-for="c in columns.filter(c => c.id !== 'actions')"
+                v-for="c in columns.filter((c: any) => c.id !== 'actions')"
                 #[`row-${c.id}`]="slotProps"
                 :key="c.id"
             >

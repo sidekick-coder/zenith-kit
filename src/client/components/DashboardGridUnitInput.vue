@@ -145,7 +145,7 @@ function getButtonClasses(bp: keyof DashboardGridUnit, v: number) {
                     :value="model[bp]"
                     type="number"
                     class="size-8 rounded-sm border border-border bg-muted px-2 text-xs outline-none focus:border-primary [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    @input="(e) => update(bp, Number((e.target as HTMLInputElement).value))"
+                    @input="(e: InputEvent) => update(bp, Number((e.target as HTMLInputElement).value))"
                 >
             </div>
         </div>

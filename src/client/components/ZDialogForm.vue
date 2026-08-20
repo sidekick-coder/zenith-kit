@@ -1,8 +1,3 @@
-<script lang="ts">
-export function defineDialogFormFields<T extends Record<string, FormField | ((data: any) => FormField)>>(field: T) {
-    return field
-}
-</script>
 <script lang="ts" setup generic="T extends BaseSchema<any, any, any>">
 import { useForm } from 'vee-validate'
 import * as v from 'valibot'
@@ -13,7 +8,6 @@ import type { BaseSchema } from 'valibot'
 import { toast } from 'vue-sonner'
 import ClientOnly from './ClientOnly.vue'
 import FormAutoFieldList from './FormAutoFieldList.vue'
-import type { FormField } from './FormAutoFieldList.vue'
 
 import Button from '#client/components/ZButton.vue'
 import {
@@ -27,6 +21,7 @@ import {
 } from '#client/components/ui/dialog/index.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 import validator from '#shared/facades/validator.ts'
+import type { DefineFormField } from '#client/utils/defineFormFields.ts'
 
 const props = defineProps({
     title: {
@@ -50,7 +45,7 @@ const props = defineProps({
         default: null,
     },
     fields: {
-        type: Object as () => Record<keyof v.InferInput<T>, FormField | ((data: any) => FormField)>,
+        type: Object as () => Record<keyof v.InferInput<T>, DefineFormField | ((data: any) => DefineFormField)>,
         default: () => ({}),
     },
     submitText: {
@@ -82,7 +77,7 @@ const { handleSubmit, errors, values, resetForm, setFieldValue } = useForm({
 })
 
 const formatedFields = computed(() => {
-    const result: Record<string, FormField> = {}
+    const result: Record<string, DefineFormField> = {}
 
     for (const [key, field] of Object.entries(props.fields)) {
         if (typeof field === 'function') {

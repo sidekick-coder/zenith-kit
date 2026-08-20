@@ -49,6 +49,13 @@ export default function(options) {
             manifest: true,
             ssr: options.ssr || false,
             ssrManifest: options.ssr || false,
+            rollupOptions: {
+                external: [
+                    'vue',
+                    'vue-router',
+                    'vee-validate'
+                ],
+            },
             lib: {
                 name: options.name,
                 entry: options.entry,

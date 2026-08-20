@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import type MenuItem from '#client/entities/menuItem.entity.ts'
+import type MenuItem from '#client/entities/MenuItemEntity.ts'
 import { parseTo } from '#client/utils/parseTo.ts'
 
 </script>
@@ -132,7 +132,7 @@ watch(groups, (newGroups) => {
                                     <SidebarMenuSub>
                                         <SidebarMenuSubItem>
                                             <SidebarMenuButton
-                                                v-for="child in items.filter(i => i.parent === item.id)"
+                                                v-for="child in items.filter((i: MenuItem) => i.parent === item.id)"
                                                 :key="child.label"
                                                 as-child
                                                 :is-active="child.to === $route.path"

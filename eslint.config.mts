@@ -22,6 +22,7 @@ export default defineConfig([
             'no-undef': 'off', // let typescript handle this
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-empty-object-type': 'off',
+            'vue/multi-word-component-names': 'off',
         }
     }
 ]);

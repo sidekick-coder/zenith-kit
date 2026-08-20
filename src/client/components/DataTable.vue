@@ -78,13 +78,11 @@ const emit = defineEmits<{
     'dblclick:row': [item: T]
 }>()
 
-interface Slots {
+defineSlots<{
     default(): any
     [key: `header-${string}`]: (props: { column: DataTableColumn<T> }) => any
     [key: `row-${string}`]: (props: { column: DataTableColumn<T>, row: T }) => any
-}
-
-defineSlots<Slots>()
+}>()
 
 const columns = defineModel('columns', {
     type: Array as PropType<DataTableColumn<T>[]>,

@@ -29,7 +29,7 @@ defineProps({
     },
 })
 
-const options = defineModel('options', {
+const options = defineModel<any[]>('options', {
     type: Array,
     default: () => [],
 })

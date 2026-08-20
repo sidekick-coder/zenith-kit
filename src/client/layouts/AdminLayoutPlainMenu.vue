@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed } from 'vue'
-import type MenuItem from '#client/entities/menuItem.entity.ts'
+import type MenuItem from '#client/entities/MenuItemEntity.ts'
 import { parseTo } from '#client/utils/parseTo.ts';
 
 </script>

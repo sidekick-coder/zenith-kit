@@ -70,8 +70,7 @@ async function handleFilePick() {
     const form = new FormData()
     form.append('file', file)
 
-    const [error, response] = await tryCatch(() => $fetch('/api/files/upload', {
-        method: 'POST',
+    const [error, response] = await tryCatch(() => $fetch.post('/api/files/upload', {
         body: form,
         query: props.public ? { public: true } : {},
     }))

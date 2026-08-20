@@ -45,9 +45,9 @@
                 "types": "./src/client/index.ts",
                 "import": "./src/client/index.ts"
             },
-            "types": "./dist/client/index.d.mts",
-            "import": "./dist/client/index.mjs",
-            "require": "./dist/client/index.mjs"
+            "types": "./dist/client/src/client/index.d.ts",
+            "import": "./dist/client/index.es.js",
+            "require": "./dist/client/index.es.js"
         },
         "./components": {
             "development": {
@@ -64,8 +64,9 @@
         }
     },
     "scripts": {
-        "build:tsdown": "tsdown",
-        "build:vite": "vite build",
+        "build:server": "tsdown",
+        "build:client": "vite build --config vite.client.config.ts",
+        "build:components": "vite build",
         "build": "npm-run-all -p build:*",
         "test:unit": "vitest --project unit",
         "test:int": "vitest -p integration",
@@ -73,7 +74,9 @@
         "release": "node artisan.js release"
     },
     "peerDependencies": {
-        "vue": "^3.5.31"
+        "vee-validate": "^4.15.1",
+        "vue": "^3.5.41",
+        "vue-router": "^5.0.6"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",
@@ -84,6 +87,7 @@
         "@types/cookie-parser": "^1.4.10",
         "@types/cors": "^2.8.19",
         "@types/supertest": "^7.2.0",
+        "acorn-typescript": "^1.4.13",
         "better-sqlite3": "^12.10.0",
         "npm-run-all": "^4.1.5"
     },
@@ -95,6 +99,7 @@
         "@inquirer/prompts": "^8.4.3",
         "@rollup/pluginutils": "^5.3.0",
         "@tailwindcss/vite": "^4.2.4",
+        "@tanstack/vue-table": "^9.1.2",
         "@types/express": "^5.0.6",
         "@types/js-yaml": "^4.0.9",
         "@types/lodash-es": "^4.17.12",
@@ -136,7 +141,7 @@
         "node-schedule": "^2.1.1",
         "pg": "^8.20.0",
         "qs": "^6.15.1",
-        "reka-ui": "^2.9.6",
+        "reka-ui": "^2.10.3",
         "supertest": "^7.2.2",
         "tailwind-merge": "^3.5.0",
         "tsdown": "^0.21.9",

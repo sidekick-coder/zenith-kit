@@ -22,6 +22,7 @@ import {
 } from '#client/components/ui/dialog/index.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 import { validator } from '#shared/facades/validator.ts'
+import type { DefineFormField } from '#client/utils/defineFormFields.ts'
 
 const props = defineProps({
     title: {
@@ -62,7 +63,7 @@ const props = defineProps({
         default: null,
     },
     fields: {
-        type: Object as () => Record<keyof v.InferInput<T>, FormField | ((data: any) => FormField)>,
+        type: Object as () => Record<keyof v.InferInput<T>, DefineFormField| ((data: any) => DefineFormField)>,
         default: () => ({}),
     },
     toastOnSuccess: {
@@ -86,7 +87,7 @@ const { handleSubmit, errors, values, resetForm, setFieldValue } = useForm({
 })
 
 const formatedFields = computed(() => {
-    const result: Record<string, FormField> = {}
+    const result: Record<string, DefineFormField> = {}
 
     for (const [key, field] of Object.entries(props.fields)) {
         if (typeof field === 'function') {

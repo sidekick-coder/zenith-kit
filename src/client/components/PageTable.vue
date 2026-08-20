@@ -10,10 +10,10 @@ const props = defineProps({
     },
 })
 
-const items = ref([])
+const items = ref<any[]>([])
 
 async function load(){
-    const response = await $fetch(props.url)
+    const response = await $fetch.get(props.url)
 
     items.value = response.data
 }
