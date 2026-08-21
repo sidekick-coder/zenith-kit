@@ -27,16 +27,22 @@ const prebuild = () => ({
 
 const externals = [
     'vue',
-    'vue-router',
-    '@vueuse/core',
-    '@vueuse/router',
-    'vee-validate',
-    '@vee-validate/valibot',
-    "@unhead/vue",
-    "vue-router",
-    "vue-sonner",
-    "vee-validate",
+    // 'vue-router',
+    // "vue-sonner",
+    //
+    // '@vueuse/core',
+    // '@vueuse/router',
+    //
+    // 'vee-validate',
+    // '@vee-validate/valibot',
+    //
+    // "@unhead/vue",
+    // "@unhead/vue/components",
+
     "reka-ui",
+    "vaul-vue",
+    "lucide-vue-next",
+    "embla-carousel-vue"
 ]
 
 const plugins: UserConfig['plugins'] = [

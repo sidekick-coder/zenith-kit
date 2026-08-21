@@ -32,16 +32,16 @@ const prebuild = () => ({
 
 const externals = [
     'vue',
-    'vue-router',
-    '@vueuse/core',
-    '@vueuse/router',
-    'vee-validate',
-    '@vee-validate/valibot',
-    "@unhead/vue",
-    "vue-router",
-    "vue-sonner",
-    "vee-validate",
-    "reka-ui",
+    // 'vue-router',
+    // '@vueuse/core',
+    // '@vueuse/router',
+    // 'vee-validate',
+    // '@vee-validate/valibot',
+    // "@unhead/vue",
+    // "vue-router",
+    // "vue-sonner",
+    // "vee-validate",
+    // "reka-ui",
 ]
 
 const plugins: UserConfig['plugins'] = [

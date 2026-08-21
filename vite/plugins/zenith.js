@@ -17,9 +17,9 @@ import * as acorn from 'acorn'
  * @param {Options} options
  * @returns {import('vite').Plugin}
  */
-export default function (options) {
-    const include = options?.include || '**/*.{js,ts,vue}'
-    const exclude = options?.exclude || 'node_modules/**'
+export default function(options) {
+    const include = options?.include || '**/*.{js,mjs,ts,mts,vue}'
+    const exclude = options?.exclude
     const imports = options?.imports || []
 
     const filter = createFilter(include, exclude)
@@ -33,9 +33,9 @@ export default function (options) {
          * @param {string} id
          */
         transform(code, id) {
-            if (!filter(id)) return null
-
-            if (!code.includes('import')) return null
+            if (!filter(id)) {
+                return null
+            }
 
             const s = new MagicString(code)
             let hasChanges = false
@@ -131,6 +131,7 @@ export default function (options) {
                     }
                 }
             }
+
 
             if (!hasChanges) return null
 
