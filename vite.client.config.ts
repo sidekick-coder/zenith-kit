@@ -62,9 +62,11 @@ plugins.push(dts({
     staticImport: true,
 }))
 
-plugins.push(tailwindcss(), prebuild(), zenith({
-    imports: externals
-}))
+plugins.push(tailwindcss(), prebuild())
+
+// plugins.push(zenith({
+//     imports: externals
+// }))
 
 export default defineConfig({
     customLogger: logger,

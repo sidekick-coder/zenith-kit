@@ -35,13 +35,13 @@ export default function(options) {
                 }
             }),
             tailwindcss(),
-            zenith({
-                imports: [
-                    'vue',
-                    'vue-router',
-                    'vee-validate'
-                ],
-            })
+            // zenith({
+            //     imports: [
+            //         'vue',
+            //         'vue-router',
+            //         'vee-validate'
+            //     ],
+            // })
         ],
         build: {
             outDir: options.outDir,
@@ -52,8 +52,6 @@ export default function(options) {
             rollupOptions: {
                 external: [
                     'vue',
-                    'vue-router',
-                    'vee-validate'
                 ],
             },
             lib: {

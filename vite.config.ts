@@ -39,10 +39,10 @@ const externals = [
     // "@unhead/vue",
     // "@unhead/vue/components",
 
-    "reka-ui",
-    "vaul-vue",
-    "lucide-vue-next",
-    "embla-carousel-vue"
+    // "reka-ui",
+    // "vaul-vue",
+    // "lucide-vue-next",
+    // "embla-carousel-vue"
 ]
 
 const plugins: UserConfig['plugins'] = [
@@ -63,9 +63,11 @@ plugins.push(dts({
     staticImport: true
 }))
 
-plugins.push(tailwindcss(), prebuild(), zenith({
-    imports: externals
-}))
+plugins.push(tailwindcss(), prebuild())
+
+// plugins.push(zenith({
+//     imports: externals
+// }))
 
 export default defineConfig({
     customLogger: logger,
