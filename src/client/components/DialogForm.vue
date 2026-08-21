@@ -5,7 +5,6 @@ import { toTypedSchema } from '@vee-validate/valibot'
 import { computed, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 import type { BaseSchema } from 'valibot'
-import { toast } from 'vue-sonner'
 import ClientOnly from './ClientOnly.vue'
 import FormAutoFieldList from './FormAutoFieldList.vue'
 
@@ -23,6 +22,7 @@ import {
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 import { validator } from '#shared/facades/validator.ts'
 import type { DefineFormField } from '#client/utils/defineFormFields.ts'
+import toast from '#client/facades/toast.ts'
 
 const props = defineProps({
     title: {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
+import toast from '#client/facades/toast.ts'
 import Button from './ZButton.vue'
 import ClientOnly from './ClientOnly.vue'
 import {

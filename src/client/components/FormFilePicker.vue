@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useField } from 'vee-validate'
-import { toast } from 'vue-sonner'
 
 import { $fetch } from '#client/utils/fetcher.ts'
 import { $file } from '#client/utils/file.ts'
@@ -16,6 +15,7 @@ import {
 } from '#client/components/ui/form/index.ts'
 import Button from '#client/components/ZButton.vue'
 import Icon from '#client/components/Icon.vue'
+import toast from '#client/facades/toast.ts'
 
 const props = defineProps({
     name: {

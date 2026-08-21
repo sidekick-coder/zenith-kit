@@ -24,7 +24,7 @@ import {
     useSidebar,
 } from '#client/components/ui/sidebar/index.ts'
 import Icon from '#client/components/Icon.vue'
-import { toast } from 'vue-sonner'
+import toast from '#client/facades/toast.ts'
 
 interface Link {
     label: string

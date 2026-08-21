@@ -1,6 +1,6 @@
-import { toast } from 'vue-sonner'
 import qs from 'qs'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
+import toast from '#client/facades/toast.ts'
 
 export interface FetchOptions extends RequestInit {
     query?: Record<string, any>

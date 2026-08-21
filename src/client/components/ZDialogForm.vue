@@ -5,7 +5,7 @@ import { toTypedSchema } from '@vee-validate/valibot'
 import { computed, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 import type { BaseSchema } from 'valibot'
-import { toast } from 'vue-sonner'
+import toast from '#client/facades/toast.ts'
 import ClientOnly from './ClientOnly.vue'
 import FormAutoFieldList from './FormAutoFieldList.vue'
 
