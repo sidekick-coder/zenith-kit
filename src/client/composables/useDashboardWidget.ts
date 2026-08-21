@@ -2,7 +2,7 @@ import { inject, provide } from 'vue'
 import type { Ref } from 'vue'
 import type DashboardWidget from '#client/entities/DashboardWidget.ts'
 
-const KEY = Symbol('dashboard-widget')
+const KEY = Symbol.for('dashboard-widget')
 
 export function provideDashboardWidget(entity: Ref<DashboardWidget>) {
     provide(KEY, entity)
