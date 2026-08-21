@@ -1,9 +1,10 @@
-import { createLogger, defineConfig, UserConfig } from 'vite'
+import { createLogger, defineConfig, mergeConfig, UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import dts from 'vite-plugin-dts'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
 import zenith from './vite/plugins/zenith'
+import viteCommonConfig from './vite.common.config'
 
 const logger = createLogger()
 
@@ -56,32 +57,45 @@ const plugins: UserConfig['plugins'] = [
     }),
 ]
 
-plugins.push(dts({
-    // entryRoot: 'src/client/index.ts',
-    tsconfigPath: './tsconfig.client.json',
-    staticImport: true,
-}))
-
-plugins.push(tailwindcss(), prebuild())
+// plugins.push(dts({
+//     // entryRoot: 'src/client/index.ts',
+//     tsconfigPath: './tsconfig.client.json',
+//     staticImport: true,
+// }))
+//
+// plugins.push(tailwindcss(), prebuild())
 
 // plugins.push(zenith({
 //     imports: externals
 // }))
 
-export default defineConfig({
-    customLogger: logger,
-    plugins: plugins,
+// export default defineConfig({
+//     customLogger: logger,
+//     plugins: plugins,
+//     build: {
+//         outDir: 'dist/client',
+//         rollupOptions: {
+//             external: externals,
+//         },
+//         lib: {
+//             name: 'Client',
+//             entry: 'src/client/index.ts',
+//             formats: ['es'],
+//             fileName: (format) => `index.${format}.js`,
+//             cssFileName: 'styles',
+//         },
+//     },
+// })
+export default mergeConfig(viteCommonConfig, defineConfig({
+    plugins: [prebuild()],
     build: {
         outDir: 'dist/client',
-        rollupOptions: {
-            external: externals,
-        },
         lib: {
-            name: 'Client',
+            name: 'Components',
             entry: 'src/client/index.ts',
             formats: ['es'],
             fileName: (format) => `index.${format}.js`,
             cssFileName: 'styles',
         },
     },
-})
+}))

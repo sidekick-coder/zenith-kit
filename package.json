@@ -70,7 +70,7 @@
     "scripts": {
         "build:server": "tsdown",
         "build:client": "vite build --config vite.client.config.ts",
-        "build:components": "vite build",
+        "build:components": "vite build --config vite.components.config.ts",
         "build": "npm-run-all -p build:*",
         "test:unit": "vitest --project unit",
         "test:int": "vitest -p integration",
