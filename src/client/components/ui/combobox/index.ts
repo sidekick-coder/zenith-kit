@@ -1,3 +1,6 @@
+import { ComboboxCancel as ReakComboboxCancel } from "reka-ui"
+import { ComboboxTrigger as ReakComboboxTrigger } from "reka-ui"
+
 export { default as Combobox } from "./Combobox.vue"
 export { default as ComboboxAnchor } from "./ComboboxAnchor.vue"
 export { default as ComboboxEmpty } from "./ComboboxEmpty.vue"
@@ -9,4 +12,7 @@ export { default as ComboboxList } from "./ComboboxList.vue"
 export { default as ComboboxSeparator } from "./ComboboxSeparator.vue"
 export { default as ComboboxViewport } from "./ComboboxViewport.vue"
 
-export { ComboboxCancel, ComboboxTrigger } from "reka-ui"
+const ComboboxCancel = ReakComboboxCancel
+const ComboboxTrigger = ReakComboboxTrigger
+
+export { ComboboxCancel, ComboboxTrigger }

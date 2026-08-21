@@ -1,3 +1,5 @@
+import { DropdownMenuPortal as RekaDropdownMenuPortal } from 'reka-ui'
+
 export { default as DropdownMenu } from './DropdownMenu.vue'
 
 export { default as DropdownMenuCheckboxItem } from './DropdownMenuCheckboxItem.vue'
@@ -13,4 +15,7 @@ export { default as DropdownMenuSub } from './DropdownMenuSub.vue'
 export { default as DropdownMenuSubContent } from './DropdownMenuSubContent.vue'
 export { default as DropdownMenuSubTrigger } from './DropdownMenuSubTrigger.vue'
 export { default as DropdownMenuTrigger } from './DropdownMenuTrigger.vue'
-export { DropdownMenuPortal } from 'reka-ui'
+
+const DropdownMenuPortal = RekaDropdownMenuPortal
+
+export { DropdownMenuPortal }
