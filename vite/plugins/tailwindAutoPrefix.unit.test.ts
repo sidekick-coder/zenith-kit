@@ -112,8 +112,8 @@ describe('tailwindAutoPrefix.js', () => {
         const result = transform(code, 'test.vue', { prefix: 'zkit' })
 
         expect(result).toContain(`side === 'left'`)
-        expect(result).toContain(`'zkit:left-0 zkit:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'`)
-        expect(result).toContain(`'zkit:right-0 zkit:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]'`)
+        expect(result).toContain(`'zkit:left-0 zkit:group-data-[collapsible=offcanvas]:left-[calc(var(--zkit-sidebar-width)*-1)]'`)
+        expect(result).toContain(`'zkit:right-0 zkit:group-data-[collapsible=offcanvas]:right-[calc(var(--zkit-sidebar-width)*-1)]'`)
         expect(result).not.toContain(`'zkit:left'`)
         expect(result).not.toContain(`'zkit:right'`)
     })
@@ -203,5 +203,145 @@ describe('tailwindAutoPrefix.js CSS plugin', () => {
         cssPlugin.generateBundle({}, bundle)
 
         expect(bundle['index.es.js'].code).toBe('.flex{}')
+    })
+
+    it('prefixes a css custom property declaration and its var() usage', () => {
+        const css = `:root{--sidebar-width:16rem}.w-\\(--sidebar-width\\){width:var(--sidebar-width)}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`:root{--zkit-sidebar-width:16rem}.zkit\\:w-\\(--zkit-sidebar-width\\){width:var(--zkit-sidebar-width)}`)
+    })
+
+    it('prefixes @property at-rules declaring a custom property', () => {
+        const css = `@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`@property --zkit-tw-translate-x{syntax:"*";inherits:false;initial-value:0}`)
+    })
+
+    it('does not double-prefix an already-prefixed css variable', () => {
+        const css = `:root{--zkit-sidebar-width:16rem}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`:root{--zkit-sidebar-width:16rem}`)
+    })
+
+    it('leaves excluded css variables untouched', () => {
+        const css = `:root{--reka-navigation-menu-viewport-height:100px}.foo{height:var(--reka-navigation-menu-viewport-height)}`
+
+        const result = generateCss(css, { prefix: 'zkit', excludeVars: ['--reka-*'] })
+
+        expect(result).toBe(`:root{--reka-navigation-menu-viewport-height:100px}.zkit\\:foo{height:var(--reka-navigation-menu-viewport-height)}`)
+    })
+})
+
+describe('tailwindAutoPrefix.js style bindings', () => {
+    it('prefixes a css variable reference embedded in a class', () => {
+        const code = `<div class="w-(--sidebar-width)"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit' })
+
+        expect(result).toBe(`<div class="zkit:w-(--zkit-sidebar-width)"></div>`)
+    })
+
+    it('prefixes a css variable reference inside an arbitrary value class', () => {
+        const code = `<div :class="'group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+2px)]'"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit' })
+
+        expect(result).toBe(`<div :class="'zkit:group-data-[collapsible=icon]:w-[calc(var(--zkit-sidebar-width-icon)+2px)]'"></div>`)
+    })
+
+    it('prefixes a custom property key set via a dynamic :style binding', () => {
+        const code = `<div :style="{ '--sidebar-width': SIDEBAR_WIDTH }"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit' })
+
+        expect(result).toBe(`<div :style="{ '--zkit-sidebar-width': SIDEBAR_WIDTH }"></div>`)
+    })
+
+    it('prefixes var() references inside a dynamic :style binding value', () => {
+        const code = `<div :style="{ '--normal-bg': 'var(--popover)', '--normal-text': 'var(--popover-foreground)' }"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit' })
+
+        expect(result).toBe(`<div :style="{ '--zkit-normal-bg': 'var(--zkit-popover)', '--zkit-normal-text': 'var(--zkit-popover-foreground)' }"></div>`)
+    })
+
+    it('prefixes var() references inside a static style attribute', () => {
+        const code = `<div style="--sidebar-width: 16rem; width: var(--sidebar-width)"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit' })
+
+        expect(result).toBe(`<div style="--zkit-sidebar-width: 16rem; width: var(--zkit-sidebar-width)"></div>`)
+    })
+
+    it('respects excludeVars for both class-embedded and :style bindings', () => {
+        const code = `<div class="w-(--reka-viewport-width)" :style="{ '--reka-viewport-width': width }"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit', excludeVars: ['--reka-*'] })
+
+        expect(result).toBe(`<div class="zkit:w-(--reka-viewport-width)" :style="{ '--reka-viewport-width': width }"></div>`)
+    })
+})
+
+describe('tailwindAutoPrefix.js classes.ignore', () => {
+    it('leaves a standalone ignored class untouched in a static class attribute', () => {
+        const code = `<div class="dark"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit', classes: { ignore: ['.dark'] } })
+
+        expect(result).toBeNull()
+    })
+
+    it('still prefixes other classes alongside an ignored one', () => {
+        const code = `<div class="dark flex p-4"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit', classes: { ignore: ['.dark'] } })
+
+        expect(result).toBe(`<div class="dark zkit:flex zkit:p-4"></div>`)
+    })
+
+    it('still prefixes compound variant classes that merely contain the ignored name', () => {
+        const code = `<div class="dark:bg-input/30"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit', classes: { ignore: ['.dark'] } })
+
+        expect(result).toBe(`<div class="zkit:dark:bg-input/30"></div>`)
+    })
+
+    it('leaves an ignored class untouched inside a dynamic :class binding', () => {
+        const code = `<div :class="['dark', 'flex']"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit', classes: { ignore: ['.dark'] } })
+
+        expect(result).toBe(`<div :class="['dark', 'zkit:flex']"></div>`)
+    })
+
+    it('leaves the literal .dark selector untouched in generated CSS while still renaming its custom properties', () => {
+        const css = `.dark{--background:oklch(14.1% .005 285.823)}`
+
+        const result = generateCss(css, { prefix: 'zkit', classes: { ignore: ['.dark'] } })
+
+        expect(result).toBe(`.dark{--zkit-background:oklch(14.1% .005 285.823)}`)
+    })
+
+    it('still prefixes the compound dark: variant utility while leaving the .dark ancestor selector untouched', () => {
+        const css = `.dark\\:bg-input\\/30:is(.dark *){background-color:red}`
+
+        const result = generateCss(css, { prefix: 'zkit', classes: { ignore: ['.dark'] } })
+
+        expect(result).toBe(`.zkit\\:dark\\:bg-input\\/30:is(.dark *){background-color:red}`)
+    })
+
+    it('does not ignore any class when classes.ignore is not provided', () => {
+        const css = `.dark{--background:oklch(14.1% .005 285.823)}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`.zkit\\:dark{--zkit-background:oklch(14.1% .005 285.823)}`)
     })
 })

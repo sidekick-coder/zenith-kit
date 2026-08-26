@@ -40,7 +40,10 @@ plugins.push(dts({
 
 plugins.push(prefixer({
     prefix: 'zkit',
-    include: ['**/*.vue', '**/*.ts'],
+    include: ['**/*.vue', '**/*.ts', "**/*.css"],
+    classes: {
+        ignore: [".dark"]
+    }
 }))
 
 plugins.push(tailwindcss())

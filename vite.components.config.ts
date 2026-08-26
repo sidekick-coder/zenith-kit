@@ -17,7 +17,7 @@ const prebuild = () => ({
                 'src/client/components/ui/**/index.ts',
                 'src/client/components/*.vue',
                 'src/client/layouts/*.vue',
-                'src/client/css/*.css',
+                'src/client/css/styles.css',
             ]
         })
 
