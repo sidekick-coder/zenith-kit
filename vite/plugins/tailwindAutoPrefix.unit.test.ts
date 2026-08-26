@@ -1,0 +1,207 @@
+import { describe, expect, it } from 'vitest'
+import tailwindAutoPrefix from './tailwindAutoPrefix.js'
+
+/**
+ * Helper to run the source plugin's transform hook directly, bypassing vite internals.
+ */
+function transform(code: string, id: string, options: Parameters<typeof tailwindAutoPrefix>[0]) {
+    const [sourcePlugin] = tailwindAutoPrefix(options)
+
+    // @ts-expect-error - transform is a function in this plugin's implementation
+    const result = sourcePlugin.transform(code, id)
+
+    return result ? result.code : null
+}
+
+/**
+ * Helper to run the CSS plugin's generateBundle hook directly, bypassing vite internals.
+ */
+function generateCss(source: string, options: Parameters<typeof tailwindAutoPrefix>[0]) {
+    const [, cssPlugin] = tailwindAutoPrefix(options)
+
+    const bundle: Record<string, any> = {
+        'styles.css': { type: 'asset', source },
+    }
+
+    // @ts-expect-error - generateBundle is a function in this plugin's implementation
+    cssPlugin.generateBundle({}, bundle)
+
+    return bundle['styles.css'].source
+}
+
+describe('tailwindAutoPrefix.js', () => {
+    it('throws when no prefix is provided', () => {
+        // @ts-expect-error - intentionally omitting required option
+        expect(() => tailwindAutoPrefix({})).toThrow('"prefix" option is required')
+    })
+
+    it('prefixes classes in a static class attribute', () => {
+        const code = `<div class="flex p-4 hover:bg-red-500"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBe(`<div class="tw:flex tw:p-4 tw:hover:bg-red-500"></div>`)
+    })
+
+    it('prefixes classes in a className attribute', () => {
+        const code = `<span className="text-sm font-bold"></span>`
+
+        const result = transform(code, 'test.tsx', { prefix: 'tw' })
+
+        expect(result).toBe(`<span className="tw:text-sm tw:font-bold"></span>`)
+    })
+
+    it('prefixes only string literals inside a :class binding', () => {
+        const code = `<p :class="['a b', active ? 'c' : '']"></p>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBe(`<p :class="['tw:a tw:b', active ? 'tw:c' : '']"></p>`)
+    })
+
+    it('prefixes only string literals inside a v-bind:class binding', () => {
+        const code = `<p v-bind:class="isOpen ? 'block' : 'hidden'"></p>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBe(`<p v-bind:class="isOpen ? 'tw:block' : 'tw:hidden'"></p>`)
+    })
+
+    it('does not prefix string literals compared against a variable with ===', () => {
+        const code = `<div :class="side === 'left' ? 'left-0' : 'right-0'"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        // 'left'/'right' are comparison operands (not classes) and must stay
+        // untouched, only the ternary branches are actual class values
+        expect(result).toBe(`<div :class="side === 'left' ? 'tw:left-0' : 'tw:right-0'"></div>`)
+    })
+
+    it('does not prefix string literals compared against a variable with !==', () => {
+        const code = `<div :class="variant !== 'floating' ? 'p-2' : 'p-4'"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBe(`<div :class="variant !== 'floating' ? 'tw:p-2' : 'tw:p-4'"></div>`)
+    })
+
+    it('does not prefix string literals compared on the left-hand side of ===', () => {
+        const code = `<div :class="'left' === side ? 'left-0' : 'right-0'"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBe(`<div :class="'left' === side ? 'tw:left-0' : 'tw:right-0'"></div>`)
+    })
+
+    it('prefixes object-syntax class bindings by key, leaving the condition untouched', () => {
+        const code = `<div :class="{ 'text-red-500': hasError, 'text-green-500': isValid }"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBe(`<div :class="{ 'tw:text-red-500': hasError, 'tw:text-green-500': isValid }"></div>`)
+    })
+
+    it('prefixes multiple class comparisons like the real Sidebar component', () => {
+        const code = `<div :class="cn(
+            'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) md:flex',
+            side === 'left'
+                ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
+                : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
+        )"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'zkit' })
+
+        expect(result).toContain(`side === 'left'`)
+        expect(result).toContain(`'zkit:left-0 zkit:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'`)
+        expect(result).toContain(`'zkit:right-0 zkit:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]'`)
+        expect(result).not.toContain(`'zkit:left'`)
+        expect(result).not.toContain(`'zkit:right'`)
+    })
+
+    it('leaves plain variable :class bindings untouched', () => {
+        const code = `<p :class="isOpen"></p>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBeNull()
+    })
+
+    it('does not double-prefix classes that are already prefixed', () => {
+        const code = `<div class="tw:flex p-4"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBe(`<div class="tw:flex tw:p-4"></div>`)
+    })
+
+    it('returns null when there is nothing to change', () => {
+        const code = `<div class="tw:flex tw:p-4"></div>`
+
+        const result = transform(code, 'test.vue', { prefix: 'tw' })
+
+        expect(result).toBeNull()
+    })
+
+    it('respects the include option', () => {
+        const code = `<div class="flex"></div>`
+
+        const result = transform(code, 'test.css', { prefix: 'tw', include: '**/*.vue' })
+
+        expect(result).toBeNull()
+    })
+
+    it('respects the exclude option', () => {
+        const code = `<div class="flex"></div>`
+
+        const result = transform(code, `${process.cwd()}/node_modules/foo/test.vue`, { prefix: 'tw', exclude: 'node_modules/**' })
+
+        expect(result).toBeNull()
+    })
+})
+
+describe('tailwindAutoPrefix.js CSS plugin', () => {
+    it('prefixes plain class selectors in generated CSS', () => {
+        const css = `.flex{display:flex}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`.zkit\\:flex{display:flex}`)
+    })
+
+    it('prefixes class selectors with variants, preserving escaped colons', () => {
+        const css = `.hover\\:bg-red-500:hover{background-color:red}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`.zkit\\:hover\\:bg-red-500:hover{background-color:red}`)
+    })
+
+    it('prefixes arbitrary variant selectors such as data attributes', () => {
+        const css = `.data-\\[state\\=open\\]\\:animate-in[data-state=open]{opacity:1}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`.zkit\\:data-\\[state\\=open\\]\\:animate-in[data-state=open]{opacity:1}`)
+    })
+
+    it('does not double-prefix already-prefixed selectors', () => {
+        const css = `.zkit\\:flex{display:flex}`
+
+        const result = generateCss(css, { prefix: 'zkit' })
+
+        expect(result).toBe(`.zkit\\:flex{display:flex}`)
+    })
+
+    it('ignores non-css assets in the bundle', () => {
+        const [, cssPlugin] = tailwindAutoPrefix({ prefix: 'zkit' })
+
+        const bundle: Record<string, any> = {
+            'index.es.js': { type: 'chunk', code: '.flex{}' },
+        }
+
+        // @ts-expect-error - generateBundle is a function in this plugin's implementation
+        cssPlugin.generateBundle({}, bundle)
+
+        expect(bundle['index.es.js'].code).toBe('.flex{}')
+    })
+})

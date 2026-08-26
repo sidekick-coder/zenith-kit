@@ -2,21 +2,22 @@ import { createLogger, defineConfig, UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import dts from 'vite-plugin-dts'
+import prefixer from './vite/plugins/tailwindAutoPrefix.js'
 
 export const logger = createLogger()
 
 const externals = [
     'vue',
-    // 'vue-router',
-    // '@vueuse/core',
-    // '@vueuse/router',
+    'vue-router',
+    '@vueuse/core',
+    '@vueuse/router',
     'vee-validate',
     '@vee-validate/valibot',
-    // "@unhead/vue",
-    // "vue-router",
-    // "vue-sonner",
-    // "vee-validate",
-    // "reka-ui",
+    "@unhead/vue",
+    "vue-router",
+    "vue-sonner",
+    "vee-validate",
+    "reka-ui",
 ]
 
 const plugins: UserConfig['plugins'] = [
@@ -36,12 +37,19 @@ plugins.push(dts({
     staticImport: true,
 }))
 
+
+plugins.push(prefixer({
+    prefix: 'zkit',
+    include: ['**/*.vue', '**/*.ts'],
+}))
+
 plugins.push(tailwindcss())
 
 export default defineConfig({
     customLogger: logger,
     plugins: plugins,
     build: {
+        minify: process.env.NO_MINIFY ? false : true,
         rollupOptions: {
             external: externals,
         },

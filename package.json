@@ -50,10 +50,6 @@
             "require": "./dist/client/index.es.js"
         },
         "./components": {
-            "development": {
-                "types": "./src/client/components.ts",
-                "import": "./src/client/components.ts"
-            },
             "types": "./dist/components/src/client/components.d.ts",
             "import": "./dist/components/index.es.js",
             "require": "./dist/components/index.es.js"
@@ -78,9 +74,11 @@
         "release": "node artisan.js release"
     },
     "peerDependencies": {
-        "vee-validate": "^4.15.1",
         "vue": "^3.5.41",
-        "vue-router": "^5.0.6"
+        "vue-router": "^5.0.6",
+        "vee-validate": "^4.15.1",
+        "reka-ui": "^2.10.3",
+        "@vueuse/core": "^10.0.0"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",
@@ -143,6 +141,8 @@
         "mysql2": "^3.22.3",
         "node-schedule": "^2.1.1",
         "pg": "^8.20.0",
+        "postcss": "^8.5.26",
+        "postcss-selector-parser": "^7.1.5",
         "qs": "^6.15.1",
         "reka-ui": "^2.10.3",
         "supertest": "^7.2.2",
