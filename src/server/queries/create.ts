@@ -62,7 +62,7 @@ export async function create<T extends keyof Database, O extends CreateOptions<T
         values
     }
 
-    if (db.driver === 'mysql') {
+    if (db._dialect_identifier === 'mysql') {
         return createMysql(table, parsedOptions)
     }
 

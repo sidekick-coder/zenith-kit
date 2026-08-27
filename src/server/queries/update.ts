@@ -82,7 +82,7 @@ export async function update<T extends keyof Database, O extends UpdateOptions<T
         values
     }
 
-    if (db.driver === 'mysql') {
+    if (db._dialect_identifier === 'mysql') {
         return updateMysql(table, parsedOptions)
     }
 
