@@ -1,5 +1,5 @@
 import { CreateTableBuilder  } from 'kysely'
-import type { ColumnType, ExpressionBuilder } from 'kysely'
+import type { ExpressionBuilder } from 'kysely'
 import type { Selectable } from 'kysely'
 import { now } from './common.ts'
 import type { DatabaseContract as Database } from '#server/contracts/DatabaseContract.ts'
@@ -20,9 +20,6 @@ export type SoftDeleteResult<T extends keyof Database, O extends SoftDeleteOptio
     O extends undefined ? Selectable<Database[T]>[] :
     O extends { serialize: (row: Selectable<Database[T]>) => infer R } ? R[] : Selectable<Database[T]>[]
 
-export interface SoftDeleteTable {
-  deleted_at: ColumnType<Date | null, never | null | ReturnType<typeof now>, string | null | ReturnType<typeof now>>
-}
 
 export function whereNotDeleted<QB extends WhereCapable<QB>>(qb: QB): QB {
     return qb.where('deleted_at', 'is', null)
@@ -63,16 +60,4 @@ export async function softDelete<T extends keyof Database, O extends SoftDeleteO
     }
 
     return rows as SoftDeleteResult<T, O>
-}
-
-declare module 'kysely' {
-  interface CreateTableBuilder<TB extends string, C extends string = never> {
-    addSoftDeleteColumn(): CreateTableBuilder<TB, C | 'deleted_at'>
-  }
-}
-
-CreateTableBuilder.prototype.addSoftDeleteColumn = function (
-    this: CreateTableBuilder<any, any>,
-) {
-    return this.addColumn('deleted_at', 'timestamp')
 }
