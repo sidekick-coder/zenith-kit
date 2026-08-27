@@ -17,15 +17,13 @@ export default defineConfig({
                 test: {
                     name: 'unit',
                     include: ['**/*.unit.test.ts'],
-                    exclude: ['**/modules/**'],
                     setupFiles: ['src/server/__tests__/setup.ts'],
                 }
             },
             {
                 test: {
-                    name: 'integration',
+                    name: 'int',
                     include: ['**/*.int.test.ts'],
-                    exclude: ['**/modules/**'],
                     testTimeout: 60000, // Increase timeout for integration tests
                     hookTimeout: 60000, // Increase hook timeout for integration tests
                 }

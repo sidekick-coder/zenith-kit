@@ -32,11 +32,11 @@ export default class ContainerService {
 
         const isConstructor = typeof payload !== 'string' && typeof payload !== 'symbol'
 
-        if (isConstructor && !(payload as any).__container_entry_key) {
-            console.warn(`Warning: The constructor ${payload.name} does not have a unique identifier. Consider adding a static property __container_entry_key to avoid potential conflicts.`)
+        if (isConstructor && !(payload as any)?.__container_entry_key) {
+            console.warn(`Warning: The constructor ${payload?.name || payload} does not have a unique identifier. Consider adding a static property __container_entry_key to avoid potential conflicts.`)
         }
 
-        if (isConstructor && (payload as any).__container_entry_key) {
+        if (isConstructor && (payload as any)?.__container_entry_key) {
             key = (payload as any).__container_entry_key
         }
 

@@ -67,16 +67,16 @@
         "build:server": "tsdown",
         "build:client": "vite build --config vite.client.config.ts",
         "build:components": "vite build --config vite.components.config.ts",
-        "build": "npm-run-all -p build:*",
+        "build": "npm-run-all build:*",
         "test:unit": "vitest --project unit",
-        "test:int": "vitest -p integration",
-        "test": "npm-run-all -p test:*",
+        "test:int": "vitest --project int",
+        "test": "npm-run-all test:*",
         "release": "node artisan.js release"
     },
     "peerDependencies": {
+        "vee-validate": "^4.15.1",
         "vue": "^3.5.41",
-        "vue-router": "^5.0.6",
-        "vee-validate": "^4.15.1"
+        "vue-router": "^5.0.6"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",
@@ -84,6 +84,7 @@
         "@faker-js/faker": "^10.4.0",
         "@microsoft/api-extractor": "^7.58.7",
         "@types/bcrypt": "^6.0.0",
+        "@types/better-sqlite3": "^9.6.0",
         "@types/cookie-parser": "^1.4.10",
         "@types/cors": "^2.8.19",
         "@types/supertest": "^7.2.0",

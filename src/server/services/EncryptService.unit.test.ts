@@ -3,13 +3,13 @@ import {
     it,
     expect
 } from 'vitest'
-import EncryptService from './encrypt.service.ts'
+import EncryptService from './EncryptService.ts'
 
 describe('EncryptService', () => {
     it('should encrypt and decrypt text correctly', () => {
-        const service = new EncryptService()
-
-        service.load('test-secret-key')
+        const service = EncryptService.create({
+            key: 'test-secret-key',
+        })
         
         const originalText = 'Hello, World!'
         

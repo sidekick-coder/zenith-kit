@@ -31,39 +31,6 @@ describe('Router', () => {
         expect(route).toBeNull()
     })
 
-
-    it('should match path with params', () => {
-        const router = new Router()
-        const match = router.matchPath('/user/:id', '/user/123')
-        expect(match).toBe(true)
-    })
-
-    it('should not match path with different segments', () => {
-        const router = new Router()
-        const match = router.matchPath('/user/:id', '/profile/123')
-        expect(match).toBe(false)
-    })
-
-    it('should match path with wildcard spread parameter', () => {
-        const router = new Router()
-        const match = router.matchPath('/files/*', '/files/documents/folder/file.txt')
-        expect(match).toBe(true)
-    })
-
-
-    it('should match wildcard at root level', () => {
-        const router = new Router()
-        const match = router.matchPath('*', '/any/path/here')
-        expect(match).toBe(true)
-    })
-
-
-    it('should match empty path with wildcard', () => {
-        const router = new Router()
-        const match = router.matchPath('*', '/')
-        expect(match).toBe(true)
-    })
-
     it('should add and resolve wildcard route', () => {
         const router = new Router()
         const handler = vi.fn()

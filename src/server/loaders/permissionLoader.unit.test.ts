@@ -13,7 +13,7 @@ import { createUser } from '#server/__tests__/helpers/createUser.ts'
 
 describe('permissionLoader', () => {
     const db = createTestDb()
-    
+
     beforeAll(() => db.setup())
     afterAll(() => db.teardown())
 
@@ -21,9 +21,9 @@ describe('permissionLoader', () => {
         const user = await createUser()
 
         const permissions = await permissionRepository.createMany([
-            { name: 'permission 1', subject: 'user', action: 'read'  },
-            { name: 'permission 2', subject: 'user', action: 'write'  },
-            { name: 'permission 3', subject: 'post', action: 'read'  },
+            { name: 'permission 1', subject: 'user', action: 'read' },
+            { name: 'permission 2', subject: 'user', action: 'write' },
+            { name: 'permission 3', subject: 'post', action: 'read' },
         ])
 
         await permissionAssignmentRepository.createMany(permissions.map(permission => ({
