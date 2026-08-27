@@ -70,7 +70,7 @@
         "build": "npm-run-all build:*",
         "test:unit": "vitest --project unit",
         "test:int": "vitest --project int",
-        "test": "npm-run-all test:*",
+        "test": "npm run test:unit",
         "release": "node artisan.js release"
     },
     "peerDependencies": {

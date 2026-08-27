@@ -57,6 +57,9 @@ command
         else if (options.major) bump = 'major'
         else bump = await ask('Select version bump type:', ['patch', 'minor', 'major'])
 
+        console.log(`run tests before bumping version...`)
+        run('npm', ['test'])
+
         console.log(`\nBumping ${bump} version...`)
         run('npm', ['version', bump])
 
