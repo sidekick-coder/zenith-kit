@@ -35,7 +35,7 @@ const keyValue = v.pipe(v.string(), v.transform((value) => {
 const stringArray = v.pipe(
     v.string(),
     v.transform((value) => value
-        .split(',')
+        .split(':')
         .map(s => s.trim())
         .filter(Boolean)
     )
@@ -73,6 +73,7 @@ export const envSchema = v.looseObject({
     ZENITH_CONFIG_S3_ENDPOINT: v.optional(v.string()),
     ZENITH_CONFIG_S3_PREFIX: v.optional(v.string(), ''),
 
-    ZENITH_PLUGINS_DIRS: v.optional(stringArray, ''),
+    ZENITH_PLUGINS_DIR: v.optional(stringArray, ''),
+    ZENITH_COMMAND_DIR: v.optional(stringArray, ''),
 })
 

@@ -31,7 +31,10 @@ export default defineConfig([
         }
     },
     {
-        entry: 'src/server/index.ts',
+        entry: [
+            'src/server/index.ts',
+            'src/server/commands/*'
+        ],
         outDir: 'dist/server',
         dts: true,
         minify: true,
@@ -44,6 +47,10 @@ export default defineConfig([
                 'chalk',
                 'commander',
                 '@unhead/vue',
+                'vite',
+                'tsdown',
+                '@vitejs/plugin-vue',
+                '@tailwindcss/vite'
             ]
         },
         hooks(hooks) {

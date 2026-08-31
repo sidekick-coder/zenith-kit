@@ -1,17 +1,20 @@
-import { Command } from 'commander'
 import * as tsdown from 'tsdown'
 import * as vite from 'vite'
 import path from 'path'
-import createTsdownConfig from '../../tsdown/createTsdownConfig.js'
-import createViteConfig from '../../vite/createViteConfig.js'
-import config from '../config.js'
+import { CliCommand } from '#server/services/CliService.js'
+import { createTsDownConfig } from '#server/utils/createTsdownConfig.js'
+import { createViteConfig } from '#server/utils/createViteConfig.js'
+import { getPluginConfig } from '#server/utils/config.js'
 
-const command = new Command('build')
+const command = new CliCommand('plugin:build')
 
 command
+    .helpGroup('plugins')
     .description('Build plugin for production')
     .action(async () => {
         const cwd = process.cwd()
+
+        const config = getPluginConfig(cwd)
 
         const entry = {
             index: 'src/server/index.ts',
@@ -21,9 +24,9 @@ command
             Object.assign(entry, config.build.server.entries)
         }
 
-        const tsdownConfig = createTsdownConfig({
+        const tsdownConfig = createTsDownConfig({
             root: cwd,
-            entry: entry,
+            entry: entry.index,
         })
 
         await tsdown.build(tsdownConfig)

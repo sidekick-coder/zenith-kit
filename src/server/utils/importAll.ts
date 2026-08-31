@@ -38,7 +38,7 @@ export async function importFiles(files: string[], options: Options = {}): Promi
 
         const cleanFilename = ctx.filename.split('?')[0]
 
-        if (/\.(mts|ts|js)$/.test(cleanFilename)) {
+        if (/\.(mts|mjs|ts|js)$/.test(cleanFilename)) {
             const abs = path.resolve(ctx.filename)
             const fileUrl = pathToFileURL(abs)
 

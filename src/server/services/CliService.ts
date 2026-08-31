@@ -72,7 +72,7 @@ export default class CliService extends CliCommand {
 
     public async loadDir(dir: string) {
         const mods = await importAll(dir, {
-            exclude: ['.test.ts', '.spec.ts', '.test.js', '.spec.js'],
+            exclude: ['.test.ts', '.spec.ts', '.test.js', '.spec.js', '.d.ts', '.d.mts', '.d.cts'],
             onError: ({ error, filename }) => {
                 Object.assign(error, { filename })
 

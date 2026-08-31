@@ -1,4 +1,4 @@
-import { Command } from 'commander'
+import { program } from 'commander'
 import { execSync, spawnSync } from 'child_process'
 import readline from 'readline'
 
@@ -34,9 +34,7 @@ function ask(question, choices) {
     })
 }
 
-const command = new Command('release')
-
-command
+program
     .description('Bump version, publish to npm and push to origin')
     .option('--patch', 'Bump patch version')
     .option('--minor', 'Bump minor version')
@@ -75,4 +73,4 @@ command
         console.log('\nRelease complete.')
     })
 
-export default command
+program.parse(process.argv)
