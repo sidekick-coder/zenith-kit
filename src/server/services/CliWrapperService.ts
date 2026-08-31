@@ -74,8 +74,26 @@ export default class CliWrapperService {
         const configArguments = Array.from(this.configArguments.entries())
             .map(([key, value]) => `${key}=${value}`).join(';');
 
-        this.addEnv('ZENITH_CONFIG_ARGUMENTS', configArguments); 
+        this.addEnv('ZENITH_CONFIG_ARGUMENTS', configArguments);
         this.addEnv('ZENITH_CONFIG_FILES', this.configFiles.join(','));
+
+
+        // 1. Force color output even when stdio is piped
+        // Respect existing environment settings if FORCE_COLOR is already set externally
+        if (process.env.FORCE_COLOR !== undefined) {
+            this.addEnv('FORCE_COLOR', process.env.FORCE_COLOR);
+        } else {
+            // '1' enables basic colors, '2' for 256 colors, '3' for 16m truecolor
+            this.addEnv('FORCE_COLOR', '1');
+        }
+
+        // 2. Set COLORTERM to signal truecolor support to library detectors
+        if (process.env.COLORTERM) {
+            this.addEnv('COLORTERM', process.env.COLORTERM);
+        }
+
+        // 3. Force chalk/supports-color to keep colors enabled
+        this.addEnv('CLI_COLOR', '1');
     }
 
     public loadArguments(args: string[] = []) {
