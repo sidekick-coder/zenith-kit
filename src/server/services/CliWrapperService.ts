@@ -119,13 +119,28 @@ export default class CliWrapperService {
             })
         }
 
+        // Pipe stdout and stderr so we can manage and flush output directly
         this.process = cp.spawn('node', this.args, {
-            stdio: 'inherit',
+            stdio: ['inherit', 'pipe', 'pipe'],
             env: {
                 ...process.env,
                 ...Object.fromEntries(this.env.entries()),
             }
         });
+
+        if (this.process.stdout) {
+            this.process.stdout.pipe(process.stdout);
+        }
+
+        if (this.process.stderr) {
+            // Forward child process stderr to parent process stdout if stdout is piped
+            // This ensures tools like `grep` catch error logs without needing `2>&1`
+            if (!process.stdout.isTTY) {
+                this.process.stderr.pipe(process.stdout);
+            } else {
+                this.process.stderr.pipe(process.stderr);
+            }
+        }
 
         process.on('SIGINT', () => this.kill());
         process.on('SIGTERM', () => this.kill());
