@@ -35,7 +35,7 @@ export const datetime = () => v.pipe(
     }),
 )
 
-export const array = <T extends v.BaseSchema<any, any, any>>(schema: T = v.any() as any as T) => v.pipe(
+const array = <T extends v.BaseSchema<any, any, any>>(schema: T = v.any() as any as T) => v.pipe(
     v.union([v.string(), v.array(v.string())]),
     v.transform(value => Array.isArray(value) ? value : value.split(',')),
     v.array(schema),
