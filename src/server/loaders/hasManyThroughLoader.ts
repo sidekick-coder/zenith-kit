@@ -27,7 +27,7 @@ export async function loadHasManyThrough<
     TTargetEntity extends Record<string, any> = Record<string, any>
 >(payload: any | any[], options: HasManyThroughLoaderOptions<TEntity, TPivotEntity, TTargetEntity>) {
     const entities = Array.isArray(payload) ? payload : [payload]
-    const target = options.target 
+    const target = options.target
     const pivot = options.pivot
 
     function findKey(entity: any, keyOrFn: KeyOrFunction<any>): any {
@@ -36,23 +36,32 @@ export async function loadHasManyThrough<
         }
 
         return get(entity, keyOrFn)
-        
+
     }
 
-    const pivoIds = entities.map(e => findKey(e, pivot.sourceKey)).filter(Boolean)
+    const pivoIds = entities.map(e => findKey(e, pivot.sourceKey))
+        .filter(id => id !== undefined && id !== null)
+        .filter((value, index, self) => self.indexOf(value) === index)
+
     const pivotEntities = await pivot.findEntities(pivoIds)
-    const targetIds = pivotEntities.map((p: any) => findKey(p, pivot.targetKey)).filter(Boolean)
+
+    const targetIds = pivotEntities.map((p: any) => findKey(p, target.sourceKey))
+        .filter(id => id !== undefined && id !== null)
+        .filter((value, index, self) => self.indexOf(value) === index)
+
     const targetEntities = await target.findEntities(targetIds)
 
     for (const entity of entities) {
-        const pivots = pivotEntities.filter((p: any) => findKey(p, pivot.sourceKey) === findKey(entity, pivot.sourceKey))
+        const pivots = pivotEntities.filter((p: any) => findKey(p, pivot.targetKey) === findKey(entity, pivot.sourceKey))
 
         if (!pivots.length) {
             set(entity, options.key, [])
             continue
         }
 
-        const targets = targetEntities.filter((t: any) => pivots.some((p: any) => findKey(p, target.sourceKey) === findKey(t, target.targetKey)))
+        const targets = targetEntities.filter((t: any) =>
+            pivots.some((p: any) => findKey(p, target.sourceKey) === findKey(t, target.targetKey))
+        )
 
         set(entity, options.key, targets)
     }
