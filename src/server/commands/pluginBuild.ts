@@ -16,6 +16,7 @@ command
 
         const config = getPluginConfig(cwd)
 
+
         const entry = {
             index: 'src/server/index.ts',
         }
@@ -26,8 +27,9 @@ command
 
         const tsdownConfig = createTsDownConfig({
             root: cwd,
-            entry: entry.index,
+            entry: entry,
         })
+
 
         await tsdown.build(tsdownConfig)
 

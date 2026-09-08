@@ -36,6 +36,7 @@ export function createViteConfig(options: CreateViteConfigOptions) {
             rollupOptions: {
                 external: [
                     'vue',
+                    'vue-router',
                     'vee-validate',
                 ],
             },
