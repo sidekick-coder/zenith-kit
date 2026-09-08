@@ -3,7 +3,7 @@ import ms from 'ms'
 import { format } from 'date-fns'
 import EnvService from './EnvService';
 import LoggerService from '#shared/services/LoggerService.ts';
-import { BaseException } from '#shared/index.ts';
+import BaseException from '#shared/exceptions/BaseException.ts';
 
 interface URLOptions {
     data?: any;

@@ -1,4 +1,5 @@
-import type { ContainerService, tryCatch } from '#shared/index.ts'
+import type ContainerService from '#shared/services/ContainerService.ts'
+import type { tryCatch } from '#shared/utils/tryCatch.ts'
 import type TranslatorService from '#shared/services/TranslatorService.ts'
 
 export { }

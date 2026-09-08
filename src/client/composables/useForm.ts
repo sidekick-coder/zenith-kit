@@ -1,4 +1,4 @@
-import { type ValibotObjectSchema, type ValibotSchema, type ValidatePayload, type ValidatorResult } from '#shared/index.ts';
+import { type ValibotObjectSchema, type ValibotSchema, type ValidatePayload, type ValidatorResult } from '#shared/services/ValidatorService.ts';
 import { toTypedSchema as  veeValidateToTypedSchema } from '@vee-validate/valibot';
 import { useForm as useVeeValidateForm, type FormContext, type FormOptions, type GenericObject } from 'vee-validate';
 

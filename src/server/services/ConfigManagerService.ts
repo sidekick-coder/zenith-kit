@@ -1,11 +1,11 @@
-import ConfigFSService from '#server/services/ConfigFSService.ts'
-import ConfigS3Service from '#server/services/ConfigS3Service.ts'
-import { BaseException, type LoggerService } from '#shared/index.ts'
+import BaseException from '#shared/exceptions/BaseException.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
 import ConfigService from '#shared/services/ConfigService.ts'
 import { flatten } from '#shared/utils/flatten.ts'
 import type EnvService from './EnvService.ts'
-import fs from 'fs'
-import yaml from 'js-yaml'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url) 
 
 export interface ConfigManagerOptions {
     env: EnvService
@@ -31,6 +31,8 @@ export default class ConfigManagerService {
     }
 
     private async loadS3Config() {
+        const ConfigS3Service = await import('#server/services/ConfigS3Service.ts').then(m => m.default)
+
         const service = new ConfigS3Service({
             bucket: this.env.get('ZENITH_CONFIG_S3_BUCKET')!,
             region: this.env.get('ZENITH_CONFIG_S3_REGION')!,
@@ -58,6 +60,8 @@ export default class ConfigManagerService {
     }
 
     private async loadFSConfig() {
+        const ConfigFSService = await import('#server/services/ConfigFSService.ts').then(m => m.default)
+
         const service = new ConfigFSService({
             directory: this.env.get('ZENITH_CONFIG_FS_PATH'),
             debug: this.env.get('ZENITH_CONFIG_DEBUG'),
@@ -86,6 +90,8 @@ export default class ConfigManagerService {
     }
 
     public loadConfigFromFile(service: ConfigService, file: string) {
+        const fs = require('fs') 
+
         if (!fs.existsSync(file)) {
             this.logger.warn(`configuration file not found: ${file}`)
             return
@@ -95,6 +101,8 @@ export default class ConfigManagerService {
         let data: Record<string, any> | null = null
 
         if (file.endsWith('.yml') || file.endsWith('.yaml')) {
+            const yaml = require('js-yaml')
+
             data = yaml.load(text) as Record<string, any>
         }
 

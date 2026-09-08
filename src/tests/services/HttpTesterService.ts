@@ -1,7 +1,8 @@
 import tokenRepository from "#server/facades/tokenRepository.ts"
 import userRepository from "#server/facades/userRepository.ts"
-import { BaseException, UserEntity } from "#shared/index.ts"
-import type HttpService from "./HttpService"
+import BaseException from "#shared/exceptions/BaseException.ts"
+import UserEntity from "#shared/entities/UserEntity.ts"
+import type HttpService from "#server/services/HttpService.ts"
 import supertest, { type Test } from 'supertest'
 
 export interface HttpTesterServiceOptions {
@@ -17,7 +18,7 @@ export default class HttpTesterService {
 
     constructor(options: HttpTesterServiceOptions) {
         this.http = options.http
-        this.request = supertest(this.http.getExpressApp())
+        this.request = supertest(this.http.getExpressApp()) as any
     }
 
 

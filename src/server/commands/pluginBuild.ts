@@ -2,8 +2,8 @@ import * as tsdown from 'tsdown'
 import * as vite from 'vite'
 import path from 'path'
 import { CliCommand } from '#server/services/CliService.js'
-import { createTsDownConfig } from '#server/utils/createTsdownConfig.js'
-import { createViteConfig } from '#server/utils/createViteConfig.js'
+import { createTsDownConfig } from '#build/createTsdownConfig.js'
+import { createViteConfig } from '#build/createViteConfig.js'
 import { getPluginConfig } from '#server/utils/config.js'
 
 const command = new CliCommand('plugin:build')

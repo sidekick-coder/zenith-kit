@@ -1,5 +1,5 @@
 import userRepository from "#server/facades/userRepository.ts";
-import type { UserEntity } from "#shared/index.ts";
+import type UserEntity from "#shared/entities/UserEntity.ts";
 import { faker } from '@faker-js/faker'
 
 export async function createUser(payload: Partial<UserEntity> = {}): Promise<UserEntity> {

@@ -1,4 +1,4 @@
-import { BaseException } from '#shared/index.ts'
+import BaseException from '#shared/exceptions/BaseException.ts'
 import type { Loader, LoaderRecord } from './defineLoader.ts'
 
 export function createLoaderFactory<E extends Record<string, any> = Record<string, any>, R extends LoaderRecord<E> = LoaderRecord<E>>(loaders: R) {

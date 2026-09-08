@@ -18,32 +18,31 @@
     "imports": {
         "#client/*": "./src/client/*",
         "#server/*": "./src/server/*",
-        "#shared/*": "./src/shared/*"
+        "#shared/*": "./src/shared/*",
+        "#build/*": "./src/build/*"
     },
     "exports": {
         "./shared": {
-            "development": {
-                "types": "./src/shared/index.ts",
-                "import": "./src/shared/index.ts"
-            },
             "types": "./dist/shared/index.d.mts",
             "import": "./dist/shared/index.mjs",
             "require": "./dist/shared/index.js"
         },
+        "./shared/*": {
+            "types": "./dist/shared/*.d.mts",
+            "import": "./dist/shared/*.mjs",
+            "require": "./dist/shared/*.js"
+        },
         "./server": {
-            "development": {
-                "types": "./src/server/index.ts",
-                "import": "./src/server/index.ts"
-            },
             "types": "./dist/server/index.d.mts",
             "import": "./dist/server/index.mjs",
             "require": "./dist/server/index.js"
         },
+        "./server/*": {
+            "types": "./dist/server/*.d.mts",
+            "import": "./dist/server/*.mjs",
+            "require": "./dist/server/*.js"
+        },
         "./client": {
-            "development": {
-                "types": "./src/client/index.ts",
-                "import": "./src/client/index.ts"
-            },
             "types": "./dist/client/src/client/index.d.ts",
             "import": "./dist/client/index.es.js",
             "require": "./dist/client/index.es.js"
@@ -88,7 +87,6 @@
         "@types/cors": "^2.8.19",
         "@types/supertest": "^7.2.0",
         "acorn-typescript": "^1.4.13",
-        "better-sqlite3": "^12.10.0",
         "npm-run-all": "^4.1.5"
     },
     "dependencies": {

@@ -1,5 +1,5 @@
 import type { Response } from 'express'
-import { BaseException, LoggerService } from '#shared/index.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
 import EnvService from './EnvService'
 
 export interface ExceptionServiceOptions {

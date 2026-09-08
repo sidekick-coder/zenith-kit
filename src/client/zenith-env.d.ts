@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
-import type { ContainerService, tryCatch } from '#shared/index.ts'
+import type { ContainerService, tryCatch } from '#shared/utils/tryCatch.ts'
+import type ConfigService from '#shared/services/ConfigService.ts'
 import type ConfigService from '#shared/services/ConfigService.ts'
 import type TranslatorService from '#shared/services/TranslatorService.ts'
 

@@ -1,4 +1,4 @@
-import { BaseException } from "#shared/index.ts"
+import BaseException from '#shared/exceptions/BaseException.ts'
 import type { DefineComponent } from "vue"
 import emmitter from '../facades/emmitter.ts'
 

@@ -1,5 +1,5 @@
 import { set, get } from 'lodash-es'
-import { unflatten } from '#shared/index.ts'
+import { unflatten } from '#shared/utils/flatten.ts'
 import { defineLoader } from '#server/utils/defineLoader.ts'
 
 interface RepositoryMeta {

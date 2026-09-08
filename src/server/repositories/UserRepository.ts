@@ -1,6 +1,6 @@
 import emmitter from '#server/facades/emmitter.ts'
 import hasher from '#server/facades/hasher.ts'
-import type { UserEntity } from '#shared/index.ts'
+import type UserEntity from '#shared/entities/UserEntity.ts'
 import DatabaseRepository from './DatabaseRepository'
 
 export interface UserRepositoryQueryOptions {

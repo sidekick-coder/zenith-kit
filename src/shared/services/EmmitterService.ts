@@ -1,5 +1,6 @@
-import { debounce } from 'lodash-es'
-import { createId, tryCatch } from '../utils/index.ts'
+import debounce from 'lodash-es/debounce.js'
+import { createId } from '#shared/utils/createId.ts'
+import { tryCatch } from '#shared/utils/tryCatch.ts'
 import LoggerService from './LoggerService.ts'
 
 export interface EmmitterListenerOptions {

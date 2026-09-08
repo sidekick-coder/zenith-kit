@@ -1,11 +1,12 @@
 import fs from 'fs'
 import path from 'path'
-import nodeSchedule from 'node-schedule'
+// import nodeSchedule from 'node-schedule'
 import logger from '../facades/logger.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 import { createId } from '#client/utils/createId.ts'
 import RoutineEntity from '#server/entities/RoutineEntity.ts'
-import { BaseException, LoggerService } from '#shared/index.ts'
+import BaseException from '#shared/exceptions/BaseException.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
 
 export interface AddOptions {
     id?: string
@@ -166,6 +167,8 @@ export default class SchedulerService {
 
             logger.info(`${routine.id} routine executed`)
         }
+
+        const nodeSchedule = await import('node-schedule')
 
         routine.job = nodeSchedule.scheduleJob(routine.cron, cb)
 

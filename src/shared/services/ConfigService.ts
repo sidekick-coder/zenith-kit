@@ -1,5 +1,8 @@
-import { get, set, has, unset } from 'lodash-es'
-import { flatten } from '../utils'
+import { flatten } from '#shared/utils/flatten.ts'
+import get from 'lodash-es/get.js'
+import set from 'lodash-es/set.js'
+import has from 'lodash-es/has.js'
+import unset from 'lodash-es/unset.js'
 
 interface Entry {
     key: string

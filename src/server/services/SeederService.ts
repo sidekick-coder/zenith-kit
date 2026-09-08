@@ -4,7 +4,7 @@ import EmmitterService from '#shared/services/EmmitterService.ts'
 import LoggerService from '#shared/services/LoggerService.ts'
 import type { Kysely } from 'kysely'
 import SeederEntity from '#server/entities/SeederEntity.ts'
-import { tryCatch } from '#shared/index.ts'
+import { tryCatch } from '#shared/utils/tryCatch.ts'
 
 
 export interface SeederSource {

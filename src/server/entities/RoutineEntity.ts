@@ -1,4 +1,4 @@
-import { Job } from 'node-schedule'
+import type { Job } from 'node-schedule'
 
 export interface RoutineHandler {
     (): void | Promise<void>

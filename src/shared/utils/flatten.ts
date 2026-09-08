@@ -1,4 +1,4 @@
-import { set } from 'lodash-es'
+import set from 'lodash-es/set.js'
 
 export function flatten(obj: any, prefix = '', res: any = {}): Record<string, any> {
     for (const [key, value] of Object.entries(obj)) {

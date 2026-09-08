@@ -3,7 +3,7 @@ import Route from '#server/entities/RouteEntity.ts'
 import type { Handler, Middleware, MiddlewareHandleResult } from '#server/contracts/RouterContract.ts'
 import { compose } from '#shared/utils/compose.ts'
 import Hooks from '#shared/mixins/HooksMixin.ts'
-import { LoggerService } from '#shared/index.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
 import { matchPath } from '#shared/utils/matchPaths.ts'
 
 type RouteContext = 'global' | 'group' | 'route'

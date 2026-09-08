@@ -1,6 +1,5 @@
 import path from 'path'
 
-
 export function basePath(...args: string[]): string {
     const BASE_PATH = process.env.ZENITH_BASE_PATH!
 
@@ -9,6 +8,22 @@ export function basePath(...args: string[]): string {
     }
 
     return path.resolve(BASE_PATH, ...args)
+}
+
+export function serverPath(...args: string[]): string {
+    if (process.env.NODE_ENV === 'production') {
+        return basePath('dist', 'server', ...args)
+    }
+
+    return basePath('src', 'server', ...args)
+}
+
+export function clientPath(...args: string[]): string {
+    if (process.env.NODE_ENV === 'production') {
+        return basePath('dist', 'client-browser', ...args)
+    }
+
+    return basePath('src', 'client', ...args)
 }
 
 export function storagePath(...args: string[]): string {

@@ -7,7 +7,7 @@ import LoggerService from '#shared/services/LoggerService.ts'
 import type { Kysely } from 'kysely'
 import MigrationEntity from '#server/entities/MigrationEntity.ts'
 import { orderBy } from 'lodash-es'
-import { BaseException } from '#shared/index.ts'
+import BaseException from '#shared/exceptions/BaseException.ts'
 
 export interface MigrationSource {
     id: string;

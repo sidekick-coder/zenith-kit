@@ -1,6 +1,7 @@
-import type { Token, UserEntity } from '@sidekick-coder/zenith-kit/shared'
-import type {  Middleware, } from '#server/contracts/RouterContract.ts'
-import { BaseException } from '#shared/index.ts'
+import type { Token } from '#shared/schemas/tokenSchema.ts'
+import type UserEntity from '#shared/entities/UserEntity.ts'
+import type { Middleware, } from '#server/contracts/RouterContract.ts'
+import BaseException from '#shared/exceptions/BaseException.ts'
 
 export type AuthMiddlewareContext = {
     user: UserEntity

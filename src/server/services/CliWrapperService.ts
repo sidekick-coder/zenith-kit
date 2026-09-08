@@ -1,6 +1,6 @@
 import cp from 'child_process';
 import path from 'path';
-import { LoggerService } from '#shared/index.ts';
+import LoggerService from '#shared/services/LoggerService.ts';
 
 export default class CliWrapperService {
     public process: cp.ChildProcess | null = null;
@@ -101,11 +101,24 @@ export default class CliWrapperService {
 
         const forwardArgs = args.filter(arg => !namespaces.some(ns => arg.startsWith(ns)));
 
+        if (process.env.NODE_ENV === 'production') {
+            const filename = path.join(this.appBasePath, 'dist', 'server', 'cli.mjs');
+
+            this.args = [
+                filename,
+                ...forwardArgs,
+            ]
+
+            return
+        }
+
+        const filename = path.join(this.appBasePath, 'src', 'server', 'cli.ts');
+
         this.args = [
             '--no-warnings',
             '--experimental-strip-types',
             '--enable-source-maps',
-            path.join(this.appBasePath, 'server', 'cli.ts'),
+            filename,
             ...forwardArgs,
         ];
 

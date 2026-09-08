@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash-es'
+import orderBy from 'lodash-es/orderBy.js'
 import BaseException from '#shared/exceptions/BaseException.ts'
 import type ConfigService from '#shared/services/ConfigService.ts'
 import { createId } from '#shared/utils/createId.ts'

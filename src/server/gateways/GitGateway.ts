@@ -1,8 +1,8 @@
 import { writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
-import LoggerService from '../../shared/services/LoggerService.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
 import { tmpPath } from '#server/utils/basePath.ts'
-import { tryCatch } from '#shared/index.ts'
+import { tryCatch } from '#shared/utils/tryCatch.ts'
 import ShellService from '#server/services/ShellService.ts'
 
 export interface GitRepoInfo {

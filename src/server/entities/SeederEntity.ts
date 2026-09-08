@@ -1,4 +1,4 @@
-import { BaseException } from "#shared/index.ts";
+import BaseException from "#shared/exceptions/BaseException.ts";
 import type { Kysely } from "kysely";
 
 export interface SeederEntiyData {

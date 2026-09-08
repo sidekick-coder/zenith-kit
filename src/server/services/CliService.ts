@@ -2,7 +2,9 @@ import { Command as CommanderCommand } from 'commander'
 import chalk from 'chalk'
 import { printTable, printObject } from '../utils/printTable.ts'
 import { importAll } from '#server/utils/importAll.ts'
-import { EmmitterService, LoggerService, tryCatch } from '#shared/index.ts'
+import EmmitterService from '#shared/services/EmmitterService.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
+import { tryCatch } from '#shared/utils/tryCatch.ts'
 import * as inquirer from '@inquirer/prompts'
 
 export interface CliEvents {
@@ -71,6 +73,8 @@ export default class CliService extends CliCommand {
     }
 
     public async loadDir(dir: string) {
+        const startTime = Date.now()
+
         const mods = await importAll(dir, {
             exclude: ['.test.ts', '.spec.ts', '.test.js', '.spec.js', '.d.ts', '.d.mts', '.d.cts'],
             onError: ({ error, filename }) => {
@@ -108,6 +112,12 @@ export default class CliService extends CliCommand {
                 this.logger.debug(`added command from file ${filename} to cli`)
             }
 
+        }
+
+        const endTime = Date.now()
+
+        if (this.debug) {
+            this.logger.debug(`loaded commands from dir ${dir} in ${endTime - startTime}ms`)
         }
     }
 

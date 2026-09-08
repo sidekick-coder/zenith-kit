@@ -1,15 +1,21 @@
 import type { Server } from 'http'
-import express from 'express'
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
+// import express from 'express'
+// import cors from 'cors'
+// import cookieParser from 'cookie-parser'
+import type { Request, Response, Application, NextFunction } from 'express'
+import type { CorsOptions } from 'cors'
 import Router from './RouterService.ts'
 import ExceptionService from './ExceptionService.ts'
 import Route from '#server/entities/RouteEntity.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
-import { EmmitterService, LoggerService } from '#shared/index.ts'
+import EmmitterService from '#shared/services/EmmitterService.ts'
+import LoggerService from '#shared/services/LoggerService.ts'
 import type { HttpContext } from '#server/contracts/HttpContextContract.ts'
 import CookieMapEntity from '#server/entities/CookieMapEntity.ts'
 import EnvService from './EnvService.ts'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 
 export interface HttpServiceOptions {
     debug?: boolean;
@@ -24,7 +30,7 @@ export interface HttpServiceOptions {
 export default class HttpService {
     public static __container_entry_key = 'HttpService'
 
-    public app: express.Application
+    public app: Application
     public server: Server | null = null
     public router: Router
     public exception: ExceptionService
@@ -32,7 +38,7 @@ export default class HttpService {
     public emmitter: EmmitterService
     public env: EnvService
     public debug = false
-    public onUnhandlerRouted: ((req: express.Request, res: express.Response) => void) | null = null
+    public onUnhandlerRouted: ((req: Request, res: Response) => void) | null = null
 
     constructor(options: HttpServiceOptions) {
         this.debug = options.debug || false
@@ -42,20 +48,25 @@ export default class HttpService {
         this.env = options.env || new EnvService()
         this.exception = options.exception || new ExceptionService({ logger: this.logger, env: this.env })
 
+        const express = require('express')
+        const cookieParser = require('cookie-parser')
+
         this.app = express()
         this.app.use(cookieParser())
         this.app.use(this.parser)
     }
 
-    public getExpressApp(): express.Application {
+    public getExpressApp(): Application {
         return this.app
     }
 
-    public cors(options: cors.CorsOptions) {
+    public cors(options: CorsOptions) {
+        const cors = require('cors')
+
         this.app.use(cors(options))
     }
 
-    public use: express.Application['use'] = (...args: any[]) => {
+    public use: Application['use'] = (...args: any[]) => {
         this.app.use(...args)
 
         return this.app
@@ -90,7 +101,8 @@ export default class HttpService {
         })
     }
 
-    public parser(req: express.Request, res: express.Response, next: express.NextFunction) {
+    public parser(req: Request, res: Response, next: NextFunction) {
+        const express = require('express')
         const contentType = req.headers['content-type'] || ''
 
         if (contentType.startsWith('multipart/form-data')) {
@@ -99,14 +111,14 @@ export default class HttpService {
         }
 
         // For other content types, parse JSON and URL-encoded body
-        express.json()(req, res, (err) => {
+        express.json()(req, res, (err: any) => {
             if (err) return next(err)
 
             express.urlencoded({ extended: true })(req, res, next)
         })
     }
 
-    public async execute(url: URL, request: express.Request, response: express.Response, route: Route) {
+    public async execute(url: URL, request: Request, response: Response, route: Route) {
         const ctx: Omit<HttpContext, 'acl'> = {
             response,
             request,

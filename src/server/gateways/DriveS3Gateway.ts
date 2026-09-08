@@ -1,17 +1,7 @@
 import { Readable } from 'stream'
 import { dirname } from 'path'
 import ms from 'ms'
-import {
-    S3Client,
-    ListObjectsV2Command,
-    GetObjectCommand,
-    PutObjectCommand,
-    DeleteObjectCommand,
-    DeleteObjectsCommand,
-    HeadObjectCommand,
-} from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { Upload } from '@aws-sdk/lib-storage'
+import type { S3Client } from '@aws-sdk/client-s3'
 import type { InferOutput } from 'valibot'
 import mime from 'mime'
 import DriveEntity from '#shared/entities/DriveEntryEntity.ts'
@@ -31,6 +21,28 @@ const schema = validator.create((v) => v.object({
 
 export type S3DriveConfig = InferOutput<typeof schema>
 
+type S3Sdk = typeof import('@aws-sdk/client-s3')
+type S3PresignerSdk = typeof import('@aws-sdk/s3-request-presigner')
+type S3StorageSdk = typeof import('@aws-sdk/lib-storage')
+
+interface S3SdkModules {
+    s3: S3Sdk
+    presigner: S3PresignerSdk
+    storage: S3StorageSdk
+}
+
+let s3SdkModules: Promise<S3SdkModules> | undefined
+
+function loadS3SdkModules(): Promise<S3SdkModules> {
+    s3SdkModules ??= Promise.all([
+        import('@aws-sdk/client-s3'),
+        import('@aws-sdk/s3-request-presigner'),
+        import('@aws-sdk/lib-storage'),
+    ]).then(([s3, presigner, storage]) => ({ s3, presigner, storage }))
+
+    return s3SdkModules
+}
+
 function streamToUint8Array(stream: any): Promise<Uint8Array> {
     if (!stream || typeof stream !== 'object' || typeof stream.on !== 'function') {
         return Promise.resolve(new Uint8Array())
@@ -48,6 +60,8 @@ export default class DriveS3 extends BaseDrive {
     private schema = schema
 
     private _client?: S3Client
+
+    private _clientPromise?: Promise<S3Client>
 
     constructor(data: Pick<BaseDrive, 'id' | 'name' | 'description' | 'config'>) {
         super(data)
@@ -86,32 +100,55 @@ export default class DriveS3 extends BaseDrive {
         return `${cleanPrefix}${cleanFilename}`
     }
 
-    protected get client(): S3Client {
+    protected async getClient(): Promise<S3Client> {
         if (this._client) {
             return this._client
         }
 
-        const config = this.config as S3DriveConfig
+        if (this._clientPromise) {
+            return this._clientPromise
+        }
 
-        this._client = new S3Client({
-            region: config.region,
-            endpoint: config.endpoint,
-            credentials: {
-                accessKeyId: config.accessKeyId,
-                secretAccessKey: config.secretAccessKey,
-                sessionToken: config.sessionToken,
-            }
+        const config = this.config as S3DriveConfig
+        const clientPromise = loadS3SdkModules().then(({ s3: { S3Client } }) => {
+            const client = new S3Client({
+                region: config.region,
+                endpoint: config.endpoint,
+                credentials: {
+                    accessKeyId: config.accessKeyId,
+                    secretAccessKey: config.secretAccessKey,
+                    sessionToken: config.sessionToken,
+                }
+            })
+
+            this._client = client
+
+            return client
         })
 
-        return this._client
+        this._clientPromise = clientPromise
+
+        try {
+            return await clientPromise
+        } catch (error) {
+            if (this._clientPromise === clientPromise) {
+                this._clientPromise = undefined
+            }
+
+            throw error
+        }
     }
 
     public exists: BaseDrive['exists'] = async (filename) => {
         this.checkValid()
 
         const Key = this.getKey(filename)
+        const [{ s3: { HeadObjectCommand } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
-        return this.client.send(new HeadObjectCommand({
+        return client.send(new HeadObjectCommand({
             Bucket: this.bucket,
             Key
         }))
@@ -128,13 +165,18 @@ export default class DriveS3 extends BaseDrive {
             Prefix += '/'
         }
 
+        const [{ s3: { ListObjectsV2Command } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
+
         const command = new ListObjectsV2Command({
             Bucket: this.bucket,
             Prefix,
             Delimiter: '/',
         })
 
-        const resp = await this.client.send(command)
+        const resp = await client.send(command)
 
         const entries: DriveEntity[] = []
 
@@ -217,8 +259,12 @@ export default class DriveS3 extends BaseDrive {
         this.checkValid()
 
         const Key = this.getKey(filename)
+        const [{ s3: { GetObjectCommand } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
-        const resp = await this.client.send(new GetObjectCommand({
+        const resp = await client.send(new GetObjectCommand({
             Bucket: this.bucket,
             Key
         }))
@@ -232,13 +278,17 @@ export default class DriveS3 extends BaseDrive {
         this.checkValid()
 
         const Key = this.getKey(filename)
+        const [{ s3: { GetObjectCommand } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
         const command = new GetObjectCommand({
             Bucket: this.bucket,
             Key
         })
 
-        const resp = await this.client.send(command)
+        const resp = await client.send(command)
 
         const body = resp.Body as any
 
@@ -249,8 +299,12 @@ export default class DriveS3 extends BaseDrive {
         this.checkValid()
 
         const Key = this.getKey(filename)
+        const [{ s3: { PutObjectCommand } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
-        await this.client.send(new PutObjectCommand({
+        await client.send(new PutObjectCommand({
             Bucket: this.bucket,
             Key,
             Body: Buffer.from(data)
@@ -261,9 +315,13 @@ export default class DriveS3 extends BaseDrive {
         this.checkValid()
 
         const Key = this.getKey(filename)
+        const [{ storage: { Upload } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
         const upload = new Upload({
-            client: this.client,
+            client,
             params: {
                 Bucket: this.bucket,
                 Key,
@@ -280,6 +338,10 @@ export default class DriveS3 extends BaseDrive {
         const Key = this.getKey(filename)
 
         const entry = await this.find(filename)
+        const [{ s3: { DeleteObjectCommand, DeleteObjectsCommand, ListObjectsV2Command } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
         if (entry.type === 'file') {
             const command = new DeleteObjectCommand({
@@ -287,13 +349,13 @@ export default class DriveS3 extends BaseDrive {
                 Key
             })
 
-            await this.client.send(command)
+            await client.send(command)
 
             return
         }
 
 
-        const listResponse = await this.client.send(new ListObjectsV2Command({
+        const listResponse = await client.send(new ListObjectsV2Command({
             Bucket: this.bucket,
             Prefix: Key
         }))
@@ -304,7 +366,7 @@ export default class DriveS3 extends BaseDrive {
             return
         }
 
-        await this.client.send(new DeleteObjectsCommand({
+        await client.send(new DeleteObjectsCommand({
             Bucket: this.bucket,
             Delete: { Objects: toDelete }
         }))
@@ -324,8 +386,12 @@ export default class DriveS3 extends BaseDrive {
 
         const expiresMs = ms(options?.expires || '30m') || 30 * 60 * 1000
         const expiresSeconds = Math.max(1, Math.round(expiresMs / 1000))
+        const [{ s3: { GetObjectCommand }, presigner: { getSignedUrl } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
-        return getSignedUrl(this.client, new GetObjectCommand({
+        return getSignedUrl(client, new GetObjectCommand({
             Bucket: this.bucket,
             Key
         }), { expiresIn: expiresSeconds })
@@ -338,12 +404,16 @@ export default class DriveS3 extends BaseDrive {
 
         const expiresMs = ms(options?.expires || '30m') || 30 * 60 * 1000
         const expiresSeconds = Math.max(1, Math.round(expiresMs / 1000))
+        const [{ s3: { PutObjectCommand }, presigner: { getSignedUrl } }, client] = await Promise.all([
+            loadS3SdkModules(),
+            this.getClient(),
+        ])
 
         const command = new PutObjectCommand({
             Bucket: this.bucket,
             Key,
         })
 
-        return getSignedUrl(this.client, command, { expiresIn: expiresSeconds })
+        return getSignedUrl(client, command, { expiresIn: expiresSeconds })
     }
 }

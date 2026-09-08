@@ -3,7 +3,7 @@
 // import type UploadService from '#server/services/upload.service.ts'
 // import type CookieService from '#shared/services/cookie.service.ts'
 import type Acl from '#server/entities/AclEntity.ts'
-import type { CookieMapEntity } from '#shared/index.ts';
+import type CookieMapEntity from '#shared/entities/CookieMapEntity.ts';
 
 export interface Request {
     [key: string]: any; // Allow additional properties
