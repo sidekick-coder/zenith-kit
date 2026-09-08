@@ -37,6 +37,7 @@ export default class ExceptionService {
             error: errorName,
             message: errorMessage,
             status: errorStatus,
+            stack: this.env.development ? error.stack : undefined,
         })
     }
 }
