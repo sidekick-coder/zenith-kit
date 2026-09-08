@@ -1,4 +1,4 @@
-import { computed, ref, toRef, watch } from 'vue'
+import { computed, onMounted, onServerPrefetch, ref, toRef, watch } from 'vue'
 import type { MaybeRef, Ref } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 import { useState } from './useState.ts'
@@ -130,6 +130,11 @@ export function useFetchPagination<T = any>(url: string, options: UseFetchPagina
         hydrated.add(key)
 
         await load()
+    }
+
+    if (options.immediate !== false) {
+        onMounted(hydrate)
+        onServerPrefetch(hydrate)
     }
 
     return {
