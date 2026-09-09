@@ -1,12 +1,9 @@
-// import dotenv from 'dotenv'
-// import * as v from 'valibot'
+import dotenv from 'dotenv'
+import * as v from 'valibot'
 import type { DotenvConfigOptions } from 'dotenv'
 import BaseException from '#shared/exceptions/BaseException.ts'
-// import { envSchema } from '#server/schemas/envSchema.ts'
+import { envSchema } from '#server/schemas/envSchema.ts'
 import type { EnvSchema } from '#server/schemas/envSchema.ts'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
 
 export default class EnvService {
     public static __container_entry_key = 'EnvService'
@@ -18,8 +15,6 @@ export default class EnvService {
     }
 
     public static dotEnvConfig(options?: DotenvConfigOptions) {
-        const dotenv = require('dotenv')
-
         return dotenv.config(options)
     }
 
@@ -39,9 +34,6 @@ export default class EnvService {
             override: true,
             quiet: true,
         })
-
-        const v = require('valibot')
-        const envSchema = require('#server/schemas/envSchema.ts').envSchema
 
         this.env = v.parse(envSchema, process.env)
 
