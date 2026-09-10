@@ -15,7 +15,7 @@ EnvService.dotEnvConfig({
 })
 
 
-let ZENITH_VERSION = 'v0.3.0'
+let ZENITH_VERSION = 'v0.3.2'
 let ZENITH_BASE_PATH = process.env.ZENITH_BASE_PATH
 let ZENITH_KIT_DEBUG = process.env.ZENITH_KIT_DEBUG
 
