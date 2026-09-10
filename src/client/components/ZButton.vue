@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, resolveComponent } from 'vue'
 import Icon from './Icon.vue'
-import { Tooltip, TooltipContent, TooltipTrigger } from '#client/components/ui/tooltip/index.ts'
 import UiButton from '#client/components/ui/button/Button.vue'
 const RouterLink = resolveComponent('RouterLink')
 const props = defineProps({
@@ -24,14 +23,6 @@ const props = defineProps({
     to: {
         type: String,
         default: null,
-    },
-    tooltip: {
-        type: String,
-        default: null,
-    },
-    tooltipSide: {
-        type: String as () => 'top' | 'right' | 'bottom' | 'left',
-        default: 'top',
     },
 })
 
@@ -62,26 +53,7 @@ const as = computed(() => {
 </script>
 
 <template>
-
-    <Tooltip v-if="tooltip">
-        <TooltipTrigger as-child>
-            <UiButton v-bind="$attrs" :disabled="disabled || loading" :as :href="to ? to : href" :to :type
-                @click="onClick">
-                <Icon v-if="loading" name="Loader2" class="animate-spin" />
-
-                <span v-else-if="label" class="text-sm">
-                    {{ label }}
-                </span>
-
-                <slot v-else />
-            </UiButton>
-        </TooltipTrigger>
-        <TooltipContent :side="tooltipSide">
-            {{ tooltip }}
-        </TooltipContent>
-    </Tooltip>
-    <UiButton v-else v-bind="$attrs" :disabled="disabled || loading" :as :href="to ? to : href" :to :type
-        @click="onClick">
+    <UiButton v-bind="$attrs" :disabled="disabled || loading" :as :href="to ? to : href" :to :type @click="onClick">
         <Icon v-if="loading" name="Loader2" class="animate-spin" />
 
         <span v-else-if="label" class="text-sm">

@@ -7,6 +7,8 @@ import prefixer from './vite/plugins/tailwindAutoPrefix.js'
 export const logger = createLogger()
 
 const externals = [
+    'vue/server-renderer',
+    '@vue/server-renderer',
     'vue',
     /^vue\//,
 
