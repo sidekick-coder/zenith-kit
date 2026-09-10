@@ -10,9 +10,12 @@ const externals = [
     'vue',
     /^vue\//,
 
-    // 'vue-router',
-    // /^vue-router\//,
-    //
+    'vue-router',
+    /^vue-router\//,
+
+    'vee-validate',
+    /^vee-validate\//,
+    
     // '@vueuse/core',
     // '@vueuse/router',
     // 'vee-validate',

@@ -35,9 +35,17 @@ export function createViteConfig(options: CreateViteConfigOptions) {
             ssrManifest: options.ssr || false,
             rollupOptions: {
                 external: [
+                    'vue/server-renderer',
+                    '@vue/server-renderer',
+
                     'vue',
+                    /^vue\//,
+
                     'vue-router',
+                    /^vue-router\//,
+
                     'vee-validate',
+                    /^vee-validate\//,
                 ],
             },
             lib: {

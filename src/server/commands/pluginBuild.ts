@@ -26,8 +26,11 @@ command
         }
 
         const tsdownConfig = createTsDownConfig({
-            root: cwd,
+            root: path.resolve(cwd, 'src'),
             entry: entry,
+            unbundle: true,
+            tsconfig: path.resolve(cwd, 'tsconfig.server.json'),
+            
         })
 
 
