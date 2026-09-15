@@ -12,7 +12,6 @@ import type { PropType } from 'vue'
 import { truncate } from 'lodash-es'
 import { useHead } from '@unhead/vue'
 import menu from '#client/facades/menu.ts'
-import route from '#client/facades/route.ts'
 import AdminLayoutDefaultMenu from './AdminLayoutDefaultMenu.vue'
 import AdminLayoutPlainMenu from './AdminLayoutPlainMenu.vue'
 import Logo from '#client/components/Logo.vue'
@@ -181,14 +180,12 @@ items.value = menu.list({
                 </div>
             </header>
 
-            <div>
-                <div :class="cn(
-                    'dashboard-layout-content h-full overflow-auto lg:max-w-[calc(100dvw-8px-var(--sidebar-width))] group-has-data-[collapsible=icon]/sidebar-wrapper:max-w-[calc(100dvw-var(--sidebar-width-icon))]',
-                    padding ? 'p-5' : '',
-                    contentClass
-                )">
-                    <slot />
-                </div>
+            <div :class="cn(
+                'dashboard-layout-content h-full overflow-auto lg:max-w-[calc(100dvw-8px-var(--sidebar-width))] group-has-data-[collapsible=icon]/sidebar-wrapper:max-w-[calc(100dvw-var(--sidebar-width-icon))]',
+                padding ? 'p-5' : '',
+                contentClass
+            )">
+                <slot />
             </div>
         </SidebarInset>
     </SidebarProvider>
