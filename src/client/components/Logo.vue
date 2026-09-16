@@ -15,8 +15,8 @@ const logoFileId = config.get('branding.logoFileId', null)
 
     <div
         v-else
-        class="flex aspect-square size-8 items-center justify-center rounded-md bg-primary text-sidebar-primary-foreground"
+        class="flex aspect-square size-8 items-center justify-center rounded-md bg-primary text-primary-foreground"
     >
-        <LogoIcon class="size-5 dark:text-black" />
+        <LogoIcon class="size-5" />
     </div>
 </template>

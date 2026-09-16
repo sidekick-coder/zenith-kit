@@ -25,6 +25,7 @@ import {
 } from '#client/components/ui/sidebar/index.ts'
 import Icon from '#client/components/Icon.vue'
 import toast from '#client/facades/toast.ts'
+import { useDarkMode } from '#client/components.ts'
 
 interface Link {
     label: string
@@ -45,44 +46,7 @@ const userName = computed(() => auth.user?.name || $t('User'))
 const userEmail = computed(() => auth.user?.email || '')
 const userInitials = computed(() => auth.user?.initials || 'U')
 
-const isDarkMode = ref(false)
-const isTogglingDarkMode = ref(false)
-
-onMounted(() => {
-    const state = di.get<Record<string, any>>('state')
-    const metas = state['user:metas'] || {}
-    isDarkMode.value = metas['admin-ui:dark_mode'] ?? false
-})
-
-async function toggleDarkMode() {
-    if (!auth.user) {
-        return
-    }
-
-    isTogglingDarkMode.value = true
-    isDarkMode.value = !isDarkMode.value
-
-    document.documentElement.classList.toggle('dark', isDarkMode.value)
-    document.documentElement.classList.toggle('light', !isDarkMode.value)
-
-    const [error] = await $fetch.try(`/api/users/${auth.user.id}/metas`, {
-        method: 'PUT',
-        data: [
-            {
-                name: 'admin-ui:dark_mode',
-                value: isDarkMode.value ? 'bool:true' : 'bool:false',
-            },
-        ],
-    })
-
-    if (error) {
-        isDarkMode.value = !isDarkMode.value
-        document.documentElement.classList.toggle('dark', isDarkMode.value)
-        document.documentElement.classList.toggle('light', !isDarkMode.value)
-    }
-
-    isTogglingDarkMode.value = false
-}
+const darkMode = useDarkMode()
 
 async function handleLogout() {
     const [error] = await $fetch.try('/auth/logout', { method: 'POST' })
@@ -133,12 +97,11 @@ async function handleLogout() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                        <DropdownMenuItem @click="toggleDarkMode">
-                            <Icon v-if="isDarkMode" name="Sun" />
+                        <DropdownMenuItem @click="darkMode = !darkMode">
+                            <Icon v-if="darkMode" name="Sun" />
                             <Icon v-else name="Moon" />
-                            <span v-if="isDarkMode">{{ $t('Light mode') }}</span>
+                            <span v-if="darkMode">{{ $t('Light mode') }}</span>
                             <span v-else>{{ $t('Dark mode') }}</span>
-                            <Icon v-if="isTogglingDarkMode" name="Loader2" class="ml-auto animate-spin" />
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuGroup v-for="link in links" :key="link.to">

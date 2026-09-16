@@ -11,14 +11,6 @@ defineOptions({ inheritAttrs: false, })
 const options = useLayoutOptions()
 const breadcrumbs = ref([])
 
-const userLinks = [
-    {
-        label: 'Preferences',
-        to: '/admin/menu/items',
-        icon: 'Settings',
-    }
-]
-
 function load(){
     breadcrumbs.value = options.value.breadcrumbs || []
 }
@@ -33,7 +25,7 @@ watch(options, load, { immediate: true, deep: true })
 
         <template #sidebar-footer>
             <SidebarFooter>
-                <UserMenu :links="userLinks" @logout="auth.logout" />
+                <UserMenu @logout="auth.logout" />
             </SidebarFooter>
         </template>
     </BaseLayout>
