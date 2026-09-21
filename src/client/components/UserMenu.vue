@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import auth from '#client/facades/auth.ts'
 
 import $fetch from '#client/facades/fetcher.ts'
-import di from '#client/facades/container.ts'
 import {
     Avatar,
     AvatarFallback,
@@ -68,7 +67,8 @@ async function handleLogout() {
                 <DropdownMenuTrigger as-child>
                     <SidebarMenuButton size="lg"
                         class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                        <Avatar class="h-8 w-8 rounded-lg">
+                        <Avatar
+                            class="h-8 w-8 rounded-lg data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                             <AvatarFallback class="rounded-lg">
                                 {{ userInitials }}
                             </AvatarFallback>

@@ -135,3 +135,24 @@ export function useCookie<T = string>(name: string, options?: UseCookieOptionsWi
     })
 }
 
+
+export function getCookie(name: string) {
+    const isClient = 'window' in globalThis && 'document' in globalThis
+
+    if (isClient) {
+        const docCookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+
+        if (docCookie) {
+            return docCookie.split('=')[1]
+        }
+
+        return null
+    }
+
+    const cookies = container.get('cookies') as Record<string, string>
+
+    return cookies[name] || null
+
+}

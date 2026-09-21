@@ -1,8 +1,13 @@
 import { watch } from "vue"
-import { useCookie } from "./useCookie"
+import { getCookie, useCookie } from "./useCookie"
+
+export function getDarkMode() {
+    const darkMode = getCookie('dark_mode')
+
+    return darkMode === 'true'
+}
 
 export function useDarkMode() {
-
     const darkMode = useCookie<boolean>('dark_mode', {
         parse: (value: string) => value === 'true',
         serialize: (value: boolean) => value ? 'true' : 'false',
