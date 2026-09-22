@@ -22,6 +22,15 @@ export interface GitGatewayOptions {
     debug?: boolean
 }
 
+export interface GitGatewayCloneOptions {
+    sshKey?: string
+    sshKeyFile?: string
+    logger?: LoggerService
+    shell?: ShellService
+    debug?: boolean
+    branch?: string
+}
+
 interface GitGatewayExecuteOptions {
     args: string
     cwd?: string
@@ -90,14 +99,20 @@ export class GitGateway {
         })
     }
 
-    public static async clone(repoUrl: string, targetDir: string, options: Omit<GitGatewayOptions, 'cwd'>) {
+    public static async clone(repoUrl: string, targetDir: string, options: GitGatewayCloneOptions = {}): Promise<GitGateway> {
+        let args = `clone '${repoUrl}' '${targetDir}'`
+
+        if (options.branch) {
+            args += ` --branch ${options.branch}`
+        }
+
         await GitGateway.execute({
             sshKey: options.sshKey,
             sshKeyFile: options.sshKeyFile,
             logger: options.logger,
             debug: options.debug,
             shell: options.shell,
-            args: `clone '${repoUrl}' '${targetDir}'`,
+            args,
         })
 
         return new GitGateway({ ...options, cwd: targetDir })
