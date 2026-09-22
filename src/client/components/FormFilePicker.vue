@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useField } from 'vee-validate'
-
-import { $fetch } from '#client/utils/fetcher.ts'
 import { $file } from '#client/utils/file.ts'
-import { tryCatch } from '#shared/utils/tryCatch.ts'
 import {
     FormControl,
     FormDescription,
@@ -16,6 +13,11 @@ import {
 import Button from '#client/components/ZButton.vue'
 import Icon from '#client/components/Icon.vue'
 import toast from '#client/facades/toast.ts'
+import { cn } from '#client/lib/utils.ts'
+
+defineOptions({
+    inheritAttrs: false,
+})
 
 const props = defineProps({
     name: {
@@ -38,131 +40,70 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    public: {
-        type: Boolean,
-        default: false,
-    },
-    showPreview: {
-        type: Boolean,
-        default: true,
-    },
-    previewSize: {
+    class: {
         type: String,
-        default: 'size-32',
+        default: '',
     },
 })
 
-const uploading = ref(false)
-const { setValue, value } = useField(props.name)
+const classes = computed(() => cn(props.class))
+
+const { setValue, value } = useField<File | null | undefined>(props.name)
 
 async function handleFilePick() {
     const file = await $file.pick({
         multiple: false,
         accept: props.accept,
     })
-    
+
     if (!file) {
         return
     }
 
-    uploading.value = true
+    setValue(file)
 
-    const form = new FormData()
-    form.append('file', file)
-
-    const [error, response] = await tryCatch(() => $fetch.post('/api/files/upload', {
-        body: form,
-        query: props.public ? { public: true } : {},
-    }))
-
-    if (error) {
-        uploading.value = false
-        return
-    }
-
-    setValue(String(response.id))
-    toast.success($t('File uploaded successfully.'))
-    
-    setTimeout(() => {
-        uploading.value = false
-    }, 500)
 }
 
 function handleRemove() {
-    setValue('')
+    setValue(undefined)
+
     toast.success($t('File removed successfully.'))
 }
 </script>
 
 <template>
-    <FormField
-        :name
-        :validate-on-blur="false"
-    >
-        <FormItem>
+    <FormField :name :validate-on-blur="false">
+        <FormItem :class="classes">
             <FormLabel>{{ label }}</FormLabel>
             <FormControl>
                 <div class="space-y-3">
                     <!-- File Preview -->
                     <div class="space-y-3">
-                        <slot
-                            name="preview"
-                            :value="value"
-                        >
+                        <slot name="preview" :value="value">
                             <div class="border rounded-lg p-4 bg-muted/50">
                                 <div class="flex items-center justify-center p-8 text-muted-foreground">
-                                    <Icon 
-                                        name="File" 
-                                        class="size-12"
-                                    />
+                                    <Icon name="File" class="size-12" />
+                                </div>
+                                <div v-if="value" class="text-center text-sm text-muted-foreground">
+                                    {{ value.name }}
                                 </div>
                             </div>
                         </slot>
                         <div class="flex gap-2">
-                            <Button
-                                v-if="!value"
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                class="w-full"
-                                :loading="uploading"
-                                :disabled="disabled"
-                                @click="handleFilePick"
-                            >
-                                <Icon 
-                                    name="Upload" 
-                                    class="size-4 mr-2" 
-                                />
+                            <Button v-if="!value" type="button" variant="outline" size="sm" class="w-full"
+                                :disabled="disabled" @click="handleFilePick">
+                                <Icon name="Upload" class="size-4 mr-2" />
                                 {{ $t('Upload') }}
                             </Button>
 
-                            <Button
-                                v-if="value"
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                :loading="uploading"
-                                :disabled="disabled"
-                                @click="handleFilePick"
-                            >
-                                <Icon 
-                                    name="Upload" 
-                                    class="size-4 mr-2" 
-                                />
+                            <Button v-if="value" type="button" variant="outline" size="sm" :disabled="disabled"
+                                @click="handleFilePick">
+                                <Icon name="Upload" class="size-4 mr-2" />
                                 {{ $t('Replace') }}
                             </Button>
-                            <Button
-                                v-if="value"
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                :disabled="disabled || uploading"
-                                @click="handleRemove"
-                            >
-                                <Icon 
-                                    name="Trash2" 
-                                    class="size-4 mr-2" 
-                                />
+                            <Button v-if="value" type="button" variant="outline" size="sm" :disabled="disabled"
+                                @click="handleRemove">
+                                <Icon name="Trash2" class="size-4 mr-2" />
                                 {{ $t('Remove') }}
                             </Button>
                         </div>
