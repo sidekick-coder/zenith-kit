@@ -6,7 +6,7 @@ export function getTheme() {
     return container.get<Theme>('theme')
 }
 
-export function getThemeCurrent(){
+export function getThemeColors(){
     const theme = getTheme()
 
     const isDark = getDarkMode()
