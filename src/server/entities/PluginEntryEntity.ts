@@ -4,7 +4,6 @@ import Base from '#shared/entities/PluginEntity.ts'
 import { GitGateway } from '#server/gateways/GitGateway.ts'
 import { composeWith } from '#shared/utils/compose.ts'
 import { join } from 'node:path'
-import GitBranchRepository from '#server/repositories/GitBranchRepository.ts'
 import GitCommitRepository from '#server/repositories/GitCommitRepository.ts'
 import ShellService from '#server/services/ShellService.ts'
 
@@ -34,13 +33,6 @@ export default class PluginEntryEntity extends composeWith(Base) {
 
     public get commits() {
         return new GitCommitRepository({
-            cwd: this.directory,
-            shell: container.has(ShellService) ? container.get(ShellService) : undefined
-        })
-    }
-
-    public get branches() {
-        return new GitBranchRepository({
             cwd: this.directory,
             shell: container.has(ShellService) ? container.get(ShellService) : undefined
         })

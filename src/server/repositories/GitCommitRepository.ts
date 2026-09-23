@@ -8,15 +8,16 @@ export interface GitCommitRepositoryOptions {
 
 export interface GitCommitListOptions {
     limit?: number
-    cursor?: string
-    branches?: string | string[]
+    offset?: number | null
+    branch?: string
 }
 
 export interface GitCommitListResult {
     items: GitCommitEntity[]
-    cursor_previous: string | null
-    cursor_current: string | null
-    cursor_next: string | null
+    limit: number
+    total: number
+    totalPages: number
+    offset: number | null
 }
 
 // %H = full hash, %h = short hash, %s = subject, %an = author name, %ae = author email, %aI = author date (ISO 8601), %b = body
@@ -34,19 +35,14 @@ export default class GitCommitRepository {
 
     async list(options?: GitCommitListOptions): Promise<GitCommitListResult> {
         const limit = options?.limit ?? 20
-        const cursor = options?.cursor
-
         const args = ['log', `--format=${COMMIT_SEPARATOR}%n${LOG_FORMAT}`, `-n`, String(limit)]
 
-        if (cursor) args.push(`${cursor}^`)
-
-        if (options?.branches) {
-            const branches = Array.isArray(options.branches) ? options.branches : [options.branches]
-            args.push(...branches)
+        if (options?.branch) {
+            args.push(options.branch)
         }
 
-        if (!options?.branches && !cursor) {
-            args.push('--all')
+        if (options?.offset) {
+            args.push(`--skip=${options.offset}`)
         }
 
         const output = await this.shell.executeCommandWithOutput('git', args, { cwd: this.cwd })
@@ -70,14 +66,16 @@ export default class GitCommitRepository {
                 })
             })
 
-        const cursor_current = items[0]?.hash ?? null
-        const cursor_next = items[items.length - 1]?.hash ?? null
+        const totalOutput = await this.shell.executeCommandWithOutput('git', ['rev-list', '--count', 'HEAD'], { cwd: this.cwd })
+        const total = parseInt(totalOutput.trim(), 10)
+        const totalPages = Math.ceil(total / limit)
 
         return {
             items,
-            cursor_previous: cursor ?? null,
-            cursor_current,
-            cursor_next: items.length < limit ? null : cursor_next,
+            limit,
+            total,
+            totalPages,
+            offset: options?.offset ?? null,
         }
     }
 
