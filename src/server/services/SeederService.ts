@@ -64,6 +64,11 @@ export default class SeeederService {
     }
 
     public async listSource(source: SeederSource) {
+        if (!fs.existsSync(source.directory)) {
+            this.logger.warn(`Seeder source directory does not exist: ${source.directory}`)
+            return []
+        }
+
         const entries = await fs.promises.readdir(source.directory)
                 const extensions = ['.js', '.ts', '.mjs', '.mts']
 

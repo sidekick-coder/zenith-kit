@@ -15,6 +15,7 @@ import { useDashboard } from '#client/composables/useDashboard.ts'
 import type DashboardWidget from '#client/entities/DashboardWidget.ts'
 import type { DashboardWidgetAction } from '#client/entities/DashboardWidgetDefinition.ts'
 import { provideDashboardWidget } from '#client/composables/useDashboardWidget.ts'
+import DashboardWidgetActionRender from './DashboardWidgetActionRender.vue'
 
 defineOptions({ inheritAttrs: false })
 
@@ -108,8 +109,7 @@ function createOptions(from: number, to: number) {
                 </span>
 
                 <div class="flex items-center gap-2">
-                    <component :is="action.component" v-for="(action, index) in actions" :key="index"
-                        v-bind="action.props" />
+                    <DashboardWidgetActionRender v-for="(a, index) in actions" :key="index" :action="a" />
 
                     <Button variant="ghost" size="icon" class="h-7 w-7" @click="layout = true">
                         <Icon name="LayoutGrid" />

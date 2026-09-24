@@ -61,6 +61,8 @@ const components = computed(() => {
 
         <input v-else-if="field.component === 'hidden'" class="hidden" :name="field.name">
 
+        <component v-else-if="field.component" :is="field.component" :name="field.name" v-bind="field.props" />
+
         <div v-else class="text-destructive">
             Unknow component {{ field.component }}
         </div>
