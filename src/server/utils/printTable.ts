@@ -118,7 +118,7 @@ export function printTable(items: any[], columns?: TableColumn[]) {
         },
         wordWrap: true,
         wrapOnWordBoundary: false,
-        colWidths: head.map((h) => h.realWidth) as number[],
+        // colWidths: head.map((h) => h.realWidth) as number[],
     })
 
     table.push(...rows)
