@@ -24,8 +24,11 @@ function removeWidget(index: number) {
 
 function duplicateWidget(index: number) {
     const copy = JSON.parse(JSON.stringify(props.widgets[index]))
+
     const updated = [...props.widgets]
+
     updated.splice(index + 1, 0, copy)
+
     emit('update:widgets', updated)
 }
 
@@ -69,13 +72,5 @@ const styles = computed(() => {
         <p class="mb-4 text-sm text-muted-foreground">
             {{ $t('No widgets added yet') }}
         </p>
-        <Button
-            type="button"
-            variant="outline"
-            @click="emit('add-widget')"
-        >
-            <Icon name="Plus" />
-            {{ $t('Add widget') }}
-        </Button>
     </div>
 </template>

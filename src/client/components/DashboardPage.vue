@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, type PropType } from 'vue'
 import type { DashboardSchema } from '#shared/schemas/dashboardSchema'
 import fetcher from '#client/facades/fetcher'
 import toast from '#client/facades/toast'
@@ -12,10 +12,15 @@ import Icon from './Icon.vue'
 import { provideDashboard } from '#client/composables/useDashboard'
 import DashboardEntity from '#client/entities/Dashboard'
 import DashboardWidgetData from '#client/entities/DashboardWidgetData'
+import type DashboardWidgetDefinition from '#client/entities/DashboardWidgetDefinition.ts'
 
 const props = defineProps({
     dashboardId: {
         type: [String, Number],
+        required: false
+    },
+    filterWidgets: {
+        type: Function as PropType<(widget: DashboardWidgetDefinition) => boolean>,
         required: false
     }
 })
@@ -121,7 +126,7 @@ onMounted(loadBody)
                 </PageSubtitle>
             </div>
             <div class="flex items-center gap-2">
-                <DashboardAddWidgetDrawer>
+                <DashboardAddWidgetDrawer :filter-widgets="filterWidgets">
                     <Button
                         type="button"
                         variant="outline"

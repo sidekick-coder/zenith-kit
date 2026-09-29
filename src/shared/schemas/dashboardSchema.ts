@@ -7,7 +7,7 @@ export function dashboardSchema() {
     return validator.create(v => v.object({
         id: v.number(),
         name: v.string(),
-        description: v.nullable(v.string()),
+        description: v.nullish(v.string(), null),
         created_at: v.string(),
         updated_at: v.string(),
         deleted_at: v.nullable(v.string()),
