@@ -2,8 +2,11 @@
 import { createFilter } from '@rollup/pluginutils'
 import MagicString from 'magic-string'
 import * as acorn from 'acorn'
+import { tsPlugin } from 'acorn-typescript'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
+
+const TypeScriptParser = acorn.Parser.extend(tsPlugin())
 
 /**
  * @typedef {Object} Options
@@ -145,6 +148,23 @@ function prefixClassList(value, prefix, isExcluded, ignoredClasses) {
 }
 
 /**
+ * @param {string} value
+ * @param {string | undefined} raw
+ */
+function formatStringLiteral(value, raw) {
+    const quote = raw?.[0] === "'" ? "'" : '"'
+    const escaped = value
+        .replace(/\\/g, '\\\\')
+        .replace(/\r/g, '\\r')
+        .replace(/\n/g, '\\n')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029')
+        .replace(quote === "'" ? /'/g : /"/g, `\\${quote}`)
+
+    return `${quote}${escaped}${quote}`
+}
+
+/**
  * @param {any} node
  * @param {any} parent
  */
@@ -194,11 +214,10 @@ function prefixDynamicClassValue(value, prefix, isExcluded, ignoredClasses) {
         const isStringLiteral = node.type === 'Literal' && typeof node.value === 'string'
 
         if (isStringLiteral && !isComparisonOperand(node, parent)) {
-            const quote = node.raw?.[0] === "'" ? "'" : '"'
             const newValue = prefixClassList(node.value, prefix, isExcluded, ignoredClasses)
 
             if (newValue !== node.value) {
-                s.overwrite(node.start, node.end, `${quote}${newValue}${quote}`)
+                s.overwrite(node.start, node.end, formatStringLiteral(newValue, node.raw))
                 hasChanges = true
             }
         }
@@ -223,6 +242,133 @@ function prefixDynamicClassValue(value, prefix, isExcluded, ignoredClasses) {
     if (!hasChanges) return value
 
     return s.toString().slice(1, -1)
+}
+
+/**
+ * @param {any} property
+ * @param {string} name
+ */
+function isNamedProperty(property, name) {
+    return property.type === 'Property'
+        && !property.computed
+        && ((property.key.type === 'Identifier' && property.key.name === name)
+            || (property.key.type === 'Literal' && property.key.value === name))
+}
+
+/**
+ * Finds a named property in an object expression.
+ *
+ * @param {any} object
+ * @param {string} name
+ */
+function getObjectProperty(object, name) {
+    return object?.type === 'ObjectExpression'
+        ? object.properties.find((property) => isNamedProperty(property, name))
+        : undefined
+}
+
+/**
+ * Prefixes Tailwind class strings passed to `cva()`. The class-variance-authority
+ * API stores classes in the first argument, each `variants` value, and optional
+ * `compoundVariants[].class`/`className` fields. Other strings, including
+ * `defaultVariants` values, are configuration values rather than class names.
+ *
+ * @param {string} code
+ * @param {string} prefix
+ * @param {(name: string) => boolean} isExcluded
+ * @param {Set<string>} ignoredClasses
+ */
+function prefixCvaClasses(code, prefix, isExcluded, ignoredClasses) {
+    let ast
+
+    try {
+        ast = TypeScriptParser.parse(code, { ecmaVersion: 'latest', sourceType: 'module' })
+    } catch {
+        return code
+    }
+
+    const s = new MagicString(code)
+    let hasChanges = false
+
+    /**
+     * @param {any} node
+     */
+    function prefixClassValue(node) {
+        if (node?.type === 'Literal' && typeof node.value === 'string') {
+            const newValue = prefixClassList(node.value, prefix, isExcluded, ignoredClasses)
+
+            if (newValue !== node.value) {
+                s.overwrite(node.start, node.end, formatStringLiteral(newValue, node.raw))
+                hasChanges = true
+            }
+
+            return
+        }
+
+        if (node?.type === 'ArrayExpression') {
+            node.elements.forEach(prefixClassValue)
+        }
+    }
+
+    /**
+     * @param {any} config
+     */
+    function prefixCvaConfig(config) {
+        const variants = getObjectProperty(config, 'variants')?.value
+
+        if (variants?.type === 'ObjectExpression') {
+            variants.properties.forEach(variant => {
+                if (variant.type !== 'Property' || variant.value?.type !== 'ObjectExpression') return
+
+                variant.value.properties.forEach(option => {
+                    if (option.type === 'Property') prefixClassValue(option.value)
+                })
+            })
+        }
+
+        const compoundVariants = getObjectProperty(config, 'compoundVariants')?.value
+
+        if (compoundVariants?.type === 'ArrayExpression') {
+            compoundVariants.elements.forEach(compoundVariant => {
+                if (compoundVariant?.type !== 'ObjectExpression') return
+
+                compoundVariant.properties.forEach(property => {
+                    if (isNamedProperty(property, 'class') || isNamedProperty(property, 'className')) {
+                        prefixClassValue(property.value)
+                    }
+                })
+            })
+        }
+    }
+
+    /**
+     * @param {any} node
+     */
+    function walk(node) {
+        if (!node || typeof node !== 'object' || typeof node.type !== 'string') return
+
+        if (node.type === 'CallExpression'
+            && node.callee.type === 'Identifier'
+            && node.callee.name === 'cva') {
+            prefixClassValue(node.arguments[0])
+            prefixCvaConfig(node.arguments[1])
+        }
+
+        for (const key in node) {
+            if (key === 'start' || key === 'end' || key === 'type') continue
+            const child = node[key]
+
+            if (Array.isArray(child)) {
+                child.forEach(walk)
+            } else {
+                walk(child)
+            }
+        }
+    }
+
+    walk(ast)
+
+    return hasChanges ? s.toString() : code
 }
 
 /**
@@ -312,8 +458,6 @@ function prefixDynamicStyleValue(value, prefix, isExcluded) {
         const isStringLiteral = node.type === 'Literal' && typeof node.value === 'string'
 
         if (isStringLiteral && node.value.includes('--')) {
-            const quote = node.raw?.[0] === "'" ? "'" : '"'
-
             // object keys declaring a custom property (`'--sidebar-width': ...`)
             // are renamed wholesale; any other string is only scanned for
             // `var(--name)`-style references
@@ -324,7 +468,7 @@ function prefixDynamicStyleValue(value, prefix, isExcluded) {
                 : renameCssVarRefs(node.value, prefix, isExcluded)
 
             if (newValue !== node.value) {
-                s.overwrite(node.start, node.end, `${quote}${newValue}${quote}`)
+                s.overwrite(node.start, node.end, formatStringLiteral(newValue, node.raw))
                 hasChanges = true
             }
         }
@@ -352,8 +496,8 @@ function prefixDynamicStyleValue(value, prefix, isExcluded) {
 
 /**
  * Vite plugin that scans included files for Tailwind CSS classes (`class`,
- * `className`, `:class`, `v-bind:class`) and prepends a fixed prefix to each
- * class found, following Tailwind v4's variant-style prefix syntax
+ * `className`, `:class`, `v-bind:class`, and `cva()` definitions) and prepends
+ * a fixed prefix to each class found, following Tailwind v4's variant-style prefix syntax
  * (e.g. `flex` -> `tw:flex`, `hover:flex` -> `tw:hover:flex`).
  *
  * @param {Options} options
@@ -386,14 +530,17 @@ export default function(options) {
                 return null
             }
 
-            const s = new MagicString(code)
-            let hasChanges = false
+            const sourceCode = /\.[cm]?[jt]sx?$/i.test(id.replace(/\?.*$/, ''))
+                ? prefixCvaClasses(code, prefix, isExcludedVar, ignoredClasses)
+                : code
+            const s = new MagicString(sourceCode)
+            let hasChanges = sourceCode !== code
 
             CLASS_ATTR_REGEX.lastIndex = 0
 
             let match
 
-            while ((match = CLASS_ATTR_REGEX.exec(code))) {
+            while ((match = CLASS_ATTR_REGEX.exec(sourceCode))) {
                 const fullMatch = match[0]
                 const { quote, value } = /** @type {{ quote: string, value: string }} */ (match.groups)
 
@@ -420,7 +567,7 @@ export default function(options) {
 
             STYLE_ATTR_REGEX.lastIndex = 0
 
-            while ((match = STYLE_ATTR_REGEX.exec(code))) {
+            while ((match = STYLE_ATTR_REGEX.exec(sourceCode))) {
                 const fullMatch = match[0]
                 const { quote, value } = /** @type {{ quote: string, value: string }} */ (match.groups)
 

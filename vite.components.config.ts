@@ -1,9 +1,5 @@
-import { createLogger, defineConfig, mergeConfig, UserConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import tailwindcss from '@tailwindcss/vite'
-import dts from 'vite-plugin-dts'
+import { defineConfig, mergeConfig } from 'vite'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
-import zenith from './vite/plugins/zenith'
 import viteCommonConfig, { logger } from './vite.common.config'
 
 
@@ -25,50 +21,6 @@ const prebuild = () => ({
     }
 })
 
-const externals = [
-    'vue',
-    // 'vue-router',
-    // "vue-sonner",
-    //
-    // '@vueuse/core',
-    // '@vueuse/router',
-    //
-    // 'vee-validate',
-    // '@vee-validate/valibot',
-    // //
-    // "@unhead/vue",
-    // "@unhead/vue/components",
-
-    // "reka-ui",
-    // "vaul-vue",
-    // "lucide-vue-next",
-    // "embla-carousel-vue"
-]
-
-// const plugins: UserConfig['plugins'] = [
-//     vue({
-//         template: {
-//             compilerOptions: {
-//                 isCustomElement: (tag) => {
-//                     return ['iconify-icon'].includes(tag)
-//                 }
-//             }
-//         }
-//     }),
-// ]
-//
-// plugins.push(dts({
-//     // entryRoot: 'src/client/components.ts',
-//     tsconfigPath: './tsconfig.client.json',
-//     staticImport: true
-// }))
-
-// plugins.push(tailwindcss(), prebuild())
-
-// plugins.push(zenith({
-//     imports: externals
-// }))
-
 export default mergeConfig(viteCommonConfig, defineConfig({
     plugins: [prebuild()],
     build: {
@@ -82,21 +34,3 @@ export default mergeConfig(viteCommonConfig, defineConfig({
         },
     },
 }))
-
-// export default defineConfig({
-//     customLogger: logger,
-//     plugins: plugins,
-//     build: {
-//         outDir: 'dist/components',
-//         rollupOptions: {
-//             external: externals,
-//         },
-//         lib: {
-//             name: 'Client',
-//             entry: 'src/client/components.ts',
-//             formats: ['es'],
-//             fileName: (format) => `index.${format}.js`,
-//             cssFileName: 'styles',
-//         },
-//     },
-// })

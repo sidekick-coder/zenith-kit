@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
 import tailwindAutoPrefix from './tailwindAutoPrefix.js'
 
 /**
@@ -156,6 +157,18 @@ describe('tailwindAutoPrefix.js', () => {
         const result = transform(code, `${process.cwd()}/node_modules/foo/test.vue`, { prefix: 'tw', exclude: 'node_modules/**' })
 
         expect(result).toBeNull()
+    })
+
+    it('prefixes class strings in the button component cva definition', () => {
+        const id = `${process.cwd()}/src/client/components/ui/button/index.ts`
+        const code = readFileSync(id, 'utf8')
+
+        const result = transform(code, id, { prefix: 'zkit' })
+
+        expect(result).toContain(`'zkit:inline-flex zkit:items-center zkit:justify-center`)
+        expect(result).toContain(`zkit:[&_svg:not([class*=\\'size-\\'])]:size-4`)
+        expect(result).toContain(`'zkit:bg-primary zkit:text-primary-foreground zkit:shadow-xs zkit:hover:bg-primary/90'`)
+        expect(result).toContain(`defaultVariants: {\n      variant: 'default',\n      size: 'default',`)
     })
 })
 
