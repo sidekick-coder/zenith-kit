@@ -222,6 +222,17 @@ function prefixDynamicClassValue(value, prefix, isExcluded, ignoredClasses) {
             }
         }
 
+        if (node.type === 'TemplateLiteral') {
+            node.quasis.forEach(quasi => {
+                const newValue = prefixClassList(quasi.value.raw, prefix, isExcluded, ignoredClasses)
+
+                if (newValue !== quasi.value.raw) {
+                    s.overwrite(quasi.start, quasi.end, newValue)
+                    hasChanges = true
+                }
+            })
+        }
+
         // don't descend into a string literal node, there is nothing left to walk
         if (isStringLiteral) return
 

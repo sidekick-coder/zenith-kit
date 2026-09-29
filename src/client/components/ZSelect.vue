@@ -222,7 +222,7 @@ watch(() => props.showSearchInput, (showSearchInput) => {
                 :multiple="multiple"
                 >
                 <SelectTrigger
-                    :class="cn('!h-10', variant === 'horizontal' ? 'rounded-l-none flex-1' : 'w-full', $attrs.class as any)"
+                    :class="cn(variant === 'horizontal' ? 'rounded-l-none flex-1' : 'w-full', $attrs.class as any)"
                 >
                     <div 
                         v-if="multiple && model?.length > 2"

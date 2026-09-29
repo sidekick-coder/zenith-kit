@@ -170,6 +170,17 @@ describe('tailwindAutoPrefix.js', () => {
         expect(result).toContain(`'zkit:bg-primary zkit:text-primary-foreground zkit:shadow-xs zkit:hover:bg-primary/90'`)
         expect(result).toContain(`defaultVariants: {\n      variant: 'default',\n      size: 'default',`)
     })
+
+    it('prefixes template literal classes in the SelectTrigger class binding', () => {
+        const id = `${process.cwd()}/src/client/components/ui/select/SelectTrigger.vue`
+        const code = readFileSync(id, 'utf8')
+
+        const result = transform(code, id, { prefix: 'zkit' })
+
+        expect(result).toContain(`zkit:border-input zkit:data-[placeholder]:text-muted-foreground`)
+        expect(result).toContain(`zkit:[&_svg:not([class*='text-'])]:text-muted-foreground`)
+        expect(result).toContain(`<ChevronDown class="zkit:size-4 zkit:opacity-50" />`)
+    })
 })
 
 describe('tailwindAutoPrefix.js CSS plugin', () => {
