@@ -42,7 +42,18 @@ const array = <T extends v.BaseSchema<any, any, any>>(schema: T = v.any() as any
 )
 
 export const arrayNumber = () => v.pipe(
-    array(),
+    v.union([v.string(), v.number(), v.array(v.string()), v.array(v.number())]),
+    v.transform(value => {
+        if (Array.isArray(value)) {
+            return value.map(Number)
+        }
+
+        if (typeof value === 'string') {
+            return value.split(',').map(Number)
+        }
+
+        return [Number(value)]
+    }),
     v.transform(value => value.map(Number)),
 )
 
