@@ -13,6 +13,7 @@ export default class DashboardWidgetDefinition {
     public name: string
     public description?: string
     public icon?: string
+    public category?: string
 
     public _actions: DashboardWidgetAction[] = []
 
@@ -41,6 +42,10 @@ export default class DashboardWidgetDefinition {
             props: props,
             component: component,
         })
+    }
+
+    public defaultOptions(){
+        return {}
     }
 
     public settings(props: SettingComponentProps = {}) {

@@ -38,6 +38,8 @@ export default class DashboardWidget {
             console.warn(`DashboardWidgetDefinition not found for id: ${data.definition_id}. Using unknown definition.`)
         }
 
+        data.options = Object.assign({}, def.defaultOptions(), data.options || {})
+
         return new DashboardWidget({
             data: data,
             definition: def,
