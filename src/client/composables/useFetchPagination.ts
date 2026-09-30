@@ -9,9 +9,9 @@ export interface UseFetchPaginationOptions {
     key?: string
     query?: MaybeRef<Record<string, any>>
     page?: MaybeRef<number>
+    limit?: MaybeRef<number>
     serialize?: (item: any) => any
     refine?: (items: any[]) => any[]
-    limit?: number
     orderBy?: string | string[] | null
     orderDirection?: 'asc' | 'desc' | ('asc' | 'desc')[] | null
     debounce?: number
