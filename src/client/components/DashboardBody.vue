@@ -54,7 +54,7 @@ const styles = computed(() => {
     >
         <DashboardWidget
             v-for="(widget, index) in widgets"
-            :key="index"
+            :key="widget.id"
             :model-value="widget"
             @duplicate="duplicateWidget(index)"
             @remove="removeWidget(index)"

@@ -98,6 +98,13 @@ export default class Dashboard {
     }
 
     public removeWidgetById(id: string) {
+        const index = this.widgets.findIndex((w) => w.id === id)
+
+        if (index === -1) {
+            console.warn(`Widget with id ${id} not found`)
+            return
+        }
+
         this.widgets = this.widgets.filter((w) => w.id !== id)
     }
 
