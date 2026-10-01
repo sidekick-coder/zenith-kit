@@ -2,6 +2,7 @@ import type DashboardWidgetActionSetting from "#client/components/DashboardWidge
 import { defineAsyncComponent } from "vue"
 
 export interface DashboardWidgetAction {
+    id: string
     props?: Record<string, any>
     component: () => Promise<any> | any
 }
@@ -37,19 +38,24 @@ export default class DashboardWidgetDefinition {
         this._actions.push(action)
     }
 
-    public actionComponent(component: DashboardWidgetAction['component'], props: Record<string, any> = {}) {
-        this.action({
-            props: props,
-            component: component,
-        })
+    public async boot() {
+        // This method can be overridden by plugins to perform any necessary bootstrapping for the widget.
     }
 
-    public defaultOptions(){
+    public defaultOptions() {
         return {}
     }
 
     public settings(props: SettingComponentProps = {}) {
+        const existingAction = this._actions.find(action => action.id === 'settings')
+
+        if (existingAction) {
+            const index = this._actions.indexOf(existingAction)
+            this._actions.splice(index, 1)
+        }
+
         this.action({
+            id: 'settings',
             props: props,
             component: () => defineAsyncComponent(() =>
                 import("#client/components/DashboardWidgetActionSetting.vue"),

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Button from '#client/components/ZButton.vue'
 import Icon from '#client/components/Icon.vue'
 import DashboardWidget from '#client/components/DashboardWidget.vue'
 import { useDashboard } from '#client/composables/useDashboard.ts'

@@ -15,7 +15,7 @@ import type DashboardWidgetData from './DashboardWidgetData'
     */
 
 
-export default class DashboardWidgetDefinitionChart extends DashboardWidgetDefinition {
+export default class WidgetChartDefinition extends DashboardWidgetDefinition {
     private static renderer: any 
 
     constructor() {
@@ -25,11 +25,11 @@ export default class DashboardWidgetDefinitionChart extends DashboardWidgetDefin
     }
 
     public static setRenderer(renderer: any) {
-        DashboardWidgetDefinitionChart.renderer = renderer
+        WidgetChartDefinition.renderer = renderer
     }
 
     public component() {
-        return DashboardWidgetDefinitionChart.renderer
+        return WidgetChartDefinition.renderer
     }
 
     // return chart options for the chart widget. This can be overridden by plugins to provide custom chart options.
