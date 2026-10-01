@@ -1,6 +1,4 @@
-export interface DefineFormField {
-    component:
-    'text-field'
+export type FormFieldType = 'text-field'
     | 'textarea'
     | 'select'
     | 'autocomplete'
@@ -12,6 +10,9 @@ export interface DefineFormField {
     | 'json-input'
     | 'date-picker'
     | 'hidden'
+
+export interface DefineFormField {
+    component: FormFieldType | (() => Promise<any>) | (() => any)
     [key: string]: any
 }
 
