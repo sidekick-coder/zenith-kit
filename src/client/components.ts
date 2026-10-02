@@ -1,4 +1,4 @@
-// export * from './css/styles.css'
+export * from './css/styles.css'
 export * from './composables/useBreakpoint.ts'
 export * from './composables/useColor.ts'
 export * from './composables/useCookie.ts'
