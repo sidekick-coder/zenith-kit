@@ -95,11 +95,11 @@ function createOptions(from: number, to: number) {
 </script>
 
 <template>
-    <div :style="styles" class="p-2">
+    <div :data-widget-id="widget.id" :style="styles" class="p-2">
         <div class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm h-full overflow-hidden">
             <div class="flex items-center gap-2 border-b px-4 py-3 select-none bg-card text-card-foreground">
 
-                <Icon data-grab-handler name="GripVertical" class="size-4 cursor-grab text-muted-foreground" />
+                <Icon data-grab-handler name="GripVertical" class="size-4 cursor-grab touch-none text-muted-foreground" />
 
                 <input v-if="editing" ref="inputRef" :placeholder="widget.definition.name || $t('Widget')"
                     class="flex-1 bg-transparent text-sm font-medium outline-none" @keydown.enter="commitEdit"

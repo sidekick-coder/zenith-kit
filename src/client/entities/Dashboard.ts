@@ -125,13 +125,11 @@ export default class Dashboard {
 
         data.id = createId()
 
-        const copy: DashboardWidget = DashboardWidget.fromData(data)
+        delete data.order
+        delete data.x
+        delete data.y
 
-        const updated = [...this.widgets]
-
-        updated.splice(index + 1, 0, copy)
-
-        this.widgets = updated
+        this.addWidget(data)
     }
 
     public duplicateWidgetById(id: string) {
