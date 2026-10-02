@@ -5,7 +5,7 @@ import DashboardWidget from '#client/components/DashboardWidget.vue'
 import { useDashboard } from '#client/composables/useDashboard.ts'
 import DashboardWidgetEntity, { DASHBOARD_ROW_HEIGHT } from '#client/entities/DashboardWidget.ts'
 
-const props = defineProps({
+defineProps({
     widgets: {
         type: Array as () => DashboardWidgetEntity[],
         required: false,
@@ -14,22 +14,6 @@ const props = defineProps({
 })
 
 const dashboard = useDashboard()
-
-const emit = defineEmits(['add-widget', 'update:widgets'])
-
-function removeWidget(index: number) {
-    emit('update:widgets', props.widgets.filter((_, i) => i !== index))
-}
-
-function duplicateWidget(index: number) {
-    const copy = JSON.parse(JSON.stringify(props.widgets[index]))
-
-    const updated = [...props.widgets]
-
-    updated.splice(index + 1, 0, copy)
-
-    emit('update:widgets', updated)
-}
 
 const styles = computed(() => {
     const tileHeight = DASHBOARD_ROW_HEIGHT
@@ -52,11 +36,9 @@ const styles = computed(() => {
         :style="styles"
     >
         <DashboardWidget
-            v-for="(widget, index) in widgets"
+            v-for="widget in widgets"
             :key="widget.id"
             :model-value="widget"
-            @duplicate="duplicateWidget(index)"
-            @remove="removeWidget(index)"
         />
     </div>
 

@@ -19,8 +19,6 @@ import DashboardWidgetActionRender from './DashboardWidgetActionRender.vue'
 
 defineOptions({ inheritAttrs: false })
 
-const emit = defineEmits(['remove', 'duplicate'])
-
 const widget = defineModel<DashboardWidget>({
     type: Object,
     required: true,
@@ -99,7 +97,10 @@ function createOptions(from: number, to: number) {
 <template>
     <div :style="styles" class="p-2">
         <div class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm h-full overflow-hidden">
-            <div class="flex items-center gap-2 border-b px-4 py-3">
+            <div class="flex items-center gap-2 border-b px-4 py-3 select-none bg-card text-card-foreground">
+
+                <Icon data-grab-handler name="GripVertical" class="size-4 cursor-grab text-muted-foreground" />
+
                 <input v-if="editing" ref="inputRef" :placeholder="widget.definition.name || $t('Widget')"
                     class="flex-1 bg-transparent text-sm font-medium outline-none" @keydown.enter="commitEdit"
                     @keydown.esc="cancelEdit" @blur="commitEdit">
@@ -122,7 +123,7 @@ function createOptions(from: number, to: number) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <slot name="options" />
-                            <DropdownMenuItem @click="emit('duplicate')">
+                            <DropdownMenuItem @click="dashboard.duplicateWidgetById(widget.id)">
                                 <Icon name="Copy" />
                                 {{ $t('Duplicate') }}
                             </DropdownMenuItem>

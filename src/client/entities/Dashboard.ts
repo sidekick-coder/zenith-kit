@@ -2,6 +2,7 @@ import EmmitterService from '#shared/services/EmmitterService.ts'
 import DashboardWidgetData from './DashboardWidgetData'
 import DashboardWidget from './DashboardWidget'
 import type { DashboardSchema } from '#shared/schemas/dashboardSchema.ts'
+import { createId } from '#shared/index.ts'
 
 export interface DashboardOptions {
     dashboard: DashboardSchema
@@ -113,10 +114,34 @@ export default class Dashboard {
     }
 
     public duplicateWidget(index: number) {
-        const copy: DashboardWidget = JSON.parse(JSON.stringify(this.widgets[index]))
+        const original = this.widgets[index]
+
+        if (!original) {
+            console.warn(`Widget at index ${index} not found`)
+            return
+        }
+
+        const data = JSON.parse(JSON.stringify(original.data))
+
+        data.id = createId()
+
+        const copy: DashboardWidget = DashboardWidget.fromData(data)
 
         const updated = [...this.widgets]
 
         updated.splice(index + 1, 0, copy)
+
+        this.widgets = updated
+    }
+
+    public duplicateWidgetById(id: string) {
+        const index = this.widgets.findIndex((w) => w.id === id)
+
+        if (index === -1) {
+            console.warn(`Widget with id ${id} not found`)
+            return
+        }
+
+        this.duplicateWidget(index)
     }
 }

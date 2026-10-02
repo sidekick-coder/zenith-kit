@@ -43,11 +43,21 @@
             "require": "./dist/server/*.js"
         },
         "./client": {
+            "development": {
+                "types": "./src/client/index.ts",
+                "import": "./src/client/index.ts",
+                "require": "./src/client/index.ts"
+            },
             "types": "./dist/client/src/client/index.d.ts",
             "import": "./dist/client/index.es.js",
             "require": "./dist/client/index.es.js"
         },
         "./components": {
+            "development": {
+                "types": "./src/client/components.ts",
+                "import": "./src/client/components.ts",
+                "require": "./src/client/components.ts"
+            },
             "types": "./dist/components/src/client/components.d.ts",
             "import": "./dist/components/index.es.js",
             "require": "./dist/components/index.es.js"
