@@ -15,16 +15,19 @@ const props = defineProps({
 
 const dashboard = useDashboard()
 
-interface DragState {
+interface InteractionState {
+    type: 'move' | 'resize'
     widget: DashboardWidgetEntity
     pointerId: number
     startClientX: number
     startClientY: number
     startX: number
     startY: number
+    startColumns: number
+    startRows: number
 }
 
-let dragState: DragState | null = null
+let interactionState: InteractionState | null = null
 
 const styles = computed(() => {
     const tileHeight = DASHBOARD_ROW_HEIGHT
@@ -46,10 +49,17 @@ function getGridPosition(widget: DashboardWidgetEntity) {
     }
 }
 
+function getGridSize(widget: DashboardWidgetEntity) {
+    return {
+        columns: widget.columns.base ?? 1,
+        rows: widget.rows.base ?? 1,
+    }
+}
+
 function onPointerDown(event: PointerEvent) {
     if (event.button !== 0 || !(event.target instanceof Element)) return
 
-    const handle = event.target.closest('[data-grab-handler]')
+    const handle = event.target.closest('[data-grab-handler], [data-resize-handler]')
     const widgetElement = handle?.closest<HTMLElement>('[data-widget-id]')
     const widgetId = widgetElement?.dataset.widgetId
     const widget = props.widgets.find(item => item.id === widgetId)
@@ -57,14 +67,18 @@ function onPointerDown(event: PointerEvent) {
     if (!handle || !widget || !dashboard.value.containerWidth) return
 
     const position = getGridPosition(widget)
+    const size = getGridSize(widget)
 
-    dragState = {
+    interactionState = {
+        type: handle.hasAttribute('data-resize-handler') ? 'resize' : 'move',
         widget,
         pointerId: event.pointerId,
         startClientX: event.clientX,
         startClientY: event.clientY,
         startX: position.x,
         startY: position.y,
+        startColumns: size.columns,
+        startRows: size.rows,
     }
 
     ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
@@ -72,25 +86,40 @@ function onPointerDown(event: PointerEvent) {
 }
 
 function onPointerMove(event: PointerEvent) {
-    if (!dragState || event.pointerId !== dragState.pointerId) return
+    if (!interactionState || event.pointerId !== interactionState.pointerId) return
 
     const columnWidth = dashboard.value.containerWidth / 12
-    const maxX = Math.max(0, 12 - (dragState.widget.columns.base ?? 1))
-    const x = Math.min(maxX, Math.max(0, dragState.startX + Math.round((event.clientX - dragState.startClientX) / columnWidth)))
-    const y = Math.max(0, dragState.startY + Math.round((event.clientY - dragState.startClientY) / DASHBOARD_ROW_HEIGHT))
 
-    const currentPosition = getGridPosition(dragState.widget)
+    if (interactionState.type === 'resize') {
+        const maxColumns = Math.max(1, 12 - interactionState.startX)
+        const columns = Math.min(maxColumns, Math.max(1, interactionState.startColumns + Math.round((event.clientX - interactionState.startClientX) / columnWidth)))
+        const rows = Math.max(1, interactionState.startRows + Math.round((event.clientY - interactionState.startClientY) / DASHBOARD_ROW_HEIGHT))
+        const currentSize = getGridSize(interactionState.widget)
+
+        if (currentSize.columns === columns && currentSize.rows === rows) return
+
+        interactionState.widget.update({
+            columns: { ...interactionState.widget.columns, base: columns },
+            rows: { ...interactionState.widget.rows, base: rows },
+        })
+        return
+    }
+
+    const maxX = Math.max(0, 12 - interactionState.startColumns)
+    const x = Math.min(maxX, Math.max(0, interactionState.startX + Math.round((event.clientX - interactionState.startClientX) / columnWidth)))
+    const y = Math.max(0, interactionState.startY + Math.round((event.clientY - interactionState.startClientY) / DASHBOARD_ROW_HEIGHT))
+    const currentPosition = getGridPosition(interactionState.widget)
 
     if (currentPosition.x === x && currentPosition.y === y) return
 
-    dragState.widget.update({
-        x: { ...dragState.widget.x, base: x },
-        y: { ...dragState.widget.y, base: y },
+    interactionState.widget.update({
+        x: { ...interactionState.widget.x, base: x },
+        y: { ...interactionState.widget.y, base: y },
     })
 }
 
 function onPointerUp(event: PointerEvent) {
-    if (!dragState || event.pointerId !== dragState.pointerId) return
+    if (!interactionState || event.pointerId !== interactionState.pointerId) return
 
     const body = event.currentTarget as HTMLElement
 
@@ -98,7 +127,7 @@ function onPointerUp(event: PointerEvent) {
         body.releasePointerCapture(event.pointerId)
     }
 
-    dragState = null
+    interactionState = null
 }
 </script>
 
