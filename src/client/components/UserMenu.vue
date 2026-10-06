@@ -113,7 +113,7 @@ async function handleLogout() {
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem @click="handleLogout">
+                    <DropdownMenuItem @click="handleLogout" v-if="auth.user">
                         <Icon name="LogOut" class="rotate-180" />
                         {{ $t('Logout') }}
                     </DropdownMenuItem>
