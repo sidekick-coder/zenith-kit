@@ -3,6 +3,8 @@ import get from 'lodash-es/get.js'
 import set from 'lodash-es/set.js'
 import has from 'lodash-es/has.js'
 import unset from 'lodash-es/unset.js'
+import template from 'lodash-es/template.js'
+import BaseException from '#shared/exceptions/BaseException.ts'
 
 interface Entry {
     key: string
@@ -187,5 +189,27 @@ export default class ConfigService {
 
     public dump(): Record<string, any> {
         return flatten(this.toRecord())
+    }
+
+    public evaluate(value: string, context: Record<string, any>) {
+        try {
+            const compiled = template(value, { interpolate: /\${{([\s\S]+?)}}/g })
+
+            return compiled(context)
+        } catch (error) {
+            throw new BaseException(`Failed to evaluate template: ${value}. ${error}`)
+        }
+    }
+
+    public evaluateConfig(context: Record<string, any>) {
+        const entries = this.toRecord()
+
+        for (const [key, value] of Object.entries(flatten(entries))) {
+            if (typeof value === 'string') {
+                const evaluatedValue = this.evaluate(value, context)
+
+                this.set(key, evaluatedValue, 'evaluated')
+            }
+        }
     }
 }

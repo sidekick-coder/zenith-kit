@@ -2,8 +2,10 @@ import BaseException from '#shared/exceptions/BaseException.ts'
 import LoggerService from '#shared/services/LoggerService.ts'
 import ConfigService from '#shared/services/ConfigService.ts'
 import { flatten } from '#shared/utils/flatten.ts'
+import { template } from 'lodash-es'
 import type EnvService from './EnvService.ts'
 import { createRequire } from 'node:module'
+import { dataPath } from '#server/utils/basePath.ts'
 
 const require = createRequire(import.meta.url) 
 
@@ -11,23 +13,24 @@ export interface ConfigManagerOptions {
     env: EnvService
     logger: LoggerService
     silent?: boolean
+    context?: Record<string, any>
 }
 
 export default class ConfigManagerService {
     public env: EnvService
     public logger: LoggerService
     public silent: boolean
+    public context: Record<string, any> = {}
 
     constructor(options: ConfigManagerOptions) {
         this.env = options.env
         this.logger = options.logger
         this.silent = options.silent ?? false
+        this.context = options.context ?? {}
     }
 
     public static create(options: ConfigManagerOptions) {
-        const service = new ConfigManagerService(options)
-
-        return service
+        return new ConfigManagerService(options)
     }
 
     private async loadS3Config() {
@@ -143,6 +146,14 @@ export default class ConfigManagerService {
         this.loadConfigFromFiles(service, this.env.get('ZENITH_CONFIG_FILES'))
 
         this.loadConfigFromEnv(service)
+
+        const context = {
+            env: this.env.toRecord(),
+            data_path: dataPath(),
+            ...this.context
+        }
+
+        service.evaluateConfig(context)
 
         return service
     }

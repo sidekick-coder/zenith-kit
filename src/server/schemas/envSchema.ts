@@ -45,6 +45,7 @@ export const envSchema = v.looseObject({
     NODE_ENV: v.optional(v.union([v.literal('development'), v.literal('production'), v.literal('test')]), 'development'),
 
     ZENITH_BASE_PATH: v.string(),
+    ZENITH_DATA_PATH: v.optional(v.string()),
     ZENITH_STORAGE_PATH: v.optional(v.string()),
 
     ZENITH_APP_URL: v.optional(v.string(), 'http://localhost:3000'),

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { set } from 'lodash-es'
-import { basePath } from '#server/utils/basePath.ts'
+import { dataPath } from '#server/utils/basePath.ts'
 import ConfigService from '#shared/services/ConfigService.ts'
 import yaml from 'js-yaml'
 import logger from '#server/facades/logger.ts'
@@ -27,7 +27,7 @@ export default class ConfigFSService extends ConfigService {
     constructor(options: ConfigFSServiceOptions = {}) {
         super()
         this.debug = options.debug ?? false
-        this.directory = options.directory ?? basePath('config')
+        this.directory = options.directory ?? dataPath('config')
         this.logger = options.logger ?? logger.child({ label: 'config' })
         this.format = options.format ?? 'json'
         this.formatOptions = options.formatOptions ?? {}

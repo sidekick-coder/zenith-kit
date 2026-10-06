@@ -75,4 +75,12 @@ export default class EnvService {
 
         this.env![key] = value
     }
+
+    public toRecord(): Record<string, any> {
+        if (!this.env) {
+            throw new BaseException('Environment variables not loaded. Call load() before accessing environment variables.')
+        }
+
+        return { ...this.env }
+    }
 }

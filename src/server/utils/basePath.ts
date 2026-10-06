@@ -26,11 +26,18 @@ export function clientPath(...args: string[]): string {
     return basePath('src', 'client', ...args)
 }
 
-export function storagePath(...args: string[]): string {
-    const BASE_PATH = process.env.ZENITH_BASE_PATH!
-    const STORAGE_PATH = process.env.ZENITH_STORAGE_PATH || path.join(BASE_PATH || '', 'storage')
+export function dataPath(...args: string[]): string {
+    const DATA_PATH = process.env.ZENITH_DATA_PATH || path.join(process.env.ZENITH_BASE_PATH || '', 'data')
 
-    return path.resolve(STORAGE_PATH, ...args)
+    return path.resolve(DATA_PATH, ...args)
+}
+
+export function storagePath(...args: string[]): string {
+    return dataPath('storage', ...args)
+}
+
+export function tmpPath(...args: string[]): string {
+    return dataPath('tmp', ...args)
 }
 
 export function relativeToBasePath(...args: string[]): string {
@@ -41,8 +48,4 @@ export function relativeToBasePath(...args: string[]): string {
     }
 
     return path.relative(process.cwd(), path.resolve(BASE_PATH, ...args))
-}
-
-export function tmpPath(...args: string[]): string {
-    return basePath('tmp', ...args)
 }
