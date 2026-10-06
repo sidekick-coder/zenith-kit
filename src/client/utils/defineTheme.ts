@@ -4,10 +4,6 @@ export interface ThemeColors {
     background: string
     foreground: string
 
-    card: string
-    cardForeground: string
-    popover: string
-    popoverForeground: string
 
     primary: string
     primaryForeground: string
@@ -34,17 +30,23 @@ export interface ThemeColors {
     chart4: string
     chart5: string
 
-    sidebar: string
-    sidebarForeground: string
+    card?: string
+    cardForeground?: string
 
-    sidebarPrimary: string
-    sidebarPrimaryForeground: string
+    popover?: string
+    popoverForeground?: string
 
-    sidebarAccent: string
-    sidebarAccentForeground: string
+    sidebar?: string
+    sidebarForeground?: string
 
-    sidebarBorder: string
-    sidebarRing: string
+    sidebarPrimary?: string
+    sidebarPrimaryForeground?: string
+
+    sidebarAccent?: string
+    sidebarAccentForeground?: string
+
+    sidebarBorder?: string
+    sidebarRing?: string
 }
 
 
@@ -61,7 +63,27 @@ export function defineTheme(light: ThemeColors, dark: ThemeColors = light): Them
 }
 
 function cssVariables(colors: ThemeColors) {
-    return Object.entries(colors)
+    const fullColors = {
+        card: colors.card || colors.background,
+        cardForeground: colors.cardForeground || colors.foreground,
+
+        popover: colors.popover || colors.background,
+        popoverForeground: colors.popoverForeground || colors.foreground,
+
+        sidebar: colors.sidebar || colors.background,
+        sidebarForeground: colors.sidebarForeground || colors.foreground,
+        
+        sidebarPrimary: colors.sidebarPrimary || colors.primary,
+        sidebarPrimaryForeground: colors.sidebarPrimaryForeground || colors.primaryForeground,
+
+        sidebarAccent: colors.sidebarAccent || colors.accent,
+        sidebarAccentForeground: colors.sidebarAccentForeground || colors.accentForeground,
+
+        sidebarBorder: colors.sidebarBorder || colors.border,
+        sidebarRing: colors.sidebarRing || colors.ring,
+        ...colors,
+    }
+    return Object.entries(fullColors)
         .map(([name, value]) => `--${kebabCase(name)}: ${value};`)
         .join('\n')
 }
