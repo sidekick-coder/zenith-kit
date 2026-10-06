@@ -2,7 +2,6 @@ import fs from 'fs'
 import DriveEntry from '#shared/entities/DriveEntryEntity.ts'
 import BaseException from '#shared/exceptions/BaseException.ts'
 import type { DriveUrlOptions } from '#server/contracts/DriveContract.ts'
-import { storagePath } from '#server/utils/basePath.ts'
 import BaseDrive from '#server/gateways/DriveBaseGateway.ts'
 import DriveS3 from '#server/gateways/DriveS3Gateway.ts'
 import DriveConfig from '#server/entities/DriveConfigEntity.ts'
@@ -214,21 +213,6 @@ export default class DriveService {
 
         this.selected = config.get('drive.default')
         this.defaultDrive = config.get('drive.default')
-    }
-
-    public async createDefaultDrives(){
-
-        await DriveConfig.updateOrCreate('uploads', {
-            name: 'Uploads',
-            type: 'fs',
-            config: { directory: storagePath('uploads') }
-        })
-
-        if (!config.get('drive.default')) {
-            config.set('drive.default', 'uploads')
-        }
-
-        await this.load()
     }
 
     public validateUpload(options: ValidateUploadOptions, file: { mimetype: string, size: number },) {

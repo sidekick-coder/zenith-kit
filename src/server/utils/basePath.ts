@@ -33,10 +33,18 @@ export function dataPath(...args: string[]): string {
 }
 
 export function storagePath(...args: string[]): string {
+    if (process.env.ZENITH_STORAGE_PATH) {
+        return path.resolve(process.env.ZENITH_STORAGE_PATH, ...args)
+    }
+
     return dataPath('storage', ...args)
 }
 
 export function tmpPath(...args: string[]): string {
+    if (process.env.ZENITH_TMP_PATH) {
+        return path.resolve(process.env.ZENITH_TMP_PATH, ...args)
+    }
+
     return dataPath('tmp', ...args)
 }
 
