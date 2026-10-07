@@ -1,5 +1,6 @@
 import DashboardWidgetDefinition from './DashboardWidgetDefinition'
 import type DashboardWidgetData from './DashboardWidgetData'
+import container from '#client/facades/container.ts'
 
 /**
     * Component to be used for chart widgets in the dashboard.
@@ -16,7 +17,7 @@ import type DashboardWidgetData from './DashboardWidgetData'
 
 
 export default class WidgetChartDefinition extends DashboardWidgetDefinition {
-    private static renderer: any 
+    private static renderer_key = 'WidgetChartDefinition.renderer' 
 
     constructor() {
         super()
@@ -25,11 +26,11 @@ export default class WidgetChartDefinition extends DashboardWidgetDefinition {
     }
 
     public static setRenderer(renderer: any) {
-        WidgetChartDefinition.renderer = renderer
+        container.set(WidgetChartDefinition.renderer_key, renderer)
     }
 
     public component() {
-        return WidgetChartDefinition.renderer
+        return container.get(WidgetChartDefinition.renderer_key)
     }
 
     // return chart options for the chart widget. This can be overridden by plugins to provide custom chart options.

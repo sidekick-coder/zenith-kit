@@ -36,8 +36,8 @@ function loadStyles() {
     styles.value = widget.value.computeStyles({ contianerWidth: dashboard.value.containerWidth ?? 0, })
 }
 
-function loadComponent() {
-    const c = widget.value.component()
+async function loadComponent() {
+    const c = await widget.value.component()
 
     if (!c) return
 
@@ -96,10 +96,12 @@ function createOptions(from: number, to: number) {
 
 <template>
     <div :data-widget-id="widget.id" :style="styles" class="p-2">
-        <div class="bg-card text-card-foreground relative flex flex-col rounded-xl border shadow-sm h-full overflow-hidden">
+        <div
+            class="bg-card text-card-foreground relative flex flex-col rounded-xl border shadow-sm h-full overflow-hidden">
             <div class="flex items-center gap-2 border-b px-4 py-3 select-none bg-card text-card-foreground">
 
-                <Icon data-grab-handler name="GripVertical" class="size-4 cursor-grab touch-none text-muted-foreground" />
+                <Icon data-grab-handler name="GripVertical"
+                    class="size-4 cursor-grab touch-none text-muted-foreground" />
 
                 <input v-if="editing" ref="inputRef" :placeholder="widget.definition.name || $t('Widget')"
                     class="flex-1 bg-transparent text-sm font-medium outline-none" @keydown.enter="commitEdit"
@@ -145,13 +147,9 @@ function createOptions(from: number, to: number) {
                 </div>
             </div>
 
-            <button
-                type="button"
-                data-resize-handler
-                :aria-label="$t('Resize widget')"
+            <button type="button" data-resize-handler :aria-label="$t('Resize widget')"
                 class="absolute bottom-1 right-1 z-10 flex size-5 cursor-se-resize touch-none items-center justify-center rounded text-muted-foreground hover:bg-muted"
-                @pointerdown.prevent
-            >
+                @pointerdown.prevent>
                 <Icon name="mdi:resize-bottom-right" class="size-8" />
             </button>
         </div>
