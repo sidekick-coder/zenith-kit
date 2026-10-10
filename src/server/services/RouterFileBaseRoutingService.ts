@@ -3,6 +3,8 @@ import type Router from '#server/services/RouterService.ts'
 import LoggerService from '#shared/services/LoggerService.ts'
 import BaseException from '#shared/exceptions/BaseException.ts'
 import type Route from '#server/entities/RouteEntity.ts'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 interface RouteFileDefinition {
     file: string
@@ -158,7 +160,9 @@ export default class RouterFileBaseRoutingService {
         this.router.on('added', hook)
 
         for (const route of this.routes) {
-            const routeModule = await import(`${this.directory}/${route.file}`)
+            const filename = path.join(this.directory, route.file)
+            const url = pathToFileURL(filename).href
+            const routeModule = await import(url)
             const handler = routeModule.default
 
             if (typeof handler !== 'function') {
