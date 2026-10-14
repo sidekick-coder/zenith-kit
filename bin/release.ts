@@ -1,37 +1,17 @@
 import { program } from 'commander'
 import { execSync, spawnSync } from 'child_process'
-import readline from 'readline'
+import { select } from '@inquirer/prompts'
 
-function exec(cmd) {
+function exec(cmd: string) {
     return execSync(cmd, { encoding: 'utf-8' }).trim()
 }
 
-function run(cmd, args = []) {
+function run(cmd: string, args: string[] = []) {
     const result = spawnSync(cmd, args, { stdio: 'inherit' })
 
     if (result.status !== 0) {
         process.exit(result.status ?? 1)
     }
-}
-
-function ask(question, choices) {
-    return new Promise((resolve) => {
-        const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-
-        const list = choices.map((c, i) => `  ${i + 1}) ${c}`).join('\n')
-
-        rl.question(`${question}\n${list}\n> `, (answer) => {
-            rl.close()
-            const index = parseInt(answer, 10) - 1
-
-            if (index >= 0 && index < choices.length) {
-                resolve(choices[index])
-            } else {
-                console.error('Invalid choice.')
-                process.exit(1)
-            }
-        })
-    })
 }
 
 program
@@ -49,11 +29,37 @@ program
         }
 
         let bump
+        if (options.patch) {
+            bump = 'patch'
+        }
 
-        if (options.patch) bump = 'patch'
-        else if (options.minor) bump = 'minor'
-        else if (options.major) bump = 'major'
-        else bump = await ask('Select version bump type:', ['patch', 'minor', 'major'])
+        if (options.minor) {
+            bump = 'minor'
+        }
+
+        if (options.major) {
+            bump = 'major'
+        }
+
+        if (!bump) {
+            bump = await select({
+                message: 'Select version bump type:',
+                choices: [
+                    {
+                        name: 'Patch',
+                        value: 'patch'
+                    },
+                    {
+                        name: 'Minor',
+                        value: 'minor'
+                    },
+                    {
+                        name: 'Major',
+                        value: 'major'
+                    }
+                ]
+            })
+        }
 
         console.log(`run tests before bumping version...`)
         run('npm', ['test'])
