@@ -120,4 +120,8 @@ export default class ContainerService {
     public keys(): EntryKey[] {
         return Array.from(this.entries.keys())
     }
+
+    public clear(): void {
+        this.entries.clear()
+    }
 }
