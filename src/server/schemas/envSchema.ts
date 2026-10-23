@@ -63,7 +63,7 @@ export const envSchema = v.looseObject({
     ZENITH_CONFIG_DEBUG: v.optional(boolean, 'false'),
     ZENITH_CONFIG_DRIVER: v.optional(v.picklist(['fs', 's3']), 'fs'),
     ZENITH_CONFIG_FS_PATH: v.optional(v.string()),
-    ZENITH_CONFIG_FS_FORMAT: v.optional(v.picklist(['json', 'yml']), 'json'),
+    ZENITH_CONFIG_FS_FORMAT: v.optional(v.picklist(['json', 'yml']), 'yml'),
     ZENITH_CONFIG_FS_FORMAT_OPTIONS: v.optional(keyValue, ''),
 
     ZENITH_CONFIG_S3_BUCKET: v.optional(v.string()),

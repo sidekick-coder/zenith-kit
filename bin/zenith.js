@@ -55,8 +55,7 @@ const wrapper = CliWrapperService
 
 wrapper
     .addEnv('ZENITH_BASE_PATH', ZENITH_BASE_PATH)
-    .addEnv('ZENITH_STORAGE_PATH', path.join(cwd, 'storage'))
-    .addEnv('ZENITH_CONFIG_FS_PATH', path.join(cwd, 'config'))
+    .addEnv('ZENITH_DATA_PATH', path.join(cwd, 'data'))
     .addEnv('ZENITH_PLUGINS_DIR', cwd)
     .addEnv('ZENITH_COMMAND_DIR', path.resolve(import.meta.dirname, '../dist/server/commands'))
     .run()
