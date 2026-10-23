@@ -20,7 +20,16 @@ export interface AutoOptions {
     refine?: (records: RouteRecordRaw[]) => RouteRecordRaw[];
 }
 
-export function auto(imports: Record<string, DefineComponent | (() => Promise<DefineComponent>)>, options: AutoOptions = {}): RouteRecordRaw[] {
+export interface RouterEvents {
+    'router:registered': {
+        router: Router
+    }
+    'router:loaded': {
+        router: Router
+    }
+}
+
+export function auto(imports: Record<string, any>, options: AutoOptions = {}): RouteRecordRaw[] {
     let routes: RouteRecordRaw[] = []
 
     for (const [filename, component] of Object.entries(imports)) {
@@ -114,7 +123,7 @@ export function createRouter() {
 
     router.beforeEach(setupGuard)
 
-    router.auto = (imports: Record<string, DefineComponent | (() => Promise<DefineComponent>)>, options: AutoOptions = {}) => {
+    router.auto = (imports: Record<string, any>, options: AutoOptions = {}) => {
         const autoRoutes = auto(imports, options)
         
         autoRoutes.forEach(route => router.addRoute(route))
