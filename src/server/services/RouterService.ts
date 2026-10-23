@@ -5,6 +5,7 @@ import { compose } from '#shared/utils/compose.ts'
 import Hooks from '#shared/mixins/HooksMixin.ts'
 import LoggerService from '#shared/services/LoggerService.ts'
 import { matchPath } from '#shared/utils/matchPaths.ts'
+import RouterFileBaseRoutingService from './RouterFileBaseRoutingService'
 
 type RouteContext = 'global' | 'group' | 'route'
 
@@ -24,6 +25,11 @@ export interface RouterEvents {
     'router:loaded': {
         router: RouterService
     }
+}
+
+export interface FileBaseRoutingOptions {
+    identifier?: string
+    prefix?: string
 }
 
 
@@ -236,4 +242,22 @@ export default class RouterService<C = {}> extends compose(Hooks) {
             this.logger.debug('service loaded in debug mode')
         }
     }
+
+
+    public async addFileBaseRoutes(directory: string, options: FileBaseRoutingOptions = {}) {
+        const register = RouterFileBaseRoutingService
+            .create(directory)
+            .setRouter(this as any)
+
+        if (options.identifier) {
+            register.setModule(options.identifier)
+        }
+
+        if (options.prefix) {
+            register.setPrefix(options.prefix)
+        }
+
+        await register.load()
+    }
+
 }
