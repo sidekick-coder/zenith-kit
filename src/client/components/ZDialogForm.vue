@@ -22,6 +22,7 @@ import {
 import { tryCatch } from '#shared/utils/tryCatch.ts'
 import validator from '#shared/facades/validator.ts'
 import type { DefineFormField } from '#client/utils/defineFormFields.ts'
+import { cn } from '#client/lib/utils.ts'
 
 const props = defineProps({
     title: {
@@ -59,6 +60,10 @@ const props = defineProps({
     toastOnSuccess: {
         type: String,
         default: null,
+    },
+    contentClass: {
+        type: String,
+        default: '',
     },
 })
 
@@ -153,7 +158,7 @@ defineExpose({ setFieldValue, })
                 <slot />
             </DialogTrigger>
 
-            <DialogContent>
+            <DialogContent :class="cn('max-h-[90vh] overflow-y-auto')">
                 <DialogHeader>
                     <DialogTitle>{{ title }}</DialogTitle>
                     <DialogDescription>{{ description }}</DialogDescription>
