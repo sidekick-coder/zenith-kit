@@ -39,9 +39,9 @@ export default class DatabaseRepository<
     public autoUpdatedAt = false
 
     constructor(
-        protected db: Kysely<any>, 
-        protected table: string, 
-        protected primaryKey: string
+        public db: Kysely<any>, 
+        public table: string, 
+        public primaryKey: string
     ) {    }
 
 

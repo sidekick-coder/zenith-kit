@@ -61,6 +61,34 @@ export default class TokenRepository extends compose(
         return item || null
     }
 
+    public async findActiveToken(value: string): Promise<Token | null> {
+        const token = await this.findByToken(value)
+
+        if (!token) {
+            return null
+        }
+
+        if (token.expires_at && new Date(token.expires_at) < new Date()) {
+            return null
+        }
+
+        return token
+    }
+
+    async isTokenValid(tokenValue: string): Promise<boolean> {
+        const token = await this.findByToken(tokenValue)
+
+        if (!token) {
+            return false
+        }
+
+        if (token.expires_at && new Date(token.expires_at) < new Date()) {
+            return false
+        }
+
+        return true
+    }
+
     async generate(options: TokenRepositoryGenerateOptions) {
         const token = randomBytes(64).toString('hex')
 
@@ -74,5 +102,17 @@ export default class TokenRepository extends compose(
             type: options.type || 'auth',
             expires_at: expiresAt
         })
+    }
+
+    async revoke(tokenValue: string): Promise<boolean> {
+        const token = await this.findByToken(tokenValue)
+
+        if (!token) {
+            return false
+        }
+
+        await this.deleteById(token.id)
+
+        return true
     }
 }

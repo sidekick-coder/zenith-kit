@@ -1,13 +1,15 @@
+import permissionAssignmentRepository from '#server/facades/permissionAssignmentRepository.ts'
 import BaseAcl from '#shared/entities/AclEntity.ts'
 import BaseException from '#shared/exceptions/BaseException.ts'
+import type { PermissionEntity } from '#shared/index.ts'
 
-export default class Acl extends BaseAcl {
+export default class AclEntity extends BaseAcl {
     public authorize(action: string, subject: any, object?: Record<string, any>) {
         if (this.cannot(action, subject, object)) {
             const error = new BaseException('Unauthorized', 403)
 
             let subjectName = ''
-            
+
             if (typeof subject === 'string') {
                 subjectName = subject
             }
@@ -24,7 +26,7 @@ export default class Acl extends BaseAcl {
                 action,
                 subject: subjectName,
             })
-            
+
             throw error
         }
     }

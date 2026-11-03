@@ -1,6 +1,6 @@
 import emmitter from '#server/facades/emmitter.ts'
 import hasher from '#server/facades/hasher.ts'
-import type UserEntity from '#shared/entities/UserEntity.ts'
+import UserEntity from '#shared/entities/UserEntity.ts'
 import DatabaseRepository from './DatabaseRepository'
 
 export interface UserRepositoryQueryOptions {
@@ -25,7 +25,7 @@ export interface UserRepositoryEvents {
 
 export default class UserRepository extends DatabaseRepository<UserEntity, number, UserRepositoryQueryOptions> {
     public static __container_entry_key = 'UserRepository'
-    public autoCreatedAt = true 
+    public autoCreatedAt = true
     public autoUpdatedAt = true
 
     constructor(db: DatabaseRepository['db']) {
