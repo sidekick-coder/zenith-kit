@@ -92,9 +92,11 @@ export default class TokenRepository extends compose(
     async generate(options: TokenRepositoryGenerateOptions) {
         const token = randomBytes(64).toString('hex')
 
-        const expiresAt = options.expires_in_hours
-            ? new Date(Date.now() + options.expires_in_hours * 60 * 60 * 1000)
-            : null
+        let expiresAt: string | null = null
+
+        if (options.expires_in_hours) {
+            expiresAt = new Date(Date.now() + options.expires_in_hours * 60 * 60 * 1000).toISOString()
+        }
 
         return await this.create({
             user_id: options.user_id,
