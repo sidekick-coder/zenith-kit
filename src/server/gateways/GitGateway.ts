@@ -67,7 +67,7 @@ export class GitGateway {
         const args = options.args
         const shell = options.shell ?? new ShellService({ logger, debug })
 
-        const env: Record<string, string> = { }
+        const env: Record<string, string> = {}
 
         if (sshKeyFile) {
             env.GIT_SSH_COMMAND = `ssh -i ${sshKeyFile} -o StrictHostKeyChecking=no`
@@ -179,5 +179,25 @@ export class GitGateway {
             isDetachedHead,
             remotes,
         }
+    }
+
+    async listBranches(): Promise<string[]> {
+        const branches = await this.run('for-each-ref --format="%(refname:short)" refs/heads/')
+            .then(
+                result => result.split('\n').map(b => b.trim())
+                    .filter(b => b.length > 0)
+                    .filter(b => !b.includes('HEAD'))
+            )
+
+        // sort by main, master, then alphabetically
+        branches.sort((a, b) => {
+            if (a === 'main') return -1
+            if (b === 'main') return 1
+            if (a === 'master') return -1
+            if (b === 'master') return 1
+            return a.localeCompare(b)
+        })
+
+        return branches
     }
 }

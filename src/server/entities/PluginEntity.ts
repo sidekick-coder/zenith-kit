@@ -1,50 +1,56 @@
-import { join } from 'path'
-import PluginEntryEntity from './PluginEntryEntity.ts'
+import config from '#server/facades/config.ts'
+import container from '#server/facades/container.ts'
+import Base from '#shared/entities/PluginEntity.ts'
+import { GitGateway } from '#server/gateways/GitGateway.ts'
+import { join } from 'node:path'
+import GitCommitRepository from '#server/repositories/GitCommitRepository.ts'
+import ShellService from '#server/services/ShellService.ts'
 
-interface AddApiFolderOptions {
-    prefix?: string
-}
+export default class PluginEntity extends Base {
+    public directory: string
+    public clientManifest: Record<string, any>
 
-export default class PluginEntity extends PluginEntryEntity {
-    public apiFolders = new Map<string, AddApiFolderOptions>()
-    public apiDirectories = new Set<string>()
-
-    constructor() {
-        super()
+    public makePath(...parts: string[]) {
+        return join(this.directory, ...parts)
     }
 
-    public staticPath(...parts: string[]) {
-        return join('/static', 'modules', this.id, ...parts)
+    public set: typeof config.set = (key, value, source) => {
+        config.set(`plugins.registry.${this.id}.${key}`, value, source)
     }
 
-    public async load() {
-        // This method can be used to load additional data from the plugin's directory if needed
+    public get: typeof config.get = (key, defaultValue) => {
+        return config.get(`plugins.registry.${this.id}.${key}`, defaultValue)
     }
 
-    public static fromPluginDiscoverEntity<T>(this: new () => T, entity: PluginEntryEntity): T {
-        const contructor = (typeof this === 'function' ? this : PluginEntity) as any
+    public get git() {
+        return new GitGateway({
+            cwd: this.directory,
+            shell: container.has(ShellService) ? container.get(ShellService) : undefined,
+            sshKey: config.get(`plugins.registry.${this.id}.ssh_key`),
+            sshKeyFile: config.get(`plugins.registry.${this.id}.ssh_key_file`)
+        })
+    }
 
-        const instance = new contructor() as any
+    public get commits() {
+        return new GitCommitRepository({
+            cwd: this.directory,
+            shell: container.has(ShellService) ? container.get(ShellService) : undefined
+        })
+    }
 
-        let payload = {
-            id: entity.id,
-            name: entity.name,
-            version: entity.version,
-            directory: entity.directory,
+    public enable() {
+        this.set(`enabled`, true)
+    }
+
+    public disable() {
+        this.set(`enabled`, false)
+    }
+
+    public toggle() {
+        if (this.get(`enabled`)) {
+            return this.disable()
         }
 
-        if (typeof contructor?.parse === 'function') {
-            payload = (contructor as any).parse(entity)
-        }
-
-        if (typeof (this as any)?.parse === 'function') {
-            payload = (this as any).parse(entity)
-        }
-
-        Object.assign(instance as any, payload)
-
-        return instance
+        return this.enable()
     }
-
-
 }
