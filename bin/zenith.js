@@ -53,9 +53,16 @@ const wrapper = CliWrapperService
     .create()
     .setBasePath(ZENITH_BASE_PATH)
 
+const plugins = [cwd]
+
+if (process.env.ZENITH_PLUGINS_DIR) {
+    const extraPlugins = process.env.ZENITH_PLUGINS_DIR.split(':')
+    plugins.push(...extraPlugins)
+}
+
 wrapper
     .addEnv('ZENITH_BASE_PATH', ZENITH_BASE_PATH)
     .addEnv('ZENITH_DATA_PATH', path.join(cwd, 'data'))
-    .addEnv('ZENITH_PLUGINS_DIR', cwd)
+    .addEnv('ZENITH_PLUGINS_DIR', plugins.join(':'))
     .addEnv('ZENITH_COMMAND_DIR', path.resolve(import.meta.dirname, '../dist/server/commands'))
     .run()
