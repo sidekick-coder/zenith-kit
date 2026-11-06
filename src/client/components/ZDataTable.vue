@@ -164,9 +164,10 @@ function isSortingDesc(column: DataTableColumn<T>) {
                 <TableHead 
                     v-for="(c, index) of formatedColumns" :key="index" 
                     class="group" 
-                    :class="[
+                    :class="cn(
                         !disableSort && c.sortable !== false ? 'cursor-pointer select-none' : '',
-                    ]"
+                        c.class
+                    )"
                     @click="setSort(c)"
                     >
                     <div class="flex items-center">
@@ -195,7 +196,7 @@ function isSortingDesc(column: DataTableColumn<T>) {
                 <TableCell v-if="enableSelection" class="w-[50px]">
                     <Checkbox :model-value="isSelected(r)" @update:model-value="toggle(r)" />
                 </TableCell>
-                <TableCell v-for="(c, ci) of formatedColumns" :key="ci">
+                <TableCell v-for="(c, ci) of formatedColumns" :key="ci" :class="c.class">
                     <slot :name="`row-${c.id}`" :row="r._raw" :column="c">
                         {{ r[c.id] }}
                     </slot>
