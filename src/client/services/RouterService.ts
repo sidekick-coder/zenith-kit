@@ -3,134 +3,148 @@ import {
     createMemoryHistory,
     createWebHistory
 } from 'vue-router'
-import type { NavigationGuard, Router as VueRouter } from 'vue-router'
+import type { NavigationGuard, Router } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { DefineComponent } from 'vue'
 import setupGuard from '#client/guards/setupGuard.ts'
-
-export interface Router extends VueRouter {
-    auto: typeof auto;
-}
-
-export interface AutoOptions {
-    guards?: NavigationGuard[] | ((record: RouteRecordRaw) => NavigationGuard[]);
-    strip?: (string | RegExp)[];
-    exclude?: (string | RegExp)[];
-    prefix?: string;
-    refine?: (records: RouteRecordRaw[]) => RouteRecordRaw[];
-}
+import set from 'lodash-es/set.js'
 
 export interface RouterEvents {
     'router:registered': {
-        router: Router
+        router: RouterService
     }
     'router:loaded': {
-        router: Router
+        router: RouterService
     }
 }
 
-export function auto(imports: Record<string, any>, options: AutoOptions = {}): RouteRecordRaw[] {
-    let routes: RouteRecordRaw[] = []
+export interface RouterSource {
+    files: Record<string, any>
+    prefix?: string
+    layout?: string
+    guards?: NavigationGuard[] | ((record: RouteRecordRaw) => NavigationGuard[]);
+    strip?: (string | RegExp)[];
+    exclude?: (string | RegExp)[];
+    refine?: (records: RouteRecordRaw[]) => RouteRecordRaw[];
+}
 
-    for (const [filename, component] of Object.entries(imports)) {
+interface RouterServiceOptions {
+    ssr?: boolean
+    debug?: boolean
+}
 
-        if (options.exclude?.some(rule =>
-            typeof rule === 'string'
-                ? filename.includes(rule)
-                : rule.test(filename)
-        )) {
-            continue
-        }
+export default class RouterService {
+    public static __container_entry_key = 'RouterClientService'
 
-        let parts = filename
-            .replace(/\.vue$/, '')
-            .split('/')
-            .filter(p => p && !p.startsWith('.'))
-            .map(part => {
-                let p = part
+    public vueRouter: Router
 
-                if (p.startsWith('[') && p.endsWith(']')) {
-                    p = ':' + p.slice(1, -1)
+    constructor(options: RouterServiceOptions = {}) {
+        const ssr = options.ssr ?? false
+
+        const router = createVueRouter({
+            history: ssr ? createMemoryHistory() : createWebHistory(),
+            routes: [],
+            scrollBehavior(_to, _from, savedPosition) {
+                if (savedPosition) {
+                    return savedPosition
                 }
 
-                return p
-            })
-
-
-        // Strip specific segments
-        if (options.strip?.length) {
-            parts = parts.filter(p =>
-                !options.strip!.some(rule =>
-                    typeof rule === 'string'
-                        ? p === rule
-                        : rule.test(p)
-                )
-            )
-        }
-
-        let path = parts.join('/').replace(/index$/, '')
-
-        if (options.prefix) {
-            path = options.prefix + '/' + path
-        }
-
-        if (!path.startsWith('/')) {
-            path = '/' + path
-        }
-
-        if (path.endsWith('/')) {
-            path = path.slice(0, -1)
-        }
-
-        const record = {
-            path: path,
-            component: component as DefineComponent,
-            beforeEnter: [] as NavigationGuard[],
-        }
-        
-        if (options.guards && Array.isArray(options.guards)) {
-            record.beforeEnter = options.guards
-        }
-
-        if (options.guards && typeof options.guards === 'function') {
-            record.beforeEnter = options.guards(record)
-        }
-
-        routes.push(record)
-    }
-
-    if (options.refine) {
-        routes = options.refine(routes)
-    }
-
-    return routes
-}
-
-export function createRouter() {
-    const ssr = import.meta.env.SSR
-
-    const router = createVueRouter({
-        history: ssr ? createMemoryHistory() : createWebHistory(),
-        routes: [],
-        scrollBehavior(_to, _from, savedPosition) {
-            if (savedPosition) {
-                return savedPosition
-            } else {
                 return { top: 0 }
-            }
-        },
-    }) as any as Router
+            },
+        })
 
-    router.beforeEach(setupGuard)
+        router.beforeEach(setupGuard)
 
-    router.auto = (imports: Record<string, any>, options: AutoOptions = {}) => {
-        const autoRoutes = auto(imports, options)
-        
-        autoRoutes.forEach(route => router.addRoute(route))
-
-        return autoRoutes
+        this.vueRouter = router
     }
 
-    return router
-}
+    public addSource(source: RouterSource) {
+        const strip = source.strip || []
+        const exclude = source.exclude || []
+        const imports = source.files
 
+        let routes: RouteRecordRaw[] = []
+
+        const match = (filename: string, rule: string | RegExp) => {
+            if (typeof rule === 'string') {
+                return filename.includes(rule)
+            }
+
+            return rule.test(filename)
+        }
+
+        for (const [filename, component] of Object.entries(imports)) {
+            if (exclude.some(rule => match(filename, rule))) {
+                continue
+            }
+
+            let parts = filename
+                .replace(/\.vue$/, '')
+                .split('/')
+                .filter(p => p && !p.startsWith('.'))
+                .map(part => {
+                    let p = part
+
+                    if (p.startsWith('[') && p.endsWith(']')) {
+                        p = ':' + p.slice(1, -1)
+                    }
+
+                    return p
+                })
+
+
+            // Strip specific segments
+            if (source.strip?.length) {
+                parts = parts.filter(p => !strip.some(rule => match(p, rule)))
+            }
+
+            let path = parts.join('/').replace(/index$/, '')
+
+            if (source.prefix) {
+                path = source.prefix + '/' + path
+            }
+
+            if (!path.startsWith('/')) {
+                path = '/' + path
+            }
+
+            if (path.endsWith('/')) {
+                path = path.slice(0, -1)
+            }
+
+            const record = {
+                path: path,
+                component: component as DefineComponent,
+                beforeEnter: [] as NavigationGuard[],
+            }
+
+            if (source.guards && Array.isArray(source.guards)) {
+                record.beforeEnter = source.guards
+            }
+
+            if (source.guards && typeof source.guards === 'function') {
+                record.beforeEnter = source.guards(record)
+            }
+
+            if (source.layout) {
+                set(record, 'meta.layout', source.layout)
+            }
+
+            routes.push(record)
+        }
+
+        if (source.refine) {
+            routes = source.refine(routes)
+        }
+
+        routes.forEach(route => this.vueRouter.addRoute(route))
+    }
+
+    public push(path: string) {
+        return this.vueRouter.push(path)
+    }
+
+    public isReady() {
+        return this.vueRouter.isReady()
+    }
+}
