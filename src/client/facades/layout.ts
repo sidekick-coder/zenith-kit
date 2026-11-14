@@ -1,9 +1,6 @@
-import LayoutManager from "#client/services/LayoutService.ts";
+import LayoutService from "#client/services/LayoutService.ts";
+import container from "./container.ts";
 
-const g = globalThis as any
-
-const layout = g.layout || new LayoutManager()
-
-g.layout = layout
+const layout = container.proxy<LayoutService>(LayoutService)
 
 export default layout

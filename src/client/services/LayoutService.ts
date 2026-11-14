@@ -2,21 +2,31 @@ import BaseException from '#shared/exceptions/BaseException.ts'
 import type { DefineComponent } from "vue"
 import emmitter from '../facades/emmitter.ts'
 
+export interface LayoutEvents {
+    'layout:registered': {
+        layout: LayoutService
+    }
+    'layout:change': {
+        id: string
+    }
+}
+
+export interface LayoutAddOptions {
+    id: string
+    component: any
+    options?: Record<string, any>
+}
+
 export default class LayoutService {
     public static __container_entry_key = 'LayoutService'
     public components: Map<string, DefineComponent> = new Map()
     public options: Record<string, any> = {}
     public currendId: string | null = null
 
-    public setCurrent(id: string) {
-        this.currendId = id
 
-        emmitter.emit('layout:change', id)
-    }
-
-    public add(name: string, component: DefineComponent, options?: any) {
-        this.components.set(name, component)
-        this.options = options || {}
+    public add(payload: LayoutAddOptions) {
+        this.components.set(payload.id, payload.component)
+        this.options = payload.options || {}
     }
 
     public has(name: string) {
@@ -43,6 +53,12 @@ export default class LayoutService {
         }
 
         return this.get(this.currendId)
+    }
+
+    public setCurrent(id: string | null) {
+        this.currendId = id
+
+        emmitter.emit('layout:change', id)
     }
 
     public setOptions(options: any = {}) {
