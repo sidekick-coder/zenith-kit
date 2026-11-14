@@ -4,11 +4,11 @@ import BaseException from '#shared/exceptions/BaseException.ts'
 import type { DriveUrlOptions } from '#server/contracts/DriveContract.ts'
 import BaseDrive from '#server/gateways/DriveBaseGateway.ts'
 import DriveS3 from '#server/gateways/DriveS3Gateway.ts'
-import DriveConfig from '#server/entities/DriveConfigEntity.ts'
 import type LoggerService from '#shared/services/LoggerService.ts'
 import logger from '#server/facades/logger.ts'
 import DriveFS from '#server/gateways/DriveFSGateway.ts'
 import config from '#server/facades/config.ts'
+import DiskRepository from '#server/repositories/DiskRepository.ts'
 
 interface ValidateUploadOptions {
     mime_types: string
@@ -25,6 +25,7 @@ export default class DriveService {
     public defaultDrive?: string
     public debug = false
     public logger: LoggerService
+    public repository: DiskRepository
 
     public get current() {
         if (!this.selected) return undefined 
@@ -45,6 +46,8 @@ export default class DriveService {
 
         this.gateways.set('s3', DriveS3)
         this.gateways.set('fs', DriveFS)
+
+        this.repository = new DiskRepository()
     }
 
     public listDrives() {
@@ -192,7 +195,7 @@ export default class DriveService {
     public async load(){
         this.drives.clear()
 
-        const configs = await DriveConfig.list()
+        const configs = await this.repository.findMany()
 
         for (const c of configs) {
             const gatewayClass = this.gateways.get(c.type)

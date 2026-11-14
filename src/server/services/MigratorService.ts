@@ -21,7 +21,7 @@ export interface Migration {
     executedAt: Date | null;
 }
 
-export interface ListFilters {
+export interface MigratorServiceListOptions {
     source?: string;
     name?: string | string[];
 }
@@ -121,7 +121,7 @@ export default class MigratorService {
         return items
     }
 
-    public async list(filters?: ListFilters) {
+    public async list(filters?: MigratorServiceListOptions) {
         await this.ensureMigrationsTable()
 
         let items = [] as MigrationEntity[]
@@ -283,7 +283,7 @@ export default class MigratorService {
         }
     }
 
-    public async migrate(filters: ListFilters & { steps?: number } = {}): Promise<MigrationResult[]> {
+    public async migrate(filters: MigratorServiceListOptions & { steps?: number } = {}): Promise<MigrationResult[]> {
         await this.ensureMigrationsTable()
 
         let migrations = await this.list(filters)
@@ -325,7 +325,7 @@ export default class MigratorService {
         return results
     }
 
-    public async rollback(filters: ListFilters & { steps?: number } = {}): Promise<MigrationResult[]> {
+    public async rollback(filters: MigratorServiceListOptions & { steps?: number } = {}): Promise<MigrationResult[]> {
         await this.ensureMigrationsTable()
 
         let migrations = await this.list(filters)
@@ -366,25 +366,25 @@ export default class MigratorService {
         return results
     }
 
-    public async up(steps: number = 1, filters: ListFilters = {}): Promise<MigrationResult[]> {
+    public async up(steps: number = 1, filters: MigratorServiceListOptions = {}): Promise<MigrationResult[]> {
         return this.migrate({
             ...filters,
             steps
         })
     }
 
-    public async down(steps: number = 1, filters: ListFilters = {}): Promise<MigrationResult[]> {
+    public async down(steps: number = 1, filters: MigratorServiceListOptions = {}): Promise<MigrationResult[]> {
         return this.rollback({
             ...filters,
             steps
         })
     }
 
-    public async latest(filters: ListFilters = {}): Promise<MigrationResult[]> {
+    public async latest(filters: MigratorServiceListOptions = {}): Promise<MigrationResult[]> {
         return this.migrate(filters)
     }
 
-    public async latestOrFail(filters: ListFilters = {}): Promise<MigrationResult[]> {
+    public async latestOrFail(filters: MigratorServiceListOptions = {}): Promise<MigrationResult[]> {
         const results = await this.latest(filters)
 
         const failed = results.find(r => r.result === 'failed')
@@ -396,7 +396,7 @@ export default class MigratorService {
         return results
     }
 
-    public async fresh(filters: ListFilters & { steps?: number } = {}): Promise<MigrationResult[]> {
+    public async fresh(filters: MigratorServiceListOptions & { steps?: number } = {}): Promise<MigrationResult[]> {
         const downResults = await this.rollback(filters)
 
         if (downResults.some(r => r.result === 'failed')) {

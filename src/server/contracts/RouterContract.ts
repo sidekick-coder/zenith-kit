@@ -26,6 +26,6 @@ type ProcessMiddlewareArray<T extends readonly Middleware[]> =
 export type MiddlewareHandleResult<T extends readonly Middleware[] = readonly Middleware[]> = ProcessMiddlewareArray<T>
 
 
-export interface Handler<T = Record<string, any>> {
+export interface RouterHandler<T = Record<string, any>> {
     (ctx: HttpContext & T): Promise<any> | any;
 }

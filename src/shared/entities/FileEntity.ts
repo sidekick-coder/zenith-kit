@@ -1,9 +1,4 @@
-import SoftDeleteMixin from '#shared/mixins/SoftDeleteMixin.ts'
-import TimestampMixin from '#shared/mixins/TimestampMixin.ts'
-import BaseEntityMixin from '#shared/mixins/BaseEntityMixin.ts'
-import { compose } from '#shared/utils/compose.ts'
-
-export default class FileEntity extends compose(BaseEntityMixin, TimestampMixin, SoftDeleteMixin) {  
+export default class FileEntity {  
     public id: number
     public drive: string
     public mimetype: string
@@ -11,6 +6,10 @@ export default class FileEntity extends compose(BaseEntityMixin, TimestampMixin,
     public client_name: string
     public filename: string
     public public: boolean
+
+    public created_at: Date | string
+    public updated_at: Date | string
+    public deleted_at?: Date | string | null
 
     // dynamic
     public url?: string

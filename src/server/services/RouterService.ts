@@ -1,6 +1,6 @@
 import { join } from 'lodash-es'
 import Route from '#server/entities/RouteEntity.ts'
-import type { Handler, Middleware, MiddlewareHandleResult } from '#server/contracts/RouterContract.ts'
+import type { RouterHandler as  Handler, Middleware, MiddlewareHandleResult } from '#server/contracts/RouterContract.ts'
 import { compose } from '#shared/utils/compose.ts'
 import Hooks from '#shared/mixins/HooksMixin.ts'
 import LoggerService from '#shared/services/LoggerService.ts'

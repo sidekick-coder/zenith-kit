@@ -1,15 +1,15 @@
 import qs from 'qs'
-import type { Handler,  Middleware } from '#server/contracts/RouterContract.ts'
+import type { RouterHandler as Handler, Middleware } from '#server/contracts/RouterContract.ts'
 
-type RouteMethod = 'get' 
-    | 'GET' 
-    | 'post' 
-    | 'POST' 
-    | 'put' 
-    | 'PUT' 
-    | 'patch' 
-    | 'PATCH' 
-    | 'delete' 
+type RouteMethod = 'get'
+    | 'GET'
+    | 'post'
+    | 'POST'
+    | 'put'
+    | 'PUT'
+    | 'patch'
+    | 'PATCH'
+    | 'delete'
     | 'DELETE'
 
 export default class Route {
@@ -41,7 +41,7 @@ export default class Route {
                 const paramName = routeSegment.slice(1) // Remove the ':' prefix
                 params[paramName] = requestSegment
             }
-            
+
             if (routeSegment === '*') {
                 // Capture all remaining segments as a single path
                 const remainingSegments = requestSegments.slice(i)

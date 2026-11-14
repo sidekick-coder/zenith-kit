@@ -2,7 +2,7 @@ import BaseException from '#shared/exceptions/BaseException.ts'
 import LoggerService from '#shared/services/LoggerService.ts'
 import ConfigService from '#shared/services/ConfigService.ts'
 import { flatten } from '#shared/utils/flatten.ts'
-import { template } from 'lodash-es'
+import { load } from 'js-yaml'
 import type EnvService from './EnvService.ts'
 import { createRequire } from 'node:module'
 import { dataPath } from '#server/utils/basePath.ts'
@@ -104,9 +104,7 @@ export default class ConfigManagerService {
         let data: Record<string, any> | null = null
 
         if (file.endsWith('.yml') || file.endsWith('.yaml')) {
-            const yaml = require('js-yaml')
-
-            data = yaml.load(text) as Record<string, any>
+            data = load(text) as Record<string, any>
         }
 
         if (!data) {

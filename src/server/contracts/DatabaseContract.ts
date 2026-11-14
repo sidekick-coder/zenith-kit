@@ -1,13 +1,6 @@
+import type { SoftDeleteTable } from '#server/utils/addSoftDeleteColumn.ts'
+import type { TimestampTable } from '#server/utils/addTimestampColumns.ts'
 import type { ColumnType, Generated } from 'kysely'
-
-export interface SoftDeleteTable {
-    deleted_at?: ColumnType<Date | string | null, Date | string | undefined, Date | string | null>
-}
-
-export interface TimestampTable {
-    created_at: ColumnType<Date, string | undefined, never>
-    updated_at: ColumnType<Date, string | undefined, never>
-}
 
 export interface MigrationsTable {
     name: string

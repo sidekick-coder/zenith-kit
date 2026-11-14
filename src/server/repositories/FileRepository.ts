@@ -2,11 +2,13 @@ import DatabaseRepository from '#server/repositories/DatabaseRepository.ts'
 import type { MetadataQueryPayload } from '#server/services/MetadataQueryService.ts'
 import MetadataQueryService from '#server/services/MetadataQueryService.ts'
 import type FileEntity from '#shared/entities/FileEntity.ts'
+import { validator } from '#shared/index.ts'
 
 export interface FileRepositoryQueryOptions {
     id?: number | number[]
     search?: string
     purpose?: string[]
+    filename?: string | string[]
     client_name?: string[]
     metas?: MetadataQueryPayload
 }
@@ -20,25 +22,36 @@ export default class FileRepository extends DatabaseRepository<
         super(db, 'files', 'id')
     }
 
-    public query(options?: FileRepositoryQueryOptions) {
-        let qb = super.query(options as any)
+    public query(payload?: FileRepositoryQueryOptions) {
+        let qb = super.query(payload as any)
 
-        if (options?.id) {
-            const ids = Array.isArray(options.id) ? options.id : [options.id]
+        const options = validator.validate(payload, v => v.object({
+            id: v.optional(v.extras.array(v.number()), []),
+            search: v.optional(v.string()),
+            purpose: v.optional(v.extras.array(v.string()), []),
+            filename: v.optional(v.extras.array(v.string()), []),
+            client_name: v.optional(v.extras.array(v.string()), []),
+            metas: v.optional(v.any()),
+        }))
 
-            qb = qb.where('id', 'in', ids)
+        if (options.id.length) {
+            qb = qb.where('id', 'in', options.id)
         }
 
         if (options?.search) {
             qb = qb.where('f.client_name', 'like', `%${options.search}%`)
         }
 
-        if (options?.purpose?.length) {
+        if (options.purpose.length) {
             qb = qb.where('f.purpose', 'in', options.purpose)
         }
 
-        if (options?.client_name?.length) {
+        if (options.client_name.length) {
             qb = qb.where('f.client_name', 'in', options.client_name)
+        }
+
+        if (options.filename.length) {
+            qb = qb.where('f.filename', 'in', options.filename)
         }
 
         if (options?.metas) {

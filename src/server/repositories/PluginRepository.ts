@@ -2,11 +2,9 @@ import PluginEntity from "#server/entities/PluginEntity.ts";
 import { GitGateway } from "#server/gateways/GitGateway.ts";
 import { readAndParse } from "#server/utils/readAndParse.ts";
 import { BaseException, type LoggerService } from "#shared/index.ts";
-import { load } from "js-yaml";
-import fs from "node:fs";
 import path from "node:path";
 
-export interface FindManyOptions {
+export interface PluginRepositoryFindManyOptions {
     enabled?: boolean
 }
 
@@ -83,7 +81,7 @@ export default class PluginRepository {
         return plugin
     }
 
-    public async findMany(options: FindManyOptions = {}): Promise<PluginEntity[]> {
+    public async findMany(options: PluginRepositoryFindManyOptions = {}): Promise<PluginEntity[]> {
         const plugins: PluginEntity[] = []
 
         for (const directory of this.directories) {

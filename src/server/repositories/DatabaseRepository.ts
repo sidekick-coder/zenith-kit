@@ -1,6 +1,6 @@
 import type { Kysely } from 'kysely'
 import BaseException from '#shared/exceptions/BaseException.ts'
-import { now } from '../queries'
+import { now } from '#server/queries/common.ts'
 import { set } from 'lodash-es'
 
 export interface Pagination<T = any> {

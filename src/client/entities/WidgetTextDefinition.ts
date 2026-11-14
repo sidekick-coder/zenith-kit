@@ -1,7 +1,7 @@
 import { defineAsyncComponent } from 'vue'
 import DashboardWidgetDefinition from './DashboardWidgetDefinition.ts'
 import { defineFormFields } from '#client/utils/defineFormFields'
-import type { DashboardWidgetData } from '../../../dist/client/src/client/index'
+import type DashboardWidgetData from './DashboardWidgetData.ts'
 
 export default class extends DashboardWidgetDefinition {
     constructor() {

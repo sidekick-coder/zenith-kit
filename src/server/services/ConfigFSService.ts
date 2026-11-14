@@ -3,7 +3,7 @@ import path from 'path'
 import { set } from 'lodash-es'
 import { dataPath } from '#server/utils/basePath.ts'
 import ConfigService from '#shared/services/ConfigService.ts'
-import yaml from 'js-yaml'
+import { load, dump } from 'js-yaml'
 import logger from '#server/facades/logger.ts'
 import type LoggerService from '#shared/services/LoggerService.ts'
 import { tryCatch } from '#shared/utils/tryCatch.ts'
@@ -44,7 +44,7 @@ export default class ConfigFSService extends ConfigService {
         let content = JSON.stringify(data, null, this.formatOptions.indent || 4)
 
         if (this.format === 'yml') {
-            content = yaml.dump(data, this.formatOptions)
+            content = dump(data, this.formatOptions)
         }
 
         await fs.promises.writeFile(filename, content, 'utf-8')
@@ -57,7 +57,7 @@ export default class ConfigFSService extends ConfigService {
         let content = JSON.stringify(data, null, 4)
 
         if (this.format === 'yml') {
-            content = yaml.dump(data, this.formatOptions)
+            content = dump(data, this.formatOptions)
         }
 
         fs.writeFileSync(filename, content, 'utf-8')
@@ -70,7 +70,7 @@ export default class ConfigFSService extends ConfigService {
             if (this.debug) {
                 this.logger.debug(`config directory does not exist, creating: ${this.directory}`)
             }
-            
+
             fs.mkdirSync(this.directory, { recursive: true })
         }
 
@@ -93,7 +93,7 @@ export default class ConfigFSService extends ConfigService {
                 const text = await fs.promises.readFile(filePath, 'utf-8')
 
                 if (path.extname(filename) === '.yml') {
-                    return yaml.load(text)
+                    return load(text)
                 }
 
                 return JSON.parse(text)
@@ -103,7 +103,7 @@ export default class ConfigFSService extends ConfigService {
                 this.logger.error(`failed to load config file ${filename}`, error)
                 continue
             }
-            
+
             const key = path.basename(filename, path.extname(filename))
 
             super.set(key, json, 'filesystem')
@@ -123,7 +123,7 @@ export default class ConfigFSService extends ConfigService {
 
         return {
             entry,
-            key: rest.join('.') 
+            key: rest.join('.')
         }
     }
 
@@ -135,7 +135,7 @@ export default class ConfigFSService extends ConfigService {
         }
 
         const { entry, key } = this.parseKey(fullKey)
-        
+
         let values = this.get(entry)
 
         if (!key) {
@@ -147,7 +147,7 @@ export default class ConfigFSService extends ConfigService {
         }
 
         this.writeSync(entry, values)
-        
+
     }
 
     public unset(fullKey: string): void {
@@ -164,7 +164,7 @@ export default class ConfigFSService extends ConfigService {
 
             return
         }
-        
+
         const values = this.get(entry)
 
         set(values, key, undefined)
