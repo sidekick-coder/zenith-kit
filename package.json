@@ -5,6 +5,7 @@
     "description": "Package to use with zenith framework",
     "author": "Henrique Oliveira <henriqueoliwork@gmail.com>",
     "homepage": "https://github.com/sidekick-coder/zenith-kit",
+    "type": "module",
     "bin": {
         "zenith": "./bin/zenith.js"
     },
@@ -43,21 +44,11 @@
             "require": "./dist/server/*.js"
         },
         "./client": {
-            "zenith-development": {
-                "types": "./src/client/index.ts",
-                "import": "./src/client/index.ts",
-                "require": "./src/client/index.ts"
-            },
-            "types": "./dist/client/src/client/index.d.ts",
+            "types": "./dist/client/client/index.d.ts",
             "import": "./dist/client/index.es.js",
             "require": "./dist/client/index.es.js"
         },
         "./components": {
-            "zenith-development": {
-                "types": "./src/client/components.ts",
-                "import": "./src/client/components.ts",
-                "require": "./src/client/components.ts"
-            },
             "types": "./dist/components/src/client/components.d.ts",
             "import": "./dist/components/index.es.js",
             "require": "./dist/components/index.es.js"

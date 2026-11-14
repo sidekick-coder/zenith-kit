@@ -343,7 +343,6 @@ defineExpose({
                         @click.stop="toggleAll" />
                 </TableHead>
                 <TableHead v-for="c in columns" :key="c.id" :style="{
-                    width: c.width ? c.width + 'px' : 'auto',
                     height: 'var(--datatable-th-height, 3rem)'
                 }">
                     <slot :name="`header-${c.id}`" :column="c">
@@ -374,7 +373,6 @@ defineExpose({
                     <Checkbox class="translate-y-0.5" :model-value="isSelected(row)" @click.stop="toggle(row)" />
                 </TableCell>
                 <TableCell v-for="c in columns" :key="c.id" :style="{
-                    width: c.width ? c.width + 'px' : 'auto',
                     height: 'var(--datatable-td-height, 3rem)'
                 }" class="whitespace-normal">
                     <slot :name="`row-${c.id}`" :column="c" :row="row">

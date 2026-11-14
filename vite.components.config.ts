@@ -1,6 +1,6 @@
 import { defineConfig, mergeConfig } from 'vite'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
-import viteCommonConfig, { logger } from './vite.common.config'
+import viteCommonConfig, { logger } from './vite.common.config.ts'
 
 
 const prebuild = () => ({

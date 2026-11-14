@@ -59,7 +59,12 @@ const loading = defineModel<boolean>('loading', {
 
 const selectedFile = ref<ServerFile | null>(null)
 
-function setSelectedFile(file: ServerFile) {
+function setSelectedFile(file: ServerFile | ServerFile[]) {
+    if (Array.isArray(file)) {
+        selectedFile.value = file[0] || null
+        return
+    }
+
     selectedFile.value = file
 }
 

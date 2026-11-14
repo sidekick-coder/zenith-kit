@@ -1,6 +1,6 @@
 import { createLogger, defineConfig, mergeConfig } from 'vite'
 import { generateIndexFile } from '#server/utils/generateIndexFile.ts'
-import viteCommonConfig from './vite.common.config'
+import viteCommonConfig from './vite.common.config.ts'
 
 const logger = createLogger()
 
@@ -12,6 +12,7 @@ const prebuild = () => ({
             folders: [
                 'src/client/services',
                 'src/client/composables',
+                'src/client/contracts',
                 'src/client/repositories',
                 'src/client/mixins',
                 'src/client/facades',
