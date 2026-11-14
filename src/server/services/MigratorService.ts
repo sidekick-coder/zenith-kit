@@ -42,7 +42,10 @@ export interface MigratorServiceOptions {
     logger?: LoggerService
 }
 
-export interface MigratorServiceEvents {
+export interface MigratorEvents {
+    'migrator:registered': {
+        migrator: MigratorService
+    }
     'migrator:before-migrate': {
         migrations: MigrationEntity[]
     }

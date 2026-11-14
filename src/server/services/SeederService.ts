@@ -26,6 +26,9 @@ export interface SeederResult {
 }
 
 export interface SeederEvents {
+    'seeder:registered': {
+        seeder: SeeederService
+    }
     'seeder:before-run': {
         seeders: string[];
     };

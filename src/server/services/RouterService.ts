@@ -32,6 +32,11 @@ export interface FileBaseRoutingOptions {
     prefix?: string
 }
 
+export interface RouterSource {
+    id: string 
+    prefix: string 
+    directory: string
+}
 
 export default class RouterService<C = {}> extends compose(Hooks) {
     public static __container_entry_key = 'RouterService'
@@ -260,4 +265,10 @@ export default class RouterService<C = {}> extends compose(Hooks) {
         await register.load()
     }
 
+    public addSource(source: RouterSource) {
+        this.addFileBaseRoutes(source.directory, {
+            identifier: source.id,
+            prefix: source.prefix,
+        })
+    }
 }

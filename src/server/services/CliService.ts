@@ -13,6 +13,10 @@ export interface CliEvents {
     }
 }
 
+export interface CliSource {
+    directory: string
+}
+
 export class CliCommand extends CommanderCommand {
     public __is_cli_command = true
     public table = printTable
@@ -68,6 +72,12 @@ export default class CliService extends CliCommand {
 
     public addDir(dir: string) {
         this.dirs.add(dir)
+
+        return this
+    }
+
+    public addSource(source: CliSource) {
+        this.dirs.add(source.directory)
 
         return this
     }
