@@ -8,6 +8,12 @@ export interface ListFilter {
     allowed?: boolean
 }
 
+export interface MenuEvents {
+    'menu:registered': {
+        menu: MenuService
+    }
+}
+
 export default class MenuService {
     public static __container_entry_key = 'MenuService'
 

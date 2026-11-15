@@ -49,13 +49,17 @@
             "require": "./dist/client/index.es.js"
         },
         "./components": {
-            "types": "./dist/components/src/client/components.d.ts",
+            "types": "./dist/components/client/components.d.ts",
             "import": "./dist/components/index.es.js",
             "require": "./dist/components/index.es.js"
         },
         "./styles.css": {
             "import": "./dist/components/styles.css",
             "require": "./dist/components/styles.css"
+        },
+        "./theme.css": {
+            "import": "./src/client/css/theme.css",
+            "require": "./src/client/css/theme.css"
         },
         "./vite": {
             "import": "./vite/plugins/vite.js",
